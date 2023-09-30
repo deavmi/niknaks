@@ -36,6 +36,8 @@ public bool isPresent(T)(T[] array, T value)
 
 /**
  * Tests the `isPresent!(T)(T[], T)` function
+ *
+ * Case: Non-empty array
  */
 unittest
 {
@@ -46,6 +48,16 @@ unittest
     }
     assert(isPresent(values, 0) == false);
     assert(isPresent(values, 5) == false);
+}
+
+/**
+ * Tests the `isPresent!(T)(T[], T)` function
+ *
+ * Case: Empty array
+ */
+unittest
+{
+    assert(isPresent([], 1) == false);
 }
 
 /** 
