@@ -14,3 +14,4 @@ niknaks-test-*
 *.o
 *.obj
 *.lst
+libniknaks.a
