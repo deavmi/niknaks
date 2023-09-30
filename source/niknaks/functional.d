@@ -18,7 +18,7 @@ template Predicate(T)
 
 version(unittest)
 {
-	bool isEven(int number)
+	private bool isEven(int number)
 	{
 		return number%2==0;
 	}
