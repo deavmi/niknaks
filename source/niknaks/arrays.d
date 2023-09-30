@@ -78,10 +78,24 @@ public T findNextFree(T)(T[] used) if(__traits(isIntegral, T))
 
 /**
  * Tests the `findNextFree!(T)(T[])` function
+ *
+ * Case: First value is free
  */
 unittest
 {
     ubyte[] values = [1,2,3];
+    ubyte free = findNextFree(values);
+    assert(isPresent(values, free) == false);
+}
+
+/**
+ * Tests the `findNextFree!(T)(T[])` function
+ *
+ * Case: First value is unfree
+ */
+unittest
+{
+    ubyte[] values = [0,2,3];
     ubyte free = findNextFree(values);
     assert(isPresent(values, free) == false);
 }
