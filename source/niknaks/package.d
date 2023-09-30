@@ -16,3 +16,11 @@ public import niknaks.functional;
  * Bytes, bits and binary tooling
  */
 public import niknaks.bits;
+
+/**
+ * Arrays tooling
+ *
+ * Unique element generation, prescence
+ * checking etc.
+ */
+public import niknaks.arrays;
