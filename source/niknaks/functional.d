@@ -13,6 +13,11 @@ module niknaks.functional;
  */
 template Predicate(T)
 {
+	/**
+	 * Parameterized function pointer
+	 * taking in `T` and returning
+	 * either `true` or `false`
+	 */
 	alias Predicate = bool function(T);
 }
 
