@@ -11,6 +11,13 @@ module niknaks;
 public import niknaks.functional;
 
 /**
+ * Binary tooling
+ *
+ * Bytes, bits and binary tooling
+ */
+public import niknaks.bits;
+
+/**
  * Arrays tooling
  *
  * Unique element generation, prescence
