@@ -16,6 +16,8 @@ To add the package to your project use the following:
 dub add niknaks
 ```
 
+[**Now read the DOCS!**](https://niknaks.dpldocs.info/)
+
 ### Modules
 
 Below is a short description of what each module provides, the list
