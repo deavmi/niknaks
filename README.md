@@ -28,7 +28,6 @@ is expected to grow over time.
 * `niknaks.bits`
     * Integral to byte conversions
     * Byte ordering functions
-    * Unique element generation
 
 ## License
 
