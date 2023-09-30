@@ -4,7 +4,7 @@
 module niknaks;
 
 /**
- * Functional tools
+ * Functional tooling
  *
  * Think about predicates etc.
  */
