@@ -25,7 +25,9 @@ is expected to grow over time.
 
 * `niknaks.functional`
     * Predicates
-
+* `niknaks.bits`
+    * Integral to byte conversions
+    * Byte ordering functions
 
 ## License
 
