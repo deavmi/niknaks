@@ -91,7 +91,7 @@ public T findNextFree(T)(T[] used) if(__traits(isIntegral, T))
 /**
  * Tests the `findNextFree!(T)(T[])` function
  *
- * Case: First value is free
+ * Case: First value is free + non-empty array
  */
 unittest
 {
@@ -103,7 +103,7 @@ unittest
 /**
  * Tests the `findNextFree!(T)(T[])` function
  *
- * Case: First value is unfree
+ * Case: First value is unfree + non-empty array
  */
 unittest
 {
@@ -111,3 +111,16 @@ unittest
     ubyte free = findNextFree(values);
     assert(isPresent(values, free) == false);
 }
+
+// TODO: Add support for , ref-based present and returns if found
+
+// /**
+//  * Tests the `findNextFree!(T)(T[])` function
+//  *
+//  * Case: First value is unfree + non-empty array
+//  */
+// unittest
+// {
+//     ubyte free = findNextFree([]]);
+//     assert(isPresent(values, free) == false);
+// }
