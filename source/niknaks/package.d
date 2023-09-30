@@ -1,3 +1,6 @@
+/**
+ * Helpful niknaks or "things" that you may grasp for now and then
+ */
 module niknaks;
 
 /**
