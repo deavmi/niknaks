@@ -25,7 +25,9 @@ is expected to grow over time.
 
 * `niknaks.functional`
     * Predicates
-
+* `niknaks.arrays`
+    * Unique element generation
+    * Prescence checking
 
 ## License
 
