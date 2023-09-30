@@ -26,7 +26,12 @@ is expected to grow over time.
 * `niknaks.functional`
     * Predicates
     * Optionals
-
+* `niknaks.arrays`
+    * Unique element generation
+    * Prescence checking
+* `niknaks.bits`
+    * Integral to byte conversions
+    * Byte ordering functions
 
 ## License
 
