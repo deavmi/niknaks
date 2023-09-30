@@ -41,4 +41,4 @@ Only make use of exceptions where it is absolutely necessary, normally
 go for an exception-less implementation and have an exception-based
 one which re-uses the former.
 
-For more information please see [CONTRIBUTING.md]().
+For more information please see [CONTRIBUTING](CONTRIBUTING.md).
