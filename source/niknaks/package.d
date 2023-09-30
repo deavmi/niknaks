@@ -9,3 +9,11 @@ module niknaks;
  * Think about predicates etc.
  */
 public import niknaks.functional;
+
+/**
+ * Arrays tooling
+ *
+ * Unique element generation, prescence
+ * checking etc.
+ */
+public import niknaks.arrays;
