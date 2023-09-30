@@ -25,6 +25,7 @@ is expected to grow over time.
 
 * `niknaks.functional`
     * Predicates
+    * Optionals
 
 
 ## License
