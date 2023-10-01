@@ -211,3 +211,75 @@ unittest
         assert(bytes == [0, 0, 0, 0, 0, 0, 0, 1]);
     }
 }
+
+/** 
+ * Takes an array of bytes and dereferences
+ * then to an integral of your choosing
+ *
+ * Params:
+ *   T = the integral type to go to
+ *   bytes = the bytes to copy
+ * Returns: the integral but `T.init` if
+ * the provided size would cause an overrun
+ * read
+ */
+public T bytesToIntegral(T)(ubyte[] bytes) if(__traits(isIntegral, T))
+{
+    if(bytes.length >= T.sizeof)
+    {
+        return *cast(T*)bytes.ptr;
+    }
+    else
+    {
+        return T.init;
+    }
+}
+
+/**
+ * Tests taking a byte array and then
+ * decoding it into the requested type
+ * by using `bytesToIntegral!(T)(ubyte[])`
+ *
+ * In this case provided bytes match the
+ * given integral to-type
+ */
+unittest
+{
+    version(LittleEndian)
+    {
+        ubyte[] bytes = [1, 0];
+        ushort to = bytesToIntegral!(ushort)(bytes);
+        assert(to == 1);
+    }
+    else version(BigEndian)
+    {
+        ubyte[] bytes = [1, 0];
+        ushort to = bytesToIntegral!(ushort)(bytes);
+        assert(to == 256);
+    }
+}
+
+/**
+ * Tests taking a byte array and then
+ * decoding it into the requested type
+ * by using `bytesToIntegral!(T)(ubyte[])`
+ *
+ * In this case provided bytes DO NOT
+ * match the given integral to-type
+ * and therefore to-type.init is returned
+ */
+unittest
+{
+    version(LittleEndian)
+    {
+        ubyte[] bytes = [1];
+        ushort to = bytesToIntegral!(ushort)(bytes);
+        assert(to == ushort.init);
+    }
+    else version(BigEndian)
+    {
+        ubyte[] bytes = [1];
+        ushort to = bytesToIntegral!(ushort)(bytes);
+        assert(to == ushort.init);
+    }
+}
