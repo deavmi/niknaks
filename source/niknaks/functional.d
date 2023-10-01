@@ -41,8 +41,21 @@ unittest
 	assert(pred(1) == false);
 }
 
+/** 
+ * Default exception which is thrown
+ * when `get()` is called on an
+ * `Optional!(T)` which has no
+ * value set
+ */
 public class OptionalException : Exception
 {
+	/** 
+	 * Constructs a new `OptionalException`
+	 * with the given message
+	 *
+	 * Params:
+	 *   msg = the error text
+	 */
 	this(string msg)
 	{
 		super(msg);
