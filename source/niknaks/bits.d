@@ -211,3 +211,26 @@ unittest
         assert(bytes == [0, 0, 0, 0, 0, 0, 0, 1]);
     }
 }
+
+
+public T fromBytes(T)(ubyte[] bytes) if(__traits(isIntegral, T))
+{
+    T value = *cast(T*)bytes.ptr;
+    return value;
+}
+
+unittest
+{
+    version(LittleEndian)
+    {
+        ubyte[] bytes = [1, 0];
+        ushort to = fromBytes!(ushort)(bytes);
+        assert(to == 1);
+    }
+    else version(BigEndian)
+    {
+        ubyte[] bytes = [1, 0];
+        ushort to = fromBytes!(ushort)(bytes);
+        assert(to == 256);
+    }
+}
