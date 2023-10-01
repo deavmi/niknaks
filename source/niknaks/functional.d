@@ -16,29 +16,58 @@ import std.traits : isAssignable;
 template Predicate(T)
 {
 	/**
-	 * Parameterized function pointer
+	 * Parameterized delegate pointer
 	 * taking in `T` and returning
 	 * either `true` or `false`
 	 */
-	// alias Predicate = bool function(T);
-
 	alias Predicate = bool delegate(T);
 }
 
-import std.traits : ReturnType, isFunction, Parameters;
+// import std.traits : ReturnType, isFunction, Parameters;
 
-template makeDelegate(alias funcName)
-if(isFunction(funcName))
+// template makeDelegate(alias funcName)
+// if(isFunction(funcName))
+// {
+// 	ReturnType!(funcName) createdDelegate(Parameters!(funcName))
+// 	{
+// 		return funcName();
+// 	}
+
+// 	ReturnType!(funcName) delegate makeDelegate()
+// 	{
+// 		return createdDelegate;
+// 	}
+// }
+
+import std.traits : isFunction, ParameterTypeTuple, isCallable;
+import std.functional : toDelegate;
+
+template predicateOf(alias func)
+if(isCallable!(func))
 {
-	ReturnType!(funcName) createdDelegate(Parameters!(funcName))
+	// Obtain the predicate's input type
+	alias predicateParameterType = ParameterTypeTuple!(func)[0];
+
+	// Created predicate delegate
+	Predicate!(predicateParameterType) del;
+
+	Predicate!(predicateParameterType) predicateOf()
 	{
-		return funcName();
+		// If it is a function, first make it a delegate
+		static if(isFunction!(func))
+		{
+			del = toDelegate(&func);
+		}
+		else
+		{
+			del = &func;
+		}
+
+
+		return del;
 	}
 
-	ReturnType!(funcName) delegate makeDelegate()
-	{
-		return createdDelegate;
-	}
+	
 }
 
 version(unittest)
@@ -55,7 +84,7 @@ version(unittest)
  */
 unittest
 {
-	Predicate!(int) pred = &isEven;
+	Predicate!(int) pred = predicateOf!(isEven);
 
 	assert(pred(0) == true);
 	assert(pred(1) == false);
