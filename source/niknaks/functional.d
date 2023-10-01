@@ -97,6 +97,12 @@ if(isAssignable!(Throwable, onEmptyGet) // &&
 	}
 }
 
+/**
+ * Creating an `Optional!(T)` with no 
+ * value present and then trying to
+ * get the value, which results in
+ * an exception
+ */
 unittest
 {
 	Optional!(int) d;
@@ -111,7 +117,16 @@ unittest
 	{
 		assert(true);
 	}
+}
 
+/**
+ * Creating an `Optional!(T)` with a
+ * value present and then trying to
+ * get the value, which results in
+ * said value being returned
+ */
+unittest
+{
 	Optional!(byte) f = Optional!(byte)(1);
 	assert(f.isPresent() == true);
 
