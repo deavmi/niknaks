@@ -3,6 +3,8 @@
  */
 module niknaks.functional;
 
+import std.traits : isAssignable;
+
 /** 
  * Predicate for testing an input type
  * against a condition and returning either
@@ -61,9 +63,6 @@ public class OptionalException : Exception
 		super(msg);
 	}
 }
-
-import std.traits : isAssignable;
-import std.meta : AliasSeq;
 
 /** 
  * Optionals for a given type and 
