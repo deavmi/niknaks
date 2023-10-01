@@ -225,14 +225,14 @@ unittest
  */
 public T bytesToIntegral(T)(ubyte[] bytes) if(__traits(isIntegral, T))
 {
-    T value = T.init;
-
     if(bytes.length >= T.sizeof)
     {
-        value = *cast(T*)bytes.ptr;
+        return *cast(T*)bytes.ptr;
     }
-
-    return value;
+    else
+    {
+        return T.init;
+    }
 }
 
 /**
