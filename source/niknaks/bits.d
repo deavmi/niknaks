@@ -274,12 +274,12 @@ unittest
     {
         ubyte[] bytes = [1];
         ushort to = bytesToIntegral!(ushort)(bytes);
-        assert(to == 0);
+        assert(to == ushort.init);
     }
     else version(BigEndian)
     {
         ubyte[] bytes = [1];
         ushort to = bytesToIntegral!(ushort)(bytes);
-        assert(to == 0);
+        assert(to == ushort.init);
     }
 }
