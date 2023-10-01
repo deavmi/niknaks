@@ -212,10 +212,26 @@ unittest
     }
 }
 
-
+/** 
+ * Takes an array of bytes and dereferences
+ * then to an integral of your choosing
+ *
+ * Params:
+ *   T = the integral type to go to
+ *   bytes = the bytes to copy
+ * Returns: the integral but `0` if the
+ * provided size would cause a overrun
+ * read
+ */
 public T bytesToIntegral(T)(ubyte[] bytes) if(__traits(isIntegral, T))
 {
-    T value = *cast(T*)bytes.ptr;
+    T value = 0;
+    
+    if(bytes.length >= T.sizeof)
+    {
+        value = *cast(T*)bytes.ptr;
+    }
+
     return value;
 }
 
