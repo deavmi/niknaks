@@ -226,7 +226,7 @@ unittest
 public T bytesToIntegral(T)(ubyte[] bytes) if(__traits(isIntegral, T))
 {
     T value = 0;
-    
+
     if(bytes.length >= T.sizeof)
     {
         value = *cast(T*)bytes.ptr;
@@ -235,6 +235,14 @@ public T bytesToIntegral(T)(ubyte[] bytes) if(__traits(isIntegral, T))
     return value;
 }
 
+/**
+ * Tests taking a byte array and then
+ * decoding it into the requested type
+ * by using `bytesToIntegral!(T)(ubyte[])`
+ *
+ * In this case provided bytes match the
+ * given integral to-type
+ */
 unittest
 {
     version(LittleEndian)
