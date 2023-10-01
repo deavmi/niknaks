@@ -258,3 +258,27 @@ unittest
         assert(to == 256);
     }
 }
+
+/**
+ * Tests taking a byte array and then
+ * decoding it into the requested type
+ * by using `bytesToIntegral!(T)(ubyte[])`
+ *
+ * In this case provided bytes DO NOT
+ * match the given integral to-type
+ */
+unittest
+{
+    version(LittleEndian)
+    {
+        ubyte[] bytes = [1];
+        ushort to = bytesToIntegral!(ushort)(bytes);
+        assert(to == 1);
+    }
+    else version(BigEndian)
+    {
+        ubyte[] bytes = [1];
+        ushort to = bytesToIntegral!(ushort)(bytes);
+        assert(to == 256);
+    }
+}
