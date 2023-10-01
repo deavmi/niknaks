@@ -20,7 +20,25 @@ template Predicate(T)
 	 * taking in `T` and returning
 	 * either `true` or `false`
 	 */
-	alias Predicate = bool function(T);
+	// alias Predicate = bool function(T);
+
+	alias Predicate = bool delegate(T);
+}
+
+import std.traits : ReturnType, isFunction, Parameters;
+
+template makeDelegate(alias funcName)
+if(isFunction(funcName))
+{
+	ReturnType!(funcName) createdDelegate(Parameters!(funcName))
+	{
+		return funcName();
+	}
+
+	ReturnType!(funcName) delegate makeDelegate()
+	{
+		return createdDelegate;
+	}
 }
 
 version(unittest)
