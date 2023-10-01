@@ -82,6 +82,9 @@ if(isAssignable!(Throwable, onEmptyGet) // &&
 //    __traits(getVirtualMethods, onEmptyGet, "")[0]
   ) // TODO: Check for this() with arity of 1 and string
 {
+	/** 
+	 * The optional itself
+	 */
 	public struct Optional
 	{
 		/** 
