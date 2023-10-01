@@ -72,7 +72,16 @@ if(isAssignable!(Throwable, onEmptyGet) // &&
 {
 	public struct Optional
 	{
+		/** 
+		 * The value
+		 */
 		private T value;
+
+		/** 
+		 * Flag for if value
+		 * has been set or
+		 * not
+		 */
 		private bool isSet = false;
 
 		/** 
