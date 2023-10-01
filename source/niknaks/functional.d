@@ -52,6 +52,19 @@ public class OptionalException : Exception
 import std.traits : isAssignable;
 import std.meta : AliasSeq;
 
+/** 
+ * Optionals for a given type and 
+ * with a customizable exception
+ * to be thrown when a value is
+ * not present and `get()` is
+ * called.
+ *
+ * Params:
+ *    T = the value type
+ *    onEmptyGet = the `Throwable`
+ * to be called when `get()` is
+ * called and no value is present
+ */
 template Optional(T, onEmptyGet = OptionalException, exceptionArgs...)
 if(isAssignable!(Throwable, onEmptyGet) // && 
 //    __traits(getVirtualMethods, onEmptyGet, "")[0]
@@ -62,22 +75,53 @@ if(isAssignable!(Throwable, onEmptyGet) // &&
 		private T value;
 		private bool isSet = false;
 
+		/** 
+		 * Constructs an optional with
+		 * the value already set
+		 *
+		 * Params:
+		 *   value = the value to set
+		 */
 		this(T value)
 		{
 			set(value);
 		}
 
+		/** 
+		 * Sets the optional's value
+		 *
+		 * Params:
+		 *   value = the value to set
+		 */
 		public void set(T value)
 		{
 			this.value = value;
 			this.isSet = true;
 		}
 
+		/** 
+		 * Checks if a value is present
+		 * or not
+		 *
+		 * Returns: `true` if present,
+		 * otherwise `false`
+		 */
 		public bool isPresent()
 		{
 			return isSet;
 		}
 
+		/** 
+		 * Returns the value of this
+		 * optional if it is set. If
+		 * not set then an exception
+		 * is thrown.
+		 *
+		 * Returns: the value
+		 * Throws:
+		 *    Throwable if no value
+		 * is present
+		 */
 		public T get()
 		{
 			if(!isPresent())
