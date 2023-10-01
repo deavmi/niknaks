@@ -39,11 +39,11 @@ template Predicate(T)
 // 	}
 // }
 
-import std.traits : isFunction, ParameterTypeTuple, isCallable;
+import std.traits : isFunction, ParameterTypeTuple, isFunction;
 import std.functional : toDelegate;
 
 template predicateOf(alias func)
-if(isCallable!(func))
+if(isFunction!(func) || isDelegate!(func))
 {
 	// Obtain the predicate's input type
 	alias predicateParameterType = ParameterTypeTuple!(func)[0];
