@@ -219,13 +219,13 @@ unittest
  * Params:
  *   T = the integral type to go to
  *   bytes = the bytes to copy
- * Returns: the integral but `0` if the
- * provided size would cause a overrun
+ * Returns: the integral but `T.init` if
+ * the provided size would cause an overrun
  * read
  */
 public T bytesToIntegral(T)(ubyte[] bytes) if(__traits(isIntegral, T))
 {
-    T value = 0;
+    T value = T.init;
 
     if(bytes.length >= T.sizeof)
     {
@@ -266,7 +266,7 @@ unittest
  *
  * In this case provided bytes DO NOT
  * match the given integral to-type
- * and therefore `0` is returned
+ * and therefore to-type.init is returned
  */
 unittest
 {
