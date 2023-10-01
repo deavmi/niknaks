@@ -266,6 +266,7 @@ unittest
  *
  * In this case provided bytes DO NOT
  * match the given integral to-type
+ * and therefore `0` is returned
  */
 unittest
 {
@@ -273,12 +274,12 @@ unittest
     {
         ubyte[] bytes = [1];
         ushort to = bytesToIntegral!(ushort)(bytes);
-        assert(to == 1);
+        assert(to == 0);
     }
     else version(BigEndian)
     {
         ubyte[] bytes = [1];
         ushort to = bytesToIntegral!(ushort)(bytes);
-        assert(to == 256);
+        assert(to == 0);
     }
 }
