@@ -39,7 +39,7 @@ template Predicate(T)
 // 	}
 // }
 
-import std.traits : isFunction, ParameterTypeTuple, isFunction;
+import std.traits : isFunction, ParameterTypeTuple, isFunction, ReturnType;
 import std.functional : toDelegate;
 
 /** 
@@ -54,8 +54,23 @@ import std.functional : toDelegate;
 template predicateOf(alias func)
 if(isFunction!(func) || isDelegate!(func))
 {
+	static if(!__traits(isSame, ReturnType!(func), bool))
+	{
+		pragma(msg, "Predicates are required to have a return type of bool");
+		static assert(false);
+	}
+
+	// Obtain all paramaters
+	alias params = ParameterTypeTuple!(func);
+
+	static if(params.length != 1)
+	{
+		pragma(msg, "Predicates are required to have an arity of 1");
+		static assert(false);
+	}
+
 	// Obtain the predicate's input type
-	alias predicateParameterType = ParameterTypeTuple!(func)[0];
+	alias predicateParameterType = params[0];
 
 	// Created predicate delegate
 	Predicate!(predicateParameterType) del;
