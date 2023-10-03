@@ -42,6 +42,15 @@ template Predicate(T)
 import std.traits : isFunction, ParameterTypeTuple, isFunction;
 import std.functional : toDelegate;
 
+/** 
+ * Given the symbol of a function or
+ * delegate this will return a new
+ * `Predicate` of it
+ *
+ * Params:
+ *   func = the symbol of the function
+ * or delegate to make a predicate of
+ */
 template predicateOf(alias func)
 if(isFunction!(func) || isDelegate!(func))
 {
@@ -81,6 +90,13 @@ version(unittest)
 /**
  * Uses a `Predicate` which tests
  * an integer input for evenness
+ *
+ * We create the predicate by
+ * passing in the symbol of the
+ * function or delegate we wish
+ * to use for testing truthiness
+ * to a template function
+ * `predicateOf!(alias)`
  */
 unittest
 {
