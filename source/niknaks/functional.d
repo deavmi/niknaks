@@ -23,7 +23,7 @@ template Predicate(T)
 	alias Predicate = bool delegate(T);
 }
 
-import std.traits : isFunction, ParameterTypeTuple, isFunction, ReturnType;
+import std.traits : isFunction, isDelegate, ParameterTypeTuple, isFunction, ReturnType;
 import std.functional : toDelegate;
 
 /** 
@@ -68,14 +68,11 @@ if(isFunction!(func) || isDelegate!(func))
 		}
 		else
 		{
-			del = &func;
+			del = func;
 		}
-
 
 		return del;
 	}
-
-	
 }
 
 version(unittest)
@@ -83,6 +80,23 @@ version(unittest)
 	private bool isEven(int number)
 	{
 		return number%2==0;
+	}
+
+	private bool thing()
+	{
+		return true;
+	}
+
+	private void doIt(bool delegate() delIn)
+	{
+		import std.stdio;
+		writeln("DeliN: ", delIn());
+	}
+
+	private void doZ(bool function() funcIn)
+	{
+		import std.stdio;
+		writeln("FuncIn: ", funcIn());
 	}
 }
 
@@ -100,6 +114,12 @@ version(unittest)
 unittest
 {
 	Predicate!(int) pred = predicateOf!(isEven);
+
+	assert(pred(0) == true);
+	assert(pred(1) == false);
+
+	bool delegate(int) isEvenDel = toDelegate(&isEven);
+	pred = predicateOf!(isEvenDel);
 
 	assert(pred(0) == true);
 	assert(pred(1) == false);
