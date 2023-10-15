@@ -154,6 +154,21 @@ unittest
     assert(isPresent(values, free) == false);
 }
 
+/**
+ * Tests the `findNextFree!(T)(T[], ref T)` function
+ *
+ * Case: Array is empty, first value should be T.init
+ */
+unittest
+{
+    ubyte[] values = [];
+
+    ubyte free;
+    bool status = findNextFree(values, free);
+    assert(status == true);
+    assert(free == ubyte.init);
+    assert(isPresent(values, free) == false);
+}
 
 version(unittest)
 {
