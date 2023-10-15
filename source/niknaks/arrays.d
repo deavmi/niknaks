@@ -125,7 +125,7 @@ public bool findNextFree(T)(T[] used, ref T found) if(__traits(isIntegral, T))
 }
 
 /**
- * Tests the `findNextFree!(T)(T[])` function
+ * Tests the `findNextFree!(T)(T[], ref T)` function
  *
  * Case: First value is free + non-empty array
  */
@@ -140,7 +140,7 @@ unittest
 }
 
 /**
- * Tests the `findNextFree!(T)(T[])` function
+ * Tests the `findNextFree!(T)(T[], ref T)` function
  *
  * Case: First value is unfree + non-empty array
  */
@@ -160,6 +160,11 @@ version(unittest)
     import std.stdio : writeln;
 }
 
+/**
+ * Tests the `findNextFree!(T)(T[], ref T)` function
+ *
+ * Case: All values are unfree
+ */
 unittest
 {
     ubyte[] values;
