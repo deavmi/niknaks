@@ -57,7 +57,7 @@ if(isFunction!(func) || isDelegate!(func))
 	alias predicateParameterType = params[0];
 
 	// Created predicate delegate
-	Predicate!(predicateParameterType) del;
+	private Predicate!(predicateParameterType) del;
 
 	Predicate!(predicateParameterType) predicateOf()
 	{
