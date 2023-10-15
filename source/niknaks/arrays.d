@@ -167,19 +167,19 @@ version(unittest)
  */
 unittest
 {
+    // Populate entire array with 0 through 255
     ubyte[] values;
-
     static foreach(ushort val; 0..256)
     {
         values~=val;
     }
-
     writeln(values);
 
     ubyte free;
     bool status = findNextFree(values, free);
     assert(status == false);
 
+    // Ensure none of the values are present
     foreach(ubyte i; values)
     {
         assert(isPresent(values, i) == true);
