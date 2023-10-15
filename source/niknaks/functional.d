@@ -45,7 +45,7 @@ if(isFunction!(func) || isDelegate!(func))
 	}
 
 	// Obtain all paramaters
-	alias params = ParameterTypeTuple!(func);
+	private alias params = ParameterTypeTuple!(func);
 
 	static if(params.length != 1)
 	{
@@ -54,7 +54,7 @@ if(isFunction!(func) || isDelegate!(func))
 	}
 
 	// Obtain the predicate's input type
-	alias predicateParameterType = params[0];
+	private alias predicateParameterType = params[0];
 
 	// Created predicate delegate
 	private Predicate!(predicateParameterType) del;
