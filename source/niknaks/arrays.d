@@ -182,16 +182,3 @@ unittest
         assert(isPresent(values, i) == true);
     }
 }
-
-// TODO: Add support for , ref-based present and returns if found
-
-// /**
-//  * Tests the `findNextFree!(T)(T[])` function
-//  *
-//  * Case: First value is unfree + non-empty array
-//  */
-// unittest
-// {
-//     ubyte free = findNextFree([]]);
-//     assert(isPresent(values, free) == false);
-// }
