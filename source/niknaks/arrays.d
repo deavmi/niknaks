@@ -63,64 +63,140 @@ unittest
 /** 
  * Given an array of values this tries to find
  * the next free value of which is NOT present
- * within the given array
+ * within the given array.
+ *
+ * If the array provided is emptied then a value
+ * will always be found and will be that of `T.init`.
  *
  * Params:
  *   used = the array of values
- * Returns: the free value
+ *   found = the found free value
+ * Returns: `true` if a free value was found
+ * otherwise `false`
  */
-public T findNextFree(T)(T[] used) if(__traits(isIntegral, T))
+@nogc
+public bool findNextFree(T)(T[] used, ref T found) if(__traits(isIntegral, T))
 {
-    T found;
+    // Temporary value used for searching
+    T tmp = T.init;
+
+    // If the array is empty then the first
+    // ... found value may as well be T.init
     if(used.length == 0)
     {
-        return 0;
+        found = tmp;
+        return true;
     }
     else
     {
-        found = 0;
-        while(isPresent(used, found)) // FIXME: Constant loop if none available
+        // Is the starting value in use?
+        // If it is increment it such that
+        // ... looping infinite rule in the
+        // ... upcoming while loop works
+        // ... as expected
+        if(isPresent(used, tmp))
         {
-            found++;
+            tmp++;
+        }
+        // If not, then we found it
+        else
+        {
+            found = tmp;
+            return true;
         }
 
-        return found;
+        // Loop till we hit starting value
+        while(tmp != T.init)
+        {
+            if(isPresent(used, tmp))
+            {
+                tmp++;
+            }
+            else
+            {
+                found = tmp;
+                return true;
+            }
+        }
+
+        // We exited loop because we exhausted all possible values
+        return false;
     }
 }
 
 /**
- * Tests the `findNextFree!(T)(T[])` function
+ * Tests the `findNextFree!(T)(T[], ref T)` function
  *
  * Case: First value is free + non-empty array
  */
 unittest
 {
     ubyte[] values = [1,2,3];
-    ubyte free = findNextFree(values);
+
+    ubyte free;
+    bool status = findNextFree(values, free);
+    assert(status == true);
     assert(isPresent(values, free) == false);
 }
 
 /**
- * Tests the `findNextFree!(T)(T[])` function
+ * Tests the `findNextFree!(T)(T[], ref T)` function
  *
  * Case: First value is unfree + non-empty array
  */
 unittest
 {
     ubyte[] values = [0,2,3];
-    ubyte free = findNextFree(values);
+
+    ubyte free;
+    bool status = findNextFree(values, free);
+    assert(status == true);
     assert(isPresent(values, free) == false);
 }
 
-// TODO: Add support for , ref-based present and returns if found
+/**
+ * Tests the `findNextFree!(T)(T[], ref T)` function
+ *
+ * Case: Array is empty, first value should be T.init
+ */
+unittest
+{
+    ubyte[] values = [];
 
-// /**
-//  * Tests the `findNextFree!(T)(T[])` function
-//  *
-//  * Case: First value is unfree + non-empty array
-//  */
-// unittest
-// {
-//     ubyte free = findNextFree([]]);
-//     assert(isPresent(values, free) == false);
-// }
+    ubyte free;
+    bool status = findNextFree(values, free);
+    assert(status == true);
+    assert(free == ubyte.init);
+    assert(isPresent(values, free) == false);
+}
+
+version(unittest)
+{
+    import std.stdio : writeln;
+}
+
+/**
+ * Tests the `findNextFree!(T)(T[], ref T)` function
+ *
+ * Case: All values are unfree
+ */
+unittest
+{
+    // Populate entire array with 0 through 255
+    ubyte[] values;
+    static foreach(ushort val; 0..256)
+    {
+        values~=val;
+    }
+    writeln(values);
+
+    ubyte free;
+    bool status = findNextFree(values, free);
+    assert(status == false);
+
+    // Ensure none of the values are present
+    foreach(ubyte i; values)
+    {
+        assert(isPresent(values, i) == true);
+    }
+}
