@@ -59,6 +59,13 @@ if(isFunction!(func) || isDelegate!(func))
 	// Created predicate delegate
 	private Predicate!(predicateParameterType) del;
 
+	/** 
+	 * Given the symbol of a function or
+	 * delegate this will return a new
+	 * `Predicate` of it
+	 *
+	 * Returns: the predicate
+	 */
 	Predicate!(predicateParameterType) predicateOf()
 	{
 		// If it is a function, first make it a delegate
