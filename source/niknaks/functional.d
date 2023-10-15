@@ -81,23 +81,6 @@ version(unittest)
 	{
 		return number%2==0;
 	}
-
-	private bool thing()
-	{
-		return true;
-	}
-
-	private void doIt(bool delegate() delIn)
-	{
-		import std.stdio;
-		writeln("DeliN: ", delIn());
-	}
-
-	private void doZ(bool function() funcIn)
-	{
-		import std.stdio;
-		writeln("FuncIn: ", funcIn());
-	}
 }
 
 /**
