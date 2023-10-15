@@ -169,12 +169,10 @@ unittest
 {
     ubyte[] values;
 
-    static foreach(ubyte val; 0..255)
+    static foreach(ushort val; 0..256)
     {
         values~=val;
     }
-
-    values~=255;
 
     writeln(values);
 
