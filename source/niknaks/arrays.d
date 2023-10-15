@@ -154,6 +154,35 @@ unittest
     assert(isPresent(values, free) == false);
 }
 
+
+version(unittest)
+{
+    import std.stdio : writeln;
+}
+
+unittest
+{
+    ubyte[] values;
+
+    static foreach(ubyte val; 0..255)
+    {
+        values~=val;
+    }
+
+    values~=255;
+
+    writeln(values);
+
+    ubyte free;
+    bool status = findNextFree(values, free);
+    assert(status == false);
+
+    foreach(ubyte i; values)
+    {
+        assert(isPresent(values, i) == true);
+    }
+}
+
 // TODO: Add support for , ref-based present and returns if found
 
 // /**
