@@ -25,6 +25,7 @@ jobs:
     - name: Install Doveralls (code coverage tool)
       run: |
           dub fetch doveralls
+          sudo apt update
           sudo apt install libcurl4-openssl-dev
 
     - name: 'Build & Test'
