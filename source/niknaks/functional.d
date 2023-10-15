@@ -16,11 +16,63 @@ import std.traits : isAssignable;
 template Predicate(T)
 {
 	/**
-	 * Parameterized function pointer
+	 * Parameterized delegate pointer
 	 * taking in `T` and returning
 	 * either `true` or `false`
 	 */
-	alias Predicate = bool function(T);
+	alias Predicate = bool delegate(T);
+}
+
+import std.traits : isFunction, isDelegate, ParameterTypeTuple, isFunction, ReturnType;
+import std.functional : toDelegate;
+
+/** 
+ * Given the symbol of a function or
+ * delegate this will return a new
+ * `Predicate` of it
+ *
+ * Params:
+ *   func = the symbol of the function
+ * or delegate to make a predicate of
+ */
+template predicateOf(alias func)
+if(isFunction!(func) || isDelegate!(func))
+{
+	static if(!__traits(isSame, ReturnType!(func), bool))
+	{
+		pragma(msg, "Predicates are required to have a return type of bool");
+		static assert(false);
+	}
+
+	// Obtain all paramaters
+	alias params = ParameterTypeTuple!(func);
+
+	static if(params.length != 1)
+	{
+		pragma(msg, "Predicates are required to have an arity of 1");
+		static assert(false);
+	}
+
+	// Obtain the predicate's input type
+	alias predicateParameterType = params[0];
+
+	// Created predicate delegate
+	Predicate!(predicateParameterType) del;
+
+	Predicate!(predicateParameterType) predicateOf()
+	{
+		// If it is a function, first make it a delegate
+		static if(isFunction!(func))
+		{
+			del = toDelegate(&func);
+		}
+		else
+		{
+			del = func;
+		}
+
+		return del;
+	}
 }
 
 version(unittest)
@@ -34,10 +86,23 @@ version(unittest)
 /**
  * Uses a `Predicate` which tests
  * an integer input for evenness
+ *
+ * We create the predicate by
+ * passing in the symbol of the
+ * function or delegate we wish
+ * to use for testing truthiness
+ * to a template function
+ * `predicateOf!(alias)`
  */
 unittest
 {
-	Predicate!(int) pred = &isEven;
+	Predicate!(int) pred = predicateOf!(isEven);
+
+	assert(pred(0) == true);
+	assert(pred(1) == false);
+
+	bool delegate(int) isEvenDel = toDelegate(&isEven);
+	pred = predicateOf!(isEvenDel);
 
 	assert(pred(0) == true);
 	assert(pred(1) == false);
