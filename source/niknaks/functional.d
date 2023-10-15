@@ -23,22 +23,6 @@ template Predicate(T)
 	alias Predicate = bool delegate(T);
 }
 
-// import std.traits : ReturnType, isFunction, Parameters;
-
-// template makeDelegate(alias funcName)
-// if(isFunction(funcName))
-// {
-// 	ReturnType!(funcName) createdDelegate(Parameters!(funcName))
-// 	{
-// 		return funcName();
-// 	}
-
-// 	ReturnType!(funcName) delegate makeDelegate()
-// 	{
-// 		return createdDelegate;
-// 	}
-// }
-
 import std.traits : isFunction, ParameterTypeTuple, isFunction, ReturnType;
 import std.functional : toDelegate;
 
