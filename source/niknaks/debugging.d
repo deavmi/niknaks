@@ -78,9 +78,7 @@ public string genTabs(size_t count)
  */
 public void dumpArray(T)(T[] array, size_t start, size_t end, size_t depth = 0)
 {
-    pragma(msg, T);
-    pragma(msg, typeof(array));
-
+    // Obtain the array's name (symbol as-a-string)
     string ident = __traits(identifier, array);
 
     for(size_t i = start; i < end; i++)
