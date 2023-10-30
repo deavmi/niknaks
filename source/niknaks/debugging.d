@@ -36,6 +36,27 @@ private bool isWriteStrat(alias T)(T)
 
 /** 
  * Generates a string containing
+ * the provided pattern repeated
+ * by the given number of times
+ *
+ * Params:
+ *   count = the number of times
+ * to repeat the pattern
+ *   pattern = the pattern itself
+ * Returns: the repeated pattern
+ */
+public string genX(size_t count, string pattern)
+{
+    string strOut;
+    for(ubyte i = 0; i < count; i++)
+    {
+        strOut ~= pattern;
+    }
+    return strOut;
+}
+
+/** 
+ * Generates a string containing
  * the number of tabs specified
  *
  * Params:
@@ -44,12 +65,7 @@ private bool isWriteStrat(alias T)(T)
  */
 public string genTabs(size_t count)
 {
-    string strOut;
-    for(ubyte i = 0; i < count; i++)
-    {
-        strOut ~= "\t";
-    }
-    return strOut;
+    return genX(count, "\t");
 }
 
 public void dumpArray(T)(T[] array, size_t start, size_t end, size_t depth = 0)
