@@ -75,9 +75,13 @@ public string genTabs(size_t count)
  *   array = the array
  *   start = beginning index
  *   end = ending index
+ * Returns: the formatted dump text
  */
-public void dumpArray(T)(T[] array, size_t start, size_t end, size_t depth = 0)
+public string dumpArray(T)(T[] array, size_t start, size_t end, size_t depth = 0)
 {
+    // String out
+    string output;
+
     // Obtain the array's name (symbol as-a-string)
     string ident = __traits(identifier, array);
 
@@ -92,10 +96,10 @@ public void dumpArray(T)(T[] array, size_t start, size_t end, size_t depth = 0)
             // Tab by depth
             textOut = genTabs(depth)~textOut;
 
-            writeln(textOut);
+            output ~= textOut~"\n";
 
 
-            dumpArray(array[i], 0, array[i].length, depth+1);
+            output ~= dumpArray(array[i], 0, array[i].length, depth+1);
         }
         else
         {
@@ -104,11 +108,11 @@ public void dumpArray(T)(T[] array, size_t start, size_t end, size_t depth = 0)
             // Tab by depth
             textOut = genTabs(depth)~textOut;
 
-            writeln(textOut);
+            output ~= textOut~"\n";
         }
-
-        
     }
+
+    return output;
 }
 
 /** 
@@ -116,10 +120,11 @@ public void dumpArray(T)(T[] array, size_t start, size_t end, size_t depth = 0)
  *
  * Params:
  *   array = the array
+ * Returns: the formatted dump text
  */
-public void dumpArray(T)(T[] array)
+public string dumpArray(T)(T[] array)
 {
-    dumpArray(array, 0, array.length);
+    return dumpArray(array, 0, array.length);
 }
 
 /**
@@ -129,7 +134,7 @@ unittest
 {
     int[] test = [1,2,3];
     writeln("Should have 3 things (BEGIN)");
-    dumpArray(test);
+    writeln(dumpArray(test));
     writeln("Should have 3 things (END)");
 }
 
@@ -141,7 +146,7 @@ unittest
 {
     int[] test = [1,2,3];
     writeln("Should have nothing (BEGIN)");
-    dumpArray(test, 0, 0);
+    writeln(dumpArray(test, 0, 0));
     writeln("Should have nothing (END)");
 }
 
@@ -153,7 +158,7 @@ unittest
 {
     int[] test = [1,2,3];
     writeln("Should have 2 (BEGIN)");
-    dumpArray(test, 1, 2);
+    writeln(dumpArray(test, 1, 2));
     writeln("Should have 2 (END)");
 }
 
@@ -164,7 +169,7 @@ unittest
 unittest
 {
     int[][] test = [ [1,2,3], [4,5,6]];
-    dumpArray(test);
+    writeln(dumpArray(test));
 }
 
 /**
@@ -183,5 +188,5 @@ unittest
             [6,7]
         ]
     ];
-    dumpArray(test);
+    writeln(dumpArray(test));
 }
