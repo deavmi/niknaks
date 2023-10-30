@@ -24,3 +24,11 @@ public import niknaks.bits;
  * checking etc.
  */
 public import niknaks.arrays;
+
+/**
+ * Debugging tools
+ *
+ * Useful methods for debugging
+ * data structures
+ */
+public import niknaks.debugging;
