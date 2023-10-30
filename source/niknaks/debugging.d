@@ -30,6 +30,10 @@ private bool isWriteStrat(alias T)(T)
     }
 }
 
+// public alias Strat = void function(string...);
+
+// public Strat defaultStrat = &writeln;
+
 public void dumpArray(T)(T[] array, size_t start, size_t end)
 {
     pragma(msg, T);
@@ -52,5 +56,23 @@ public void dumpArray(T)(T[] array)
 unittest
 {
     int[] test = [1,2,3];
+    writeln("Should have 3 things (BEGIN)");
     dumpArray(test);
+    writeln("Should have 3 things (END)");
+}
+
+unittest
+{
+    int[] test = [1,2,3];
+    writeln("Should have nothing (BEGIN)");
+    dumpArray(test, 0, 0);
+    writeln("Should have nothing (END)");
+}
+
+unittest
+{
+    int[] test = [1,2,3];
+    writeln("Should have 2 (BEGIN)");
+    dumpArray(test, 1, 2);
+    writeln("Should have 2 (END)");
 }
