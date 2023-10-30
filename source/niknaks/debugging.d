@@ -6,7 +6,7 @@ module niknaks.debugging;
 
 import std.traits : ForeachType, isArray;
 import std.conv : to;
-import std.stdio : writeln;
+import std.stdio : writeln, write;
 
 import std.traits : isFunction, arity, ParameterTypeTuple;
 
@@ -34,7 +34,17 @@ private bool isWriteStrat(alias T)(T)
 
 // public Strat defaultStrat = &writeln;
 
-public void dumpArray(T)(T[] array, size_t start, size_t end)
+public string genTabs(ubyte count)
+{
+    string strOut;
+    for(ubyte i = 0; i < count; i++)
+    {
+        strOut ~= "\t";
+    }
+    return strOut;
+}
+
+public void dumpArray(T)(T[] array, size_t start, size_t end, ubyte depth = 0)
 {
     pragma(msg, T);
     pragma(msg, typeof(array));
@@ -43,8 +53,27 @@ public void dumpArray(T)(T[] array, size_t start, size_t end)
 
     for(size_t i = start; i < end; i++)
     {
-        string textOut = ident~"["~to!(string)(i)~"] = "~to!(string)(array[i]);
-        writeln(textOut);
+        string textOut;
+
+        static if(isArray!(T))
+        {
+            textOut = ident~"["~to!(string)(i)~"] = ...";
+            writeln(textOut);
+
+
+            dumpArray(array[i], 0, array[i].length, 1);
+        }
+        else
+        {
+            textOut = ident~"["~to!(string)(i)~"] = "~to!(string)(array[i]);
+
+            // Tab by depth
+            textOut = genTabs(depth)~textOut;
+
+            writeln(textOut);
+        }
+
+        
     }
 }
 
@@ -75,4 +104,10 @@ unittest
     writeln("Should have 2 (BEGIN)");
     dumpArray(test, 1, 2);
     writeln("Should have 2 (END)");
+}
+
+unittest
+{
+    int[][] test = [ [1,2,3], [4,5,6]];
+    dumpArray(test);
 }
