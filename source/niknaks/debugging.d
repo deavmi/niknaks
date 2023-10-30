@@ -34,7 +34,7 @@ private bool isWriteStrat(alias T)(T)
 
 // public Strat defaultStrat = &writeln;
 
-public string genTabs(ubyte count)
+public string genTabs(size_t count)
 {
     string strOut;
     for(ubyte i = 0; i < count; i++)
@@ -44,7 +44,7 @@ public string genTabs(ubyte count)
     return strOut;
 }
 
-public void dumpArray(T)(T[] array, size_t start, size_t end, ubyte depth = 0)
+public void dumpArray(T)(T[] array, size_t start, size_t end, size_t depth = 0)
 {
     pragma(msg, T);
     pragma(msg, typeof(array));
@@ -58,10 +58,14 @@ public void dumpArray(T)(T[] array, size_t start, size_t end, ubyte depth = 0)
         static if(isArray!(T))
         {
             textOut = ident~"["~to!(string)(i)~"] = ...";
+
+            // Tab by depth
+            textOut = genTabs(depth)~textOut;
+
             writeln(textOut);
 
 
-            dumpArray(array[i], 0, array[i].length, 1);
+            dumpArray(array[i], 0, array[i].length, depth+1);
         }
         else
         {
@@ -109,5 +113,20 @@ unittest
 unittest
 {
     int[][] test = [ [1,2,3], [4,5,6]];
+    dumpArray(test);
+}
+
+unittest
+{
+    int[][][] test = [
+        [   [1,2],
+            [3,4]
+        ],
+        
+        [
+            [4,5],
+            [6,7]
+        ]
+    ];
     dumpArray(test);
 }
