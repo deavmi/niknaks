@@ -1,6 +1,5 @@
 /**
- * Useful methods for debugging
- * data structures
+ * Debugging tools
  */
 module niknaks.debugging;
 
