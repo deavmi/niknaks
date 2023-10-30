@@ -6,7 +6,6 @@ module niknaks.debugging;
 
 import std.traits : ForeachType, isArray;
 import std.conv : to;
-import std.stdio : writeln, write;
 
 import std.traits : isFunction, arity, ParameterTypeTuple;
 
@@ -127,6 +126,11 @@ public string dumpArray(T)(T[] array)
     return dumpArray(array, 0, array.length);
 }
 
+version(unittest)
+{
+    import std.stdio : writeln, write;
+}
+
 /**
  * Test dumping an array of integers
  */
@@ -134,7 +138,7 @@ unittest
 {
     int[] test = [1,2,3];
     writeln("Should have 3 things (BEGIN)");
-    writeln(dumpArray(test));
+    write(dumpArray(test));
     writeln("Should have 3 things (END)");
 }
 
@@ -146,7 +150,7 @@ unittest
 {
     int[] test = [1,2,3];
     writeln("Should have nothing (BEGIN)");
-    writeln(dumpArray(test, 0, 0));
+    write(dumpArray(test, 0, 0));
     writeln("Should have nothing (END)");
 }
 
@@ -158,7 +162,7 @@ unittest
 {
     int[] test = [1,2,3];
     writeln("Should have 2 (BEGIN)");
-    writeln(dumpArray(test, 1, 2));
+    write(dumpArray(test, 1, 2));
     writeln("Should have 2 (END)");
 }
 
@@ -169,7 +173,7 @@ unittest
 unittest
 {
     int[][] test = [ [1,2,3], [4,5,6]];
-    writeln(dumpArray(test));
+    write(dumpArray(test));
 }
 
 /**
@@ -188,5 +192,5 @@ unittest
             [6,7]
         ]
     ];
-    writeln(dumpArray(test));
+    write(dumpArray(test));
 }
