@@ -86,6 +86,9 @@ public void dumpArray(T)(T[] array)
     dumpArray(array, 0, array.length);
 }
 
+/**
+ * Test dumping an array of integers
+ */
 unittest
 {
     int[] test = [1,2,3];
@@ -94,6 +97,10 @@ unittest
     writeln("Should have 3 things (END)");
 }
 
+/**
+ * Test dumping an array of integers
+ * with custom bounds
+ */
 unittest
 {
     int[] test = [1,2,3];
@@ -102,6 +109,10 @@ unittest
     writeln("Should have nothing (END)");
 }
 
+/**
+ * Test dumping an array of integers
+ * with custom bounds
+ */
 unittest
 {
     int[] test = [1,2,3];
@@ -110,12 +121,20 @@ unittest
     writeln("Should have 2 (END)");
 }
 
+/**
+ * Test dumping an array of integer
+ * arrays
+ */
 unittest
 {
     int[][] test = [ [1,2,3], [4,5,6]];
     dumpArray(test);
 }
 
+/**
+ * Test dumping an array of an array of
+ * integer arrays
+ */
 unittest
 {
     int[][][] test = [
