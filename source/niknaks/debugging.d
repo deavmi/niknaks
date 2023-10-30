@@ -34,6 +34,14 @@ private bool isWriteStrat(alias T)(T)
 
 // public Strat defaultStrat = &writeln;
 
+/** 
+ * Generates a string containing
+ * the number of tabs specified
+ *
+ * Params:
+ *   count = the number of tabs
+ * Returns: the tabbed string
+ */
 public string genTabs(size_t count)
 {
     string strOut;
