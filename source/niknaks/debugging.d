@@ -68,6 +68,14 @@ public string genTabs(size_t count)
     return genX(count, "\t");
 }
 
+/** 
+ * Dumps a given array within the provided boundries
+ *
+ * Params:
+ *   array = the array
+ *   start = beginning index
+ *   end = ending index
+ */
 public void dumpArray(T)(T[] array, size_t start, size_t end, size_t depth = 0)
 {
     pragma(msg, T);
@@ -105,6 +113,12 @@ public void dumpArray(T)(T[] array, size_t start, size_t end, size_t depth = 0)
     }
 }
 
+/** 
+ * Dumps a given array 
+ *
+ * Params:
+ *   array = the array
+ */
 public void dumpArray(T)(T[] array)
 {
     dumpArray(array, 0, array.length);
