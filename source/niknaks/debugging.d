@@ -57,7 +57,7 @@ public void dumpArray(T)(T[] array, size_t start, size_t end, size_t depth = 0)
 
         static if(isArray!(T))
         {
-            textOut = ident~"["~to!(string)(i)~"] = ...";
+            textOut = (depth ? "":ident)~"["~to!(string)(i)~"] = ...";
 
             // Tab by depth
             textOut = genTabs(depth)~textOut;
@@ -69,7 +69,7 @@ public void dumpArray(T)(T[] array, size_t start, size_t end, size_t depth = 0)
         }
         else
         {
-            textOut = ident~"["~to!(string)(i)~"] = "~to!(string)(array[i]);
+            textOut = (depth ? "":ident)~"["~to!(string)(i)~"] = "~to!(string)(array[i]);
 
             // Tab by depth
             textOut = genTabs(depth)~textOut;
