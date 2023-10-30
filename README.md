@@ -32,6 +32,10 @@ is expected to grow over time.
 * `niknaks.bits`
     * Integral to byte conversions
     * Byte ordering functions
+* `niknaks.debugging`
+    * **Automagic** dumping of arrays to textual representation
+        * Supports arrays-of-arrays-of...
+    * Some textual manipulation routines as well
 
 ## License
 
