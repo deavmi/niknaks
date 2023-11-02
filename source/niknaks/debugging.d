@@ -40,6 +40,27 @@ public string genTabs(size_t count)
     return genX(count, "\t");
 }
 
+// public string dumpArray2(alias T = g, K)(K g)
+// {
+//     return ""~thing;
+// }
+
+// unittest
+// {
+//     int[] bruh = [1,2,3];
+//     string g = dumpArray2(bruh);
+// }
+
+/**
+ * Tests out the compile-time component-type
+ * detection of `string` in any array of them
+ */
+unittest
+{
+    string[] stringArray = ["Hello", "world"];
+    writeln(stringArray.dumpArray);
+}
+
 /** 
  * Dumps a given array within the provided boundries
  *
@@ -61,7 +82,7 @@ public string dumpArray(T)(T[] array, size_t start, size_t end, size_t depth = 0
     {
         string textOut;
 
-        static if(isArray!(T))
+        static if(isArray!(T) && !__traits(isSame, T, string))
         {
             textOut = (depth ? "":ident)~"["~to!(string)(i)~"] = ...";
 
