@@ -114,6 +114,52 @@ if(isArray!(typeof(array)))
 }
 
 /**
+ * Test dumping an array of integers
+ */
+unittest
+{
+    int[] test = [1,2,3];
+    writeln("Should have 3 things (BEGIN)");
+    write(dumpArray!(test));
+    writeln("Should have 3 things (END)");
+}
+
+/**
+ * Test dumping an array of integers
+ * with custom bounds
+ */
+unittest
+{
+    int[] test = [1,2,3];
+    writeln("Should have nothing (BEGIN)");
+    write(dumpArray!(test)(0, 0));
+    writeln("Should have nothing (END)");
+}
+
+/**
+ * Test dumping an array of integers
+ * with custom bounds
+ */
+unittest
+{
+    int[] test = [1,2,3];
+    writeln("Should have 2 (BEGIN)");
+    write(dumpArray!(test)(1, 2));
+    writeln("Should have 2 (END)");
+}
+
+/**
+ * Test dumping an array of integer
+ * arrays
+ */
+unittest
+{
+    int[][] test = [ [1,2,3], [4,5,6]];
+    write(dumpArray!(test));
+}
+
+
+/**
  * Test dumping an array of an array of
  * integer arrays
  */
@@ -133,16 +179,6 @@ unittest
 }
 
 /**
- * Tests the array-name dumping
- */
-unittest
-{
-    int[] bruh = [1,2,3];
-    string g = dumpArray!(bruh)();
-    writeln(g);
-}
-
-/**
  * Tests out the compile-time component-type
  * detection of `string` in any array of them
  */
@@ -150,6 +186,16 @@ unittest
 {
     string[] stringArray = ["Hello", "world"];
     writeln(dumpArray!(stringArray));
+}
+
+/**
+ * Tests the array-name dumping
+ */
+unittest
+{
+    int[] bruh = [1,2,3];
+    string g = dumpArray!(bruh)();
+    writeln(g);
 }
 
 /** 
@@ -206,49 +252,3 @@ version(unittest)
 {
     import std.stdio : writeln, write;
 }
-
-/**
- * Test dumping an array of integers
- */
-unittest
-{
-    int[] test = [1,2,3];
-    writeln("Should have 3 things (BEGIN)");
-    write(dumpArray!(test));
-    writeln("Should have 3 things (END)");
-}
-
-/**
- * Test dumping an array of integers
- * with custom bounds
- */
-unittest
-{
-    int[] test = [1,2,3];
-    writeln("Should have nothing (BEGIN)");
-    write(dumpArray!(test)(0, 0));
-    writeln("Should have nothing (END)");
-}
-
-/**
- * Test dumping an array of integers
- * with custom bounds
- */
-unittest
-{
-    int[] test = [1,2,3];
-    writeln("Should have 2 (BEGIN)");
-    write(dumpArray!(test)(1, 2));
-    writeln("Should have 2 (END)");
-}
-
-/**
- * Test dumping an array of integer
- * arrays
- */
-unittest
-{
-    int[][] test = [ [1,2,3], [4,5,6]];
-    write(dumpArray!(test));
-}
-
