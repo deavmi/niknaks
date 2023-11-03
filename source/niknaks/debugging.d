@@ -109,7 +109,7 @@ unittest
 unittest
 {
     string[] stringArray = ["Hello", "world"];
-    writeln(stringArray.dumpArray);
+    writeln(dumpArray2!(stringArray));
 }
 
 /** 
@@ -183,7 +183,7 @@ unittest
 {
     int[] test = [1,2,3];
     writeln("Should have 3 things (BEGIN)");
-    write(dumpArray(test));
+    write(dumpArray2!(test));
     writeln("Should have 3 things (END)");
 }
 
@@ -195,7 +195,7 @@ unittest
 {
     int[] test = [1,2,3];
     writeln("Should have nothing (BEGIN)");
-    write(dumpArray(test, 0, 0));
+    write(dumpArray2!(test)(0, 0));
     writeln("Should have nothing (END)");
 }
 
@@ -207,7 +207,7 @@ unittest
 {
     int[] test = [1,2,3];
     writeln("Should have 2 (BEGIN)");
-    write(dumpArray(test, 1, 2));
+    write(dumpArray2!(test)(1, 2));
     writeln("Should have 2 (END)");
 }
 
@@ -218,7 +218,7 @@ unittest
 unittest
 {
     int[][] test = [ [1,2,3], [4,5,6]];
-    write(dumpArray(test));
+    write(dumpArray2!(test));
 }
 
 /**
@@ -237,5 +237,5 @@ unittest
             [6,7]
         ]
     ];
-    write(dumpArray(test));
+    write(dumpArray2!(test));
 }
