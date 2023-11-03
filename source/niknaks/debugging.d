@@ -113,6 +113,24 @@ if(isArray!(typeof(array)))
     }
 }
 
+/**
+ * Test dumping an array of an array of
+ * integer arrays
+ */
+unittest
+{
+    int[][][] test = [
+        [   [1,2],
+            [3,4]
+        ],
+        
+        [
+            [4,5],
+            [6,7]
+        ]
+    ];
+    write(dumpArray!(test));
+}
 
 /**
  * Tests the array-name dumping
@@ -234,21 +252,3 @@ unittest
     write(dumpArray!(test));
 }
 
-/**
- * Test dumping an array of an array of
- * integer arrays
- */
-unittest
-{
-    int[][][] test = [
-        [   [1,2],
-            [3,4]
-        ],
-        
-        [
-            [4,5],
-            [6,7]
-        ]
-    ];
-    write(dumpArray!(test));
-}
