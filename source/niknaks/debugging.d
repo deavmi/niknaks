@@ -6,6 +6,11 @@ module niknaks.debugging;
 import std.traits : isArray, ForeachType;
 import std.conv : to;
 
+version(unittest)
+{
+    import std.stdio : writeln, write;
+}
+
 /** 
  * Generates a string containing
  * the provided pattern repeated
@@ -135,6 +140,19 @@ if(isArray!(typeof(array)))
     {
         return dumpArray!(array)(0, array.length);
     }
+    return output;
+}
+
+/** 
+ * Dumps a given array 
+ *
+ * Params:
+ *   array = the array
+ * Returns: the formatted dump text
+ */
+public string dumpArray(T)(T[] array)
+{
+    return dumpArray(array, 0, array.length);
 }
 
 /**
