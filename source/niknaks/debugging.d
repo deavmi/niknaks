@@ -49,15 +49,16 @@ public string genTabs(size_t count)
 template dumpArray(alias array)
 if(isArray!(typeof(array)))
 {
-
+    // Get the type of the array
     private alias symbolType = typeof(array);
     pragma(msg, "Symboltype: ", symbolType);
 
+    // Get the arrays'e element type
     private alias elementType = ForeachType!(symbolType);
     pragma(msg, "Element type: ", elementType);
 
+    // Get the array's name as a string
     private string ident = __traits(identifier, array);
-
 
     /** 
      * Dumps the array within the provided boundries
