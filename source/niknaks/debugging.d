@@ -52,6 +52,17 @@ public string genTabs(size_t count)
     return genX(count, "\t");
 }
 
+/**
+ * Tests `genTabs(size_t)`
+ */
+unittest
+{
+    size_t count = 2;
+
+    string output = genTabs(count);
+    assert(output == "\t\t");
+}
+
 /** 
  * Dumps a given array within the provided boundries
  *
