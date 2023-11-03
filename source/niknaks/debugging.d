@@ -86,7 +86,7 @@ if(isArray!(typeof(array)))
                 output ~= textOut~"\n";
 
 
-                output ~= dumpArray(array[i], 0, array[i].length, depth+1);
+                output ~= dumpArray_rec(array[i], 0, array[i].length, depth+1);
             }
             else
             {
@@ -134,13 +134,16 @@ unittest
 /** 
  * Dumps a given array within the provided boundries
  *
+ * This method is used internally for the recursive
+ * call as it won't work with the template.
+ *
  * Params:
  *   array = the array
  *   start = beginning index
  *   end = ending index
  * Returns: the formatted dump text
  */
-public string dumpArray(T)(T[] array, size_t start, size_t end, size_t depth = 0)
+private string dumpArray_rec(T)(T[] array, size_t start, size_t end, size_t depth = 0)
 {
     // String out
     string output;
@@ -162,7 +165,7 @@ public string dumpArray(T)(T[] array, size_t start, size_t end, size_t depth = 0
             output ~= textOut~"\n";
 
 
-            output ~= dumpArray(array[i], 0, array[i].length, depth+1);
+            output ~= dumpArray_rec(array[i], 0, array[i].length, depth+1);
         }
         else
         {
