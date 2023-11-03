@@ -40,6 +40,12 @@ public string genTabs(size_t count)
     return genX(count, "\t");
 }
 
+/** 
+ * Dumps the provided array
+ *
+ * Params:
+ *   array = the array to dump
+ */
 template dumpArray2(alias array)
 if(isArray!(typeof(array)))
 {
@@ -53,6 +59,14 @@ if(isArray!(typeof(array)))
     private string ident = __traits(identifier, array);
 
 
+    /** 
+     * Dumps the array within the provided boundries
+     *
+     * Params:
+     *   start = beginning index
+     *   end = ending index
+     * Returns: the formatted dump text
+     */
     public string dumpArray2(size_t start, size_t end, size_t depth = 0)
     {
         // String out
@@ -88,6 +102,11 @@ if(isArray!(typeof(array)))
         return output;
     }
 
+    /** 
+     * Dumps the entire array
+     *
+     * Returns: the formatted dump text
+     */
     public string dumpArray2()
     {
         return dumpArray2!(array)(0, array.length);
