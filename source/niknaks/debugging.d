@@ -3,7 +3,7 @@
  */
 module niknaks.debugging;
 
-import std.traits : isArray;
+import std.traits : isArray, ForeachType;
 import std.conv : to;
 
 version(unittest)
@@ -69,62 +69,77 @@ unittest
 }
 
 /** 
- * Dumps a given array within the provided boundries
+ * Dumps the provided array
  *
  * Params:
- *   array = the array
- *   start = beginning index
- *   end = ending index
- * Returns: the formatted dump text
+ *   array = the array to dump
  */
-public string dumpArray(T)(T[] array, size_t start, size_t end, size_t depth = 0)
+template dumpArray(alias array)
+if(isArray!(typeof(array)))
 {
-    // String out
-    string output;
+    // Get the type of the array
+    private alias symbolType = typeof(array);
+    pragma(msg, "Symboltype: ", symbolType);
 
-    // Obtain the array's name (symbol as-a-string)
-    string ident = __traits(identifier, array);
+    // Get the arrays'e element type
+    private alias elementType = ForeachType!(symbolType);
+    pragma(msg, "Element type: ", elementType);
 
-    for(size_t i = start; i < end; i++)
+    // Get the array's name as a string
+    private string ident = __traits(identifier, array);
+
+    /** 
+     * Dumps the array within the provided boundries
+     *
+     * Params:
+     *   start = beginning index
+     *   end = ending index
+     * Returns: the formatted dump text
+     */
+    public string dumpArray(size_t start, size_t end, size_t depth = 0)
     {
-        string textOut;
+        // String out
+        string output;
 
-        static if(isArray!(T))
+        for(size_t i = start; i < end; i++)
         {
-            textOut = (depth ? "":ident)~"["~to!(string)(i)~"] = ...";
+            string textOut;
 
-            // Tab by depth
-            textOut = genTabs(depth)~textOut;
+            static if(isArray!(elementType) && !__traits(isSame, elementType, string))
+            {
+                textOut = (depth ? "":ident)~"["~to!(string)(i)~"] = ...";
 
-            output ~= textOut~"\n";
+                // Tab by depth
+                textOut = genTabs(depth)~textOut;
+
+                output ~= textOut~"\n";
 
 
-            output ~= dumpArray(array[i], 0, array[i].length, depth+1);
+                output ~= dumpArray_rec(array[i], 0, array[i].length, depth+1);
+            }
+            else
+            {
+                textOut = (depth ? "":ident)~"["~to!(string)(i)~"] = "~to!(string)(array[i]);
+
+                // Tab by depth
+                textOut = genTabs(depth)~textOut;
+
+                output ~= textOut~"\n";
+            }
         }
-        else
-        {
-            textOut = (depth ? "":ident)~"["~to!(string)(i)~"] = "~to!(string)(array[i]);
 
-            // Tab by depth
-            textOut = genTabs(depth)~textOut;
-
-            output ~= textOut~"\n";
-        }
+        return output;
     }
 
-    return output;
-}
-
-/** 
- * Dumps a given array 
- *
- * Params:
- *   array = the array
- * Returns: the formatted dump text
- */
-public string dumpArray(T)(T[] array)
-{
-    return dumpArray(array, 0, array.length);
+    /** 
+     * Dumps the entire array
+     *
+     * Returns: the formatted dump text
+     */
+    public string dumpArray()
+    {
+        return dumpArray!(array)(0, array.length);
+    }
 }
 
 /**
@@ -134,7 +149,7 @@ unittest
 {
     int[] test = [1,2,3];
     writeln("Should have 3 things (BEGIN)");
-    write(dumpArray(test));
+    write(dumpArray!(test));
     writeln("Should have 3 things (END)");
 }
 
@@ -146,7 +161,7 @@ unittest
 {
     int[] test = [1,2,3];
     writeln("Should have nothing (BEGIN)");
-    write(dumpArray(test, 0, 0));
+    write(dumpArray!(test)(0, 0));
     writeln("Should have nothing (END)");
 }
 
@@ -158,7 +173,7 @@ unittest
 {
     int[] test = [1,2,3];
     writeln("Should have 2 (BEGIN)");
-    write(dumpArray(test, 1, 2));
+    write(dumpArray!(test)(1, 2));
     writeln("Should have 2 (END)");
 }
 
@@ -169,8 +184,9 @@ unittest
 unittest
 {
     int[][] test = [ [1,2,3], [4,5,6]];
-    write(dumpArray(test));
+    write(dumpArray!(test));
 }
+
 
 /**
  * Test dumping an array of an array of
@@ -188,5 +204,75 @@ unittest
             [6,7]
         ]
     ];
-    write(dumpArray(test));
+    write(dumpArray!(test));
+}
+
+/**
+ * Tests out the compile-time component-type
+ * detection of `string` in any array of them
+ */
+unittest
+{
+    string[] stringArray = ["Hello", "world"];
+    writeln(dumpArray!(stringArray));
+}
+
+/**
+ * Tests the array-name dumping
+ */
+unittest
+{
+    int[] bruh = [1,2,3];
+    string g = dumpArray!(bruh)();
+    writeln(g);
+}
+
+/** 
+ * Dumps a given array within the provided boundries
+ *
+ * This method is used internally for the recursive
+ * call as it won't work with the template.
+ *
+ * Params:
+ *   array = the array
+ *   start = beginning index
+ *   end = ending index
+ * Returns: the formatted dump text
+ */
+private string dumpArray_rec(T)(T[] array, size_t start, size_t end, size_t depth = 0)
+{
+    // String out
+    string output;
+
+    // Obtain the array's name (symbol as-a-string)
+    string ident = __traits(identifier, array);
+
+    for(size_t i = start; i < end; i++)
+    {
+        string textOut;
+
+        static if(isArray!(T) && !__traits(isSame, T, string))
+        {
+            textOut = (depth ? "":ident)~"["~to!(string)(i)~"] = ...";
+
+            // Tab by depth
+            textOut = genTabs(depth)~textOut;
+
+            output ~= textOut~"\n";
+
+
+            output ~= dumpArray_rec(array[i], 0, array[i].length, depth+1);
+        }
+        else
+        {
+            textOut = (depth ? "":ident)~"["~to!(string)(i)~"] = "~to!(string)(array[i]);
+
+            // Tab by depth
+            textOut = genTabs(depth)~textOut;
+
+            output ~= textOut~"\n";
+        }
+    }
+
+    return output;
 }
