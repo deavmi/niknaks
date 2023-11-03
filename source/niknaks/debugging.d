@@ -6,6 +6,11 @@ module niknaks.debugging;
 import std.traits : isArray;
 import std.conv : to;
 
+version(unittest)
+{
+    import std.stdio : writeln, write;
+}
+
 /** 
  * Generates a string containing
  * the provided pattern repeated
@@ -120,11 +125,6 @@ public string dumpArray(T)(T[] array, size_t start, size_t end, size_t depth = 0
 public string dumpArray(T)(T[] array)
 {
     return dumpArray(array, 0, array.length);
-}
-
-version(unittest)
-{
-    import std.stdio : writeln, write;
 }
 
 /**
