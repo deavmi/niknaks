@@ -27,6 +27,18 @@ public string genX(size_t count, string pattern)
     return strOut;
 }
 
+/**
+ * Tests the generation of a pattern
+ */
+unittest
+{
+    string pattern = "YOLO";
+    size_t count = 2;
+
+    string output = genX(count, pattern);
+    assert(output == "YOLOYOLO");
+}
+
 /** 
  * Generates a string containing
  * the number of tabs specified
