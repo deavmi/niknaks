@@ -114,6 +114,9 @@ if(isArray!(typeof(array)))
 }
 
 
+/**
+ * Tests the array-name dumping
+ */
 unittest
 {
     int[] bruh = [1,2,3];
@@ -180,7 +183,6 @@ private string dumpArray_rec(T)(T[] array, size_t start, size_t end, size_t dept
 
     return output;
 }
-
 
 version(unittest)
 {
