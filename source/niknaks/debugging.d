@@ -3,7 +3,7 @@
  */
 module niknaks.debugging;
 
-import std.traits : isArray;
+import std.traits : isArray, ForeachType;
 import std.conv : to;
 
 /** 
@@ -40,16 +40,67 @@ public string genTabs(size_t count)
     return genX(count, "\t");
 }
 
-// public string dumpArray2(alias T = g, K)(K g)
-// {
-//     return ""~thing;
-// }
+template dumpArray2(alias array)
+if(isArray!(typeof(array)))
+{
 
-// unittest
-// {
-//     int[] bruh = [1,2,3];
-//     string g = dumpArray2(bruh);
-// }
+    private alias symbolType = typeof(array);
+    pragma(msg, "Symboltype: ", symbolType);
+
+    private alias elementType = ForeachType!(symbolType);
+    pragma(msg, "Element type: ", elementType);
+
+    private string ident = __traits(identifier, array);
+
+
+    public string dumpArray2(size_t start, size_t end, size_t depth = 0)
+    {
+        // String out
+        string output;
+
+        for(size_t i = start; i < end; i++)
+        {
+            string textOut;
+
+            static if(isArray!(elementType) && !__traits(isSame, elementType, string))
+            {
+                textOut = (depth ? "":ident)~"["~to!(string)(i)~"] = ...";
+
+                // Tab by depth
+                textOut = genTabs(depth)~textOut;
+
+                output ~= textOut~"\n";
+
+
+                output ~= dumpArray(array[i], 0, array[i].length, depth+1);
+            }
+            else
+            {
+                textOut = (depth ? "":ident)~"["~to!(string)(i)~"] = "~to!(string)(array[i]);
+
+                // Tab by depth
+                textOut = genTabs(depth)~textOut;
+
+                output ~= textOut~"\n";
+            }
+        }
+
+        return output;
+    }
+
+    public string dumpArray2()
+    {
+        return dumpArray2!(array)(0, array.length);
+    }
+}
+
+
+unittest
+{
+    int[] bruh = [1,2,3];
+    string g = dumpArray2!(bruh)();
+    writeln(g);
+}
 
 /**
  * Tests out the compile-time component-type
