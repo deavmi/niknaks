@@ -140,19 +140,6 @@ if(isArray!(typeof(array)))
     {
         return dumpArray!(array)(0, array.length);
     }
-    return output;
-}
-
-/** 
- * Dumps a given array 
- *
- * Params:
- *   array = the array
- * Returns: the formatted dump text
- */
-public string dumpArray(T)(T[] array)
-{
-    return dumpArray(array, 0, array.length);
 }
 
 /**
@@ -288,9 +275,4 @@ private string dumpArray_rec(T)(T[] array, size_t start, size_t end, size_t dept
     }
 
     return output;
-}
-
-version(unittest)
-{
-    import std.stdio : writeln, write;
 }
