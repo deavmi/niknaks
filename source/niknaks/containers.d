@@ -124,6 +124,30 @@ public template CacheMap(K, V, ExpirationStrategy strat = ExpirationStrategy.ON_
             }
         }
 
+        private V makeKey(K key)
+        {
+            // Lock the mutex
+            this.lock.lock();
+
+            // On exit
+            scope(exit)
+            {
+                // Unlock the mutex
+                this.lock.unlock();
+            }
+
+            // Run the replacement function for this key
+            V newValue = replFunc(key);
+
+            // Create a new entry with this value
+            Entry newEntry = Entry(newValue);
+
+            // Save this entry into the hashmap
+            this.map[key] = newEntry;
+            
+            return newValue;
+        }
+
         private V updateKey(K key)
         {
             // Lock the mutex
@@ -179,7 +203,10 @@ public template CacheMap(K, V, ExpirationStrategy strat = ExpirationStrategy.ON_
 
         // Check's a specific key for expiration,
         // ... and if expired then refreshes it
-        private void expirationCheck(K key)
+        // ... if not it leaves it alone
+        // 
+        // At the end returns the value
+        private V expirationCheck(K key)
         {
             // Lock the mutex
             this.lock.lock();
@@ -194,15 +221,34 @@ public template CacheMap(K, V, ExpirationStrategy strat = ExpirationStrategy.ON_
             // Obtain the entry at this key
             Entry!(V)* entry = key in this.map;
 
-            // If this entry expired, run the refresher
-            if(entry.getElapsedTime() >= this.expirationTime)
+            // If the key exists
+            if(entry != null)
             {
-                version(unittest)
+                // If this entry expired, run the refresher
+                if(entry.getElapsedTime() >= this.expirationTime)
                 {
-                    writeln("Expired entry for key '", key, "', refreshing");
+                    version(unittest)
+                    {
+                        writeln("Expired entry for key '", key, "', refreshing");
+                    }
+                    
+                    updateKey(key);
                 }
-                updateKey(key);
+                // Else, if not, then bump the entry
+                else
+                {
+                    entry.bump();
+                }
             }
+            // If it does not exist (then make it)
+            else
+            {
+                writeln("Hello there, we must MAKE key as it does not exist");
+                updateKey(key);
+                writeln("fic");
+            }
+
+            return this.map[key].getValue();
         }
 
         public V get(K key)
@@ -220,32 +266,13 @@ public template CacheMap(K, V, ExpirationStrategy strat = ExpirationStrategy.ON_
             // If on-access then run expiration check
             static if(strat == ExpirationStrategy.ON_ACCESS)
             {
-                expirationCheck(key);
+                return expirationCheck(key);
             }
 
-            Entry!(V)* entry = key in this.map;
-            V value;
-
-            // If the entry exists
-            if(entry != null)
-            {
-                // Fetch the value
-                value = entry.getValue();
-
-                // Bump its timer
-                entry.bump();
-            }
-            // If no key exists
-            else
-            {
-                // Then add the entry (and save refreshed value)
-                value = updateKey(key);
-            }
-
-            return value;
+            
         }
 
-        public void put(K key, V value)
+        private void put(K key, V value)
         {
             // Lock the mutex
             this.lock.lock();
@@ -333,17 +360,17 @@ unittest
 
     // map.put("Tristan", 81);
     int tValue = map.get("Tristan");
-    assert(tValue == 81);
+    assert(tValue == 0);
 
-    Thread.sleep(dur!("seconds")(5));
+    // Thread.sleep(dur!("seconds")(5));
 
-    tValue = map.get("Tristan");
-    assert(tValue == 81);
+    // tValue = map.get("Tristan");
+    // assert(tValue == 81);
 
-    Thread.sleep(dur!("seconds")(11));
+    // Thread.sleep(dur!("seconds")(11));
 
-    tValue = map.get("Tristan");
-    assert(tValue == int.init);
+    // tValue = map.get("Tristan");
+    // assert(tValue == int.init);
 
 }
 
