@@ -236,6 +236,11 @@ public template CacheMap(K, V, ExpirationStrategy strat = ExpirationStrategy.ON_
             {
                 return expirationCheck(key);
             }
+            else static if(strat == ExpirationStrategy.LIVE)
+            {
+                pragma(msg, "Live stratergy not yet implemented, get() failed");
+                static assert(false);
+            }
 
             
         }
@@ -281,7 +286,11 @@ public template CacheMap(K, V, ExpirationStrategy strat = ExpirationStrategy.ON_
 
             ~this()
             {
-                
+                // Set run state to false
+                this.isRunning = false;
+
+                // Signal to stop
+                doLiveCheck();
             }
             
         }
