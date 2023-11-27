@@ -209,14 +209,7 @@ public template CacheMap(K, V, ExpirationStrategy strat = ExpirationStrategy.ON_
             // If on-access then run expiration check
             static if(strat == ExpirationStrategy.ON_ACCESS)
             {
-                // Increment hitcount
-                // this.curHitCount++;
-
-                // Check if we should expire entries
-                // if(this.curHitCount == this.maxHitCount)
-                // {
-                    expirationCheck();
-                // }
+                expirationCheck(key);
             }
 
             Entry!(V)* entry = key in this.map;
