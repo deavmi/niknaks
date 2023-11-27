@@ -69,14 +69,21 @@ public template Entry(V)
     }
 }
 
-
 public template CacheMap(K, V, ExpirationStrategy strat = ExpirationStrategy.ON_ACCESS)
 {
+    private alias ReplacementFunction = V function(K);
+
+    private V nopReplFunc(K)
+    {
+        return V.init;
+    }
+
     public class CacheMap
     {
         private Entry!(V)[K] map;
         private Mutex lock;
         private Duration expirationTime;
+        private ReplacementFunction replFunc;
 
         static if(strat == ExpirationStrategy.LIVE)
         {
@@ -91,8 +98,9 @@ public template CacheMap(K, V, ExpirationStrategy strat = ExpirationStrategy.ON_
             private size_t curHitCount;
         }
 
-        this(Duration expirationTime = dur!("seconds")(10))
+        this(ReplacementFunction replFunc = &nopReplFunc, Duration expirationTime = dur!("seconds")(10))
         {
+            this.replFunc = replFunc;
             this.lock = new Mutex();
             this.expirationTime = expirationTime;
 
