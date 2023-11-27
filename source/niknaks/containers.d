@@ -278,3 +278,16 @@ unittest
     // CacheMap!(string, int, ExpirationStrategy.LIVE) map = new CacheMap!(string, int, ExpirationStrategy.LIVE);
 }
 
+public template CacheList(V)
+{
+    public class CacheList
+    {
+        private DList!(Entry!(V)) list;
+        private Mutex lock;
+
+        this()
+        {
+            this.lock = new Mutex();
+        }
+    }
+}
