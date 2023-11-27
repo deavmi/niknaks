@@ -169,38 +169,6 @@ public template CacheMap(K, V, ExpirationStrategy strat = ExpirationStrategy.ON_
             return newValue;
         }
 
-        // TODO: Traverse through whole thing finding expired entries
-        private void expirationCheck()
-        {
-            // Lock the mutex
-            this.lock.lock();
-
-            // On exit
-            scope(exit)
-            {
-                // Unlock the mutex
-                this.lock.unlock();
-            }
-            
-            K[] marked;
-
-            foreach(K key; this.map.keys())
-            {
-                Entry!(V)* entry = key in this.map;
-
-                // If this entry expired, run the refresher
-                if(entry.getElapsedTime() >= this.expirationTime)
-                {
-                    marked ~= key;
-                }
-            }
-
-            foreach(K key; marked)
-            {
-                this.map.remove(key);
-            }
-        }
-
         // Check's a specific key for expiration,
         // ... and if expired then refreshes it
         // ... if not it leaves it alone
