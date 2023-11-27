@@ -244,7 +244,7 @@ public template CacheMap(K, V, ExpirationStrategy strat = ExpirationStrategy.ON_
             else
             {
                 writeln("Hello there, we must MAKE key as it does not exist");
-                updateKey(key);
+                makeKey(key);
                 writeln("fic");
             }
 
