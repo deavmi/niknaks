@@ -140,7 +140,7 @@ public template CacheMap(K, V, ExpirationStrategy strat = ExpirationStrategy.ON_
             V newValue = replFunc(key);
 
             // Create a new entry with this value
-            Entry newEntry = Entry(newValue);
+            Entry!(V) newEntry = Entry!(V)(newValue);
 
             // Save this entry into the hashmap
             this.map[key] = newEntry;
