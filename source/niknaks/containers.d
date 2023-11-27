@@ -354,23 +354,33 @@ public template CacheMap(K, V, ExpirationStrategy strat = ExpirationStrategy.ON_
     }
 }
 
+int i=0;
+private int getVal(string)
+{
+    i++;
+    return i;
+}
+
 unittest
 {
-    CacheMap!(string, int) map = new CacheMap!(string, int);
+    CacheMap!(string, int) map = new CacheMap!(string, int)(&getVal);
 
-    // map.put("Tristan", 81);
+    // Get the value
     int tValue = map.get("Tristan");
-    assert(tValue == 0);
+    assert(tValue == 1);
+
+    tValue = map.get("Tristan");
+    assert(tValue == 1);
 
     // Thread.sleep(dur!("seconds")(5));
 
     // tValue = map.get("Tristan");
     // assert(tValue == 81);
 
-    // Thread.sleep(dur!("seconds")(11));
+    Thread.sleep(dur!("seconds")(11));
 
-    // tValue = map.get("Tristan");
-    // assert(tValue == int.init);
+    tValue = map.get("Tristan");
+    assert(tValue == 2);
 
 }
 
