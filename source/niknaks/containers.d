@@ -119,6 +119,25 @@ public template CacheMap(K, V, ExpirationStrategy strat = ExpirationStrategy.ON_
             }
         }
 
+        private void updateKey(K key)
+        {
+            // Lock the mutex
+            this.lock.lock();
+
+            // On exit
+            scope(exit)
+            {
+                // Unlock the mutex
+                this.lock.unlock();
+            }
+
+            // Run the replacement function for this key
+            V newValue = replFunc(key);
+
+            // Update the value saved at this key's entry
+            this.map[key].setValue(newValue);
+        }
+
         // TODO: Traverse through whole thing finding expired entries
         private void expirationCheck()
         {
