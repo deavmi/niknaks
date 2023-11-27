@@ -8,6 +8,11 @@ import std.datetime.stopwatch : StopWatch, AutoStart;
 import core.thread : Thread;
 import core.sync.condition : Condition;
 
+version(unittest)
+{
+    import std.stdio : writeln;
+}
+
 /** 
  * Strategy to use for managing
  * expiration of entries
@@ -119,7 +124,7 @@ public template CacheMap(K, V, ExpirationStrategy strat = ExpirationStrategy.ON_
             }
         }
 
-        private void updateKey(K key)
+        private V updateKey(K key)
         {
             // Lock the mutex
             this.lock.lock();
@@ -136,6 +141,8 @@ public template CacheMap(K, V, ExpirationStrategy strat = ExpirationStrategy.ON_
 
             // Update the value saved at this key's entry
             this.map[key].setValue(newValue);
+
+            return newValue;
         }
 
         // TODO: Traverse through whole thing finding expired entries
@@ -190,6 +197,10 @@ public template CacheMap(K, V, ExpirationStrategy strat = ExpirationStrategy.ON_
             // If this entry expired, run the refresher
             if(entry.getElapsedTime() >= this.expirationTime)
             {
+                version(unittest)
+                {
+                    writeln("Expired entry for key '", key, "', refreshing");
+                }
                 updateKey(key);
             }
         }
@@ -227,8 +238,8 @@ public template CacheMap(K, V, ExpirationStrategy strat = ExpirationStrategy.ON_
             // If no key exists
             else
             {
-                // TODO: Throw an exception
-                return V.init;
+                // Then add the entry (and save refreshed value)
+                value = updateKey(key);
             }
 
             return value;
@@ -320,7 +331,7 @@ unittest
 {
     CacheMap!(string, int) map = new CacheMap!(string, int);
 
-    map.put("Tristan", 81);
+    // map.put("Tristan", 81);
     int tValue = map.get("Tristan");
     assert(tValue == 81);
 
