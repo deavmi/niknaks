@@ -85,6 +85,11 @@ public template CacheMap(K, V, ExpirationStrategy strat = ExpirationStrategy.ON_
             private Condition condVar;
             private Duration wakeupTime;
         }
+        else static if(strat == ExpirationStrategy.ON_ACCESS)
+        {
+            private size_t maxHitCount;
+            private size_t curHitCount;
+        }
 
         this(Duration expirationTime = dur!("seconds")(10))
         {
@@ -96,8 +101,13 @@ public template CacheMap(K, V, ExpirationStrategy strat = ExpirationStrategy.ON_
                 this.condVar = new Condition(this.lock);
                 this.checker = new Thread(&checkerFunc);
                 this.isRunning = true;
-                this.wakeupTime = dur!("seconds")(2); // make configurable, also make it idk
+                this.wakeupTime = dur!("seconds")(2); // TODO: make configurable, also make it idk
                 this.checker.start();
+            }
+            else static if(strat == ExpirationStrategy.ON_ACCESS)
+            {
+                this.maxHitCount = 100; // TODO: Decide on how this should scale
+                this.curHitCount = 0;
             }
         }
 
@@ -146,7 +156,14 @@ public template CacheMap(K, V, ExpirationStrategy strat = ExpirationStrategy.ON_
             // If on-access then run expiration check
             static if(strat == ExpirationStrategy.ON_ACCESS)
             {
-                expirationCheck();
+                // Increment hitcount
+                this.curHitCount++;
+
+                // Check if we should expire entries
+                if(this.curHitCount == this.maxHitCount)
+                {
+                    expirationCheck();
+                }
             }
 
             Entry!(V)* entry = key in this.map;
@@ -276,6 +293,20 @@ unittest
 unittest
 {
     // CacheMap!(string, int, ExpirationStrategy.LIVE) map = new CacheMap!(string, int, ExpirationStrategy.LIVE);
+
+    // map.put("Tristan", 81);
+    // int tValue = map.get("Tristan");
+    // assert(tValue == 81);
+
+    // Thread.sleep(dur!("seconds")(5));
+
+    // tValue = map.get("Tristan");
+    // assert(tValue == 81);
+
+    // Thread.sleep(dur!("seconds")(11));
+
+    // tValue = map.get("Tristan");
+    // assert(tValue == int.init);
 }
 
 public template CacheList(V)
