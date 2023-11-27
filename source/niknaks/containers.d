@@ -272,41 +272,7 @@ public template CacheMap(K, V, ExpirationStrategy strat = ExpirationStrategy.ON_
             
         }
 
-        private void put(K key, V value)
-        {
-            // Lock the mutex
-            this.lock.lock();
-
-            // On exit
-            scope(exit)
-            {
-                // Unlock the mutex
-                this.lock.unlock();
-            }
-
-            Entry!(V)* entry = key in this.map;
-
-            // If the entry exists
-            if(entry != null)
-            {
-                // Store new value
-                entry.setValue(value);
-
-                // Bump its timer
-                entry.bump();
-            }
-            // If no key exists
-            else
-            {
-                this.map[key] = Entry!(V)(value);
-            }
-
-            // If on-access then run expiration check
-            static if(strat == ExpirationStrategy.ON_ACCESS)
-            {
-                expirationCheck();
-            }
-        }
+        
 
         static if(strat == ExpirationStrategy.LIVE)
         {
