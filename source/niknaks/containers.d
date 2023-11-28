@@ -7,6 +7,7 @@ import std.datetime : Duration, dur;
 import std.datetime.stopwatch : StopWatch, AutoStart;
 import core.thread : Thread;
 import core.sync.condition : Condition;
+import std.functional : toDelegate;
 
 version(unittest)
 {
@@ -74,8 +75,12 @@ public template Entry(V)
     }
 }
 
+/** 
+ * 
+ */
 public template CacheMap(K, V, ExpirationStrategy strat = ExpirationStrategy.ON_ACCESS)
 {
+    private alias ReplacementDelegate = V delegate(K);
     private alias ReplacementFunction = V function(K);
 
     private V nopReplFunc(K)
@@ -83,12 +88,15 @@ public template CacheMap(K, V, ExpirationStrategy strat = ExpirationStrategy.ON_
         return V.init;
     }
 
+    /** 
+     * 
+     */
     public class CacheMap
     {
         private Entry!(V)[K] map;
         private Mutex lock;
         private Duration expirationTime;
-        private ReplacementFunction replFunc;
+        private ReplacementDelegate replFunc;
 
         static if(strat == ExpirationStrategy.LIVE)
         {
@@ -103,7 +111,17 @@ public template CacheMap(K, V, ExpirationStrategy strat = ExpirationStrategy.ON_
             private size_t curHitCount;
         }
 
-        this(ReplacementFunction replFunc = &nopReplFunc, Duration expirationTime = dur!("seconds")(10))
+        /** 
+         * Constructs a new cache map with the
+         * given replacement delegate and the
+         * expiration deadline.
+         *
+         * Params:
+         *   replFunc = the replacement delegate
+         *   expirationTime = the expiration
+         * deadline
+         */
+        this(ReplacementDelegate replFunc, Duration expirationTime = dur!("seconds")(10))
         {
             this.replFunc = replFunc;
             this.lock = new Mutex();
@@ -122,6 +140,21 @@ public template CacheMap(K, V, ExpirationStrategy strat = ExpirationStrategy.ON_
                 this.maxHitCount = 100; // TODO: Decide on how this should scale
                 this.curHitCount = 0;
             }
+        }
+
+        /** 
+         * Constructs a new cache map with the
+         * given replacement function and the
+         * expiration deadline.
+         *
+         * Params:
+         *   replFunc = the replacement function
+         *   expirationTime = the expiration
+         * deadline
+         */
+        this(ReplacementFunction replFunc, Duration expirationTime = dur!("seconds")(10))
+        {
+            this(toDelegate(replFunc));
         }
 
         /** 
