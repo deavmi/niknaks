@@ -124,6 +124,17 @@ public template CacheMap(K, V, ExpirationStrategy strat = ExpirationStrategy.ON_
             }
         }
 
+        /** 
+         * Creates an entry for the given
+         * key by creating the `Entry`
+         * at the key and then setting
+         * that entry's value with the
+         * replacement function
+         *
+         * Params:
+         *   key = the key
+         * Returns: the value set
+         */
         private V makeKey(K key)
         {
             // Lock the mutex
@@ -148,6 +159,17 @@ public template CacheMap(K, V, ExpirationStrategy strat = ExpirationStrategy.ON_
             return newValue;
         }
 
+        /** 
+         * Called to update an existing
+         * `Entry` (already present) in
+         * the map. This will run the 
+         * replacement function and update
+         * the value present.
+         *
+         * Params:
+         *   key = the key
+         * Returns: the value set
+         */
         private V updateKey(K key)
         {
             // Lock the mutex
