@@ -253,10 +253,13 @@ public template CacheMap(K, V, ExpirationStrategy strat = ExpirationStrategy.ON_
                 this.lock.unlock();
             }
 
+            // The key's value
+            V keyValue;
+
             // If on-access then run expiration check
             static if(strat == ExpirationStrategy.ON_ACCESS)
             {
-                return expirationCheck(key);
+                keyValue = expirationCheck(key);
             }
             else static if(strat == ExpirationStrategy.LIVE)
             {
@@ -264,7 +267,7 @@ public template CacheMap(K, V, ExpirationStrategy strat = ExpirationStrategy.ON_
                 static assert(false);
             }
 
-            
+            return keyValue;
         }
 
         
