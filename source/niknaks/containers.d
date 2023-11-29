@@ -78,7 +78,7 @@ public template Entry(V)
 /** 
  * 
  */
-public template CacheMap(K, V, ExpirationStrategy strat = ExpirationStrategy.ON_ACCESS)
+public template CacheMap(K, V)
 {
     private alias ReplacementDelegate = V delegate(K);
     private alias ReplacementFunction = V function(K);
@@ -95,18 +95,13 @@ public template CacheMap(K, V, ExpirationStrategy strat = ExpirationStrategy.ON_
         private Duration expirationTime;
         private ReplacementDelegate replFunc;
 
-        static if(strat == ExpirationStrategy.LIVE)
-        {
-            private Thread checker;
-            private bool isRunning;
-            private Condition condVar;
-            private Duration wakeupTime;
-        }
-        else static if(strat == ExpirationStrategy.ON_ACCESS)
-        {
-            private size_t maxHitCount;
-            private size_t curHitCount;
-        }
+        
+        private Thread checker;
+        private bool isRunning;
+        private Condition condVar;
+        
+        
+       
 
         /** 
          * Constructs a new cache map with the
@@ -124,19 +119,12 @@ public template CacheMap(K, V, ExpirationStrategy strat = ExpirationStrategy.ON_
             this.lock = new Mutex();
             this.expirationTime = expirationTime;
 
-            static if(strat == ExpirationStrategy.LIVE)
-            {
-                this.condVar = new Condition(this.lock);
-                this.checker = new Thread(&checkerFunc);
-                this.isRunning = true;
-                this.wakeupTime = dur!("seconds")(2); // TODO: make configurable, also make it idk
-                this.checker.start();
-            }
-            else static if(strat == ExpirationStrategy.ON_ACCESS)
-            {
-                this.maxHitCount = 100; // TODO: Decide on how this should scale
-                this.curHitCount = 0;
-            }
+          
+            this.condVar = new Condition(this.lock);
+            this.checker = new Thread(&checkerFunc);
+            this.isRunning = true;
+            this.checker.start();
+          
         }
 
         /** 
@@ -286,68 +274,96 @@ public template CacheMap(K, V, ExpirationStrategy strat = ExpirationStrategy.ON_
             // The key's value
             V keyValue;
 
-            // If on-access then run expiration check
-            static if(strat == ExpirationStrategy.ON_ACCESS)
-            {
-                keyValue = expirationCheck(key);
-            }
-            else static if(strat == ExpirationStrategy.LIVE)
-            {
-                pragma(msg, "Live stratergy not yet implemented, get() failed");
-                static assert(false);
-            }
+            // On access expiration check
+            keyValue = expirationCheck(key);
 
             return keyValue;
         }
 
         
 
-        static if(strat == ExpirationStrategy.LIVE)
+        private void checkerFunc()
         {
-            private void checkerFunc()
-            {
-                while(this.isRunning)
-                {
-                    // Lock the mutex
-                    this.lock.lock();
-
-                    // On loop exit
-                    scope(exit)
-                    {
-                        // Unlock the mutex
-                        this.lock.unlock();
-                    }
-
-                    // Sleep until timeout
-                    this.condVar.wait(this.wakeupTime);
-
-
-                    // Run the expiration check
-                    expirationCheck();
-                }
-            }
-
-            private void doLiveCheck()
+            while(this.isRunning)
             {
                 // Lock the mutex
                 this.lock.lock();
 
-                // Signal wake up
-                this.condVar.notify();
+                // On loop exit
+                scope(exit)
+                {
+                    // Unlock the mutex
+                    this.lock.unlock();
+                }
 
-                // Unlock the mutex
-                this.lock.unlock();
+                // Sleep until timeout
+                this.condVar.wait(this.expirationTime);
+
+                // Run the expiration check
+                K[] marked;
+                foreach(K curKey; this.map.keys())
+                {
+                    Entry!(V) curEntry = this.map[curKey];
+
+                    // If entry has expired mark it for removal
+                    if(curEntry.getElapsedTime() >= this.expirationTime)
+                    {
+                        version(unittest)
+                        {
+                            import std.stdio : writeln;
+                            writeln("Marked entry '", curEntry, "' for removal");
+                        }
+                        marked ~= curKey;
+                    }
+                }
+
+                foreach(K curKey; marked)
+                {
+                    Entry!(V) curEntry = this.map[curKey];
+
+                    version(unittest)
+                    {
+                        import std.stdio : writeln;
+                        writeln("Removing entry '", curEntry, "'...");
+                    }
+                    this.map.remove(curKey);
+                }
             }
+        }
 
-            ~this()
+        private void doLiveCheck()
+        {
+            // Lock the mutex
+            this.lock.lock();
+
+            // Signal wake up
+            this.condVar.notify();
+
+            // Unlock the mutex
+            this.lock.unlock();
+        }
+
+        ~this()
+        {
+            version(unittest)
             {
-                // Set run state to false
-                this.isRunning = false;
+                import std.stdio : writeln;
+                writeln("Dtor running");
 
-                // Signal to stop
-                doLiveCheck();
+                scope(exit)
+                {
+                    writeln("Dtor running [done]");
+                }
             }
-            
+
+            // Set run state to false
+            this.isRunning = false;
+
+            // Signal to stop
+            doLiveCheck();
+
+            // Wait for it to stop
+            this.checker.join();
         }
     }
 }
@@ -380,6 +396,10 @@ unittest
     tValue = map.get("Tristan");
     assert(tValue == 2);
 
+
+    writeln("Sleeping now 11 secs");
+    Thread.sleep(dur!("seconds")(11));
+    destroy(map);
 }
 
 unittest
