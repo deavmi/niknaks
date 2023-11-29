@@ -83,10 +83,7 @@ public template CacheMap(K, V, ExpirationStrategy strat = ExpirationStrategy.ON_
     private alias ReplacementDelegate = V delegate(K);
     private alias ReplacementFunction = V function(K);
 
-    private V nopReplFunc(K)
-    {
-        return V.init;
-    }
+    
 
     /** 
      * 
