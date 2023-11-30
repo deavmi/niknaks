@@ -86,7 +86,25 @@ public template CacheMap(K, V)
     
 
     /** 
-     * 
+     * A caching map which when queried
+     * for a key which does not exist yet
+     * will call a so-called replacement
+     * function which produces a result
+     * which will be stored at that key's
+     * location
+     *
+     * After this process a timer is started,
+     * and periodically entries are checked
+     * for timeouts, if they have timed out
+     * then they are removed and the process
+     * begins again.
+     *
+     * Accessing an entry will reset its
+     * timer ONLY if it has not yet expired
+     * however accessing an entry which
+     * has expired causing an on-demand
+     * replacement function call, just not
+     * a removal in between
      */
     public class CacheMap
     {
