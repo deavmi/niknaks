@@ -76,14 +76,13 @@ public template Entry(V)
 }
 
 /** 
- * 
+ * A `CacheMap` with a key type of `K`
+ * and value type of `V`
  */
 public template CacheMap(K, V)
 {
     private alias ReplacementDelegate = V delegate(K);
     private alias ReplacementFunction = V function(K);
-
-    
 
     /** 
      * A caching map which when queried
@@ -113,14 +112,10 @@ public template CacheMap(K, V)
         private Duration expirationTime;
         private ReplacementDelegate replFunc;
 
-        
         private Thread checker;
         private bool isRunning;
         private Condition condVar;
         
-        
-       
-
         /** 
          * Constructs a new cache map with the
          * given replacement delegate and the
@@ -227,11 +222,17 @@ public template CacheMap(K, V)
             return newValue;
         }
 
-        // Check's a specific key for expiration,
-        // ... and if expired then refreshes it
-        // ... if not it leaves it alone
-        // 
-        // At the end returns the value
+        /** 
+         * Check's a specific key for expiration,
+         * and if expired then refreshes it if
+         * not it leaves it alone.
+         *
+         * Returns the key's value
+         *
+         * Params:
+         *   key = the key to check
+         * Returns: the key's value
+         */
         private V expirationCheck(K key)
         {
             // Lock the mutex
@@ -253,10 +254,7 @@ public template CacheMap(K, V)
                 // If this entry expired, run the refresher
                 if(entry.getElapsedTime() >= this.expirationTime)
                 {
-                    version(unittest)
-                    {
-                        writeln("Expired entry for key '", key, "', refreshing");
-                    }
+                    version(unittest) { writeln("Expired entry for key '", key, "', refreshing"); }
                     
                     updateKey(key);
                 }
@@ -269,9 +267,9 @@ public template CacheMap(K, V)
             // If it does not exist (then make it)
             else
             {
-                writeln("Hello there, we must MAKE key as it does not exist");
+                version(unittest) { writeln("Hello there, we must MAKE key as it does not exist"); }
                 makeKey(key);
-                writeln("fic");
+                version(unittest) { writeln("fic"); }
             }
 
             return this.map[key].getValue();
@@ -326,11 +324,7 @@ public template CacheMap(K, V)
                     // If entry has expired mark it for removal
                     if(curEntry.getElapsedTime() >= this.expirationTime)
                     {
-                        version(unittest)
-                        {
-                            import std.stdio : writeln;
-                            writeln("Marked entry '", curEntry, "' for removal");
-                        }
+                        version(unittest) { writeln("Marked entry '", curEntry, "' for removal"); }
                         marked ~= curKey;
                     }
                 }
@@ -339,11 +333,7 @@ public template CacheMap(K, V)
                 {
                     Entry!(V) curEntry = this.map[curKey];
 
-                    version(unittest)
-                    {
-                        import std.stdio : writeln;
-                        writeln("Removing entry '", curEntry, "'...");
-                    }
+                    version(unittest) { writeln("Removing entry '", curEntry, "'..."); }
                     this.map.remove(curKey);
                 }
             }
@@ -365,7 +355,6 @@ public template CacheMap(K, V)
         {
             version(unittest)
             {
-                import std.stdio : writeln;
                 writeln("Dtor running");
 
                 scope(exit)
