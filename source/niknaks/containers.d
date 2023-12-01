@@ -427,17 +427,3 @@ unittest
     // tValue = map.get("Tristan");
     // assert(tValue == int.init);
 }
-
-public template CacheList(V)
-{
-    public class CacheList
-    {
-        private DList!(Entry!(V)) list;
-        private Mutex lock;
-
-        this()
-        {
-            this.lock = new Mutex();
-        }
-    }
-}
