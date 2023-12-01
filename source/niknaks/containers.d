@@ -380,6 +380,13 @@ public template CacheMap(K, V)
             }
         }
 
+        /** 
+         * Wakes up the checker
+         * immediately such that
+         * it can perform a cycle
+         * over the map and check
+         * for expired entries
+         */
         private void doLiveCheck()
         {
             // Lock the mutex
@@ -392,6 +399,14 @@ public template CacheMap(K, V)
             this.lock.unlock();
         }
 
+        /** 
+         * On destruction, set
+         * the running status
+         * to `false`, then
+         * wake up the checker
+         * and wait for it to
+         * exit
+         */
         ~this()
         {
             version(unittest)
