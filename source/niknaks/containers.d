@@ -14,8 +14,20 @@ version(unittest)
     import std.stdio : writeln;
 }
 
-public template Entry(V)
+/** 
+ * Represents an entry of
+ * some value of type `V`
+ *
+ * Associated with this
+ * is a timer used to
+ * check against for
+ * expiration
+ */
+private template Entry(V)
 {
+    /**
+     * The entry type
+     */
     public struct Entry
     {
         private V value;
@@ -24,27 +36,59 @@ public template Entry(V)
         @disable
         private this();
 
+        /** 
+         * Creates a new entry
+         * with the given value
+         *
+         * Params:
+         *   value = the value
+         */
         public this(V value)
         {
             setValue(value);
             timer = StopWatch(AutoStart.yes);
         }
 
+        /** 
+         * Sets the value of this
+         * entry
+         *
+         * Params:
+         *   value = the value
+         */
         public void setValue(V value)
         {
             this.value = value;
         }
 
+        /** 
+         * Returns the value associated
+         * with this entry
+         *
+         * Returns: the value
+         */
         public V getValue()
         {
             return this.value;
         }
 
+        /** 
+         * Resets the timer back
+         * to zero
+         */
         public void bump()
         {
             timer.reset();
         }
 
+        /** 
+         * Gets the time elapsed
+         * since this entry was
+         * instantiated
+         *
+         * Returns: the elapsed
+         * time
+         */
         public Duration getElapsedTime()
         {
             return timer.peek();
