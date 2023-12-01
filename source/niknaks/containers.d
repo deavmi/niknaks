@@ -376,7 +376,11 @@ public template CacheMap(K, V)
 }
 
 
-
+/**
+ * Tests the usage of the `CacheMap` type
+ * along with the expiration of entries
+ * mechanism
+ */
 unittest
 {
     int i=0;
@@ -409,23 +413,4 @@ unittest
     writeln("Sleeping now 11 secs");
     Thread.sleep(dur!("seconds")(11));
     destroy(map);
-}
-
-unittest
-{
-    // CacheMap!(string, int, ExpirationStrategy.LIVE) map = new CacheMap!(string, int, ExpirationStrategy.LIVE);
-
-    // map.put("Tristan", 81);
-    // int tValue = map.get("Tristan");
-    // assert(tValue == 81);
-
-    // Thread.sleep(dur!("seconds")(5));
-
-    // tValue = map.get("Tristan");
-    // assert(tValue == 81);
-
-    // Thread.sleep(dur!("seconds")(11));
-
-    // tValue = map.get("Tristan");
-    // assert(tValue == int.init);
 }
