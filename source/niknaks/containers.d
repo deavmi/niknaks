@@ -332,8 +332,13 @@ public template CacheMap(K, V)
             return keyValue;
         }
 
-        
-
+        /** 
+         * Runs at the latest every
+         * `expirationTime` ticks
+         * and checks the entire
+         * map for expired
+         * entries
+         */
         private void checkerFunc()
         {
             while(this.isRunning)
