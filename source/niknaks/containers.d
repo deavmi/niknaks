@@ -296,6 +296,21 @@ public template CacheMap(K, V)
             return this.map[key].getValue();
         }
 
+        /** 
+         * Gets the value of
+         * the entry at the
+         * provided key
+         *
+         * This may or may not
+         * call the replication
+         * function
+         *
+         * Params:
+         *   key = the key to
+         * lookup by
+         *
+         * Returns: the value
+         */
         public V get(K key)
         {
             // Lock the mutex
