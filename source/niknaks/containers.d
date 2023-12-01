@@ -375,15 +375,17 @@ public template CacheMap(K, V)
     }
 }
 
-int i=0;
-private int getVal(string)
-{
-    i++;
-    return i;
-}
+
 
 unittest
 {
+    int i=0;
+    int getVal(string)
+    {
+        i++;
+        return i;
+    }
+
     CacheMap!(string, int) map = new CacheMap!(string, int)(&getVal);
 
     // Get the value
