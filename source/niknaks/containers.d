@@ -14,29 +14,6 @@ version(unittest)
     import std.stdio : writeln;
 }
 
-/** 
- * Strategy to use for managing
- * expiration of entries
- */
-public enum ExpirationStrategy
-{
-    /** 
-     * A thread should be spawned which
-     * is to, at regular intervals,
-     * wake up and traverse the containr
-     * in order to expire entries
-     */
-    LIVE,
-
-    /** 
-     * Every time an access is performed
-     * via the container then we traverse
-     * the container in order to expire
-     * entries
-     */
-    ON_ACCESS // TODO: Tweak how ofteh this is to make it low O(n) because currently it is 1*O(n) which is bruh moment for a hashmap my fella
-}
-
 public template Entry(V)
 {
     public struct Entry
@@ -374,7 +351,6 @@ public template CacheMap(K, V)
         }
     }
 }
-
 
 /**
  * Tests the usage of the `CacheMap` type
