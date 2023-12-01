@@ -1,3 +1,6 @@
+/**
+ * Container types
+ */
 module niknaks.containers;
 
 import core.sync.mutex : Mutex;
