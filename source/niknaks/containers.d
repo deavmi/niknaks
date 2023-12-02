@@ -501,6 +501,11 @@ unittest
     destroy(map);
 }
 
+/**
+ * Tests the usage of the `CacheMap`,
+ * specifically the explicit key
+ * removal method
+ */
 unittest
 {
     int i=0;
