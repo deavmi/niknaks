@@ -476,7 +476,7 @@ unittest
         return i;
     }
 
-    CacheMap!(string, int) map = new CacheMap!(string, int)(&getVal);
+    CacheMap!(string, int) map = new CacheMap!(string, int)(&getVal, dur!("seconds")(10));
 
     // Get the value
     int tValue = map.get("Tristan");
