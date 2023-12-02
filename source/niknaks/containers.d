@@ -500,3 +500,26 @@ unittest
     Thread.sleep(dur!("seconds")(11));
     destroy(map);
 }
+
+unittest
+{
+    int i=0;
+    int getVal(string)
+    {
+        i++;
+        return i;
+    }
+
+    CacheMap!(string, int) map = new CacheMap!(string, int)(&getVal, dur!("seconds")(10));
+
+    // Get the value
+    int tValue = map.get("Tristan");
+    assert(tValue == 1);
+
+    // Remove the key
+    assert(map.removeKey("Tristan"));
+
+    // Get the value
+    tValue = map.get("Tristan");
+    assert(tValue == 2);
+}
