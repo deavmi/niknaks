@@ -335,6 +335,18 @@ public template CacheMap(K, V)
             return keyValue;
         }
 
+        /** 
+         * Removes the given key
+         * returning whether or
+         * not it was a success
+         *
+         * Params:
+         *   key = the key to
+         * remove
+         * Returns: `true` if the
+         * key existed, `false`
+         * otherwise
+         */
         public bool removeKey(K key)
         {
             // Lock the mutex
