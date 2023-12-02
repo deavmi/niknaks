@@ -522,4 +522,6 @@ unittest
     // Get the value
     tValue = map.get("Tristan");
     assert(tValue == 2);
+
+    destroy(map);
 }
