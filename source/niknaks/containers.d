@@ -335,6 +335,22 @@ public template CacheMap(K, V)
             return keyValue;
         }
 
+        public bool removeKey(K key)
+        {
+            // Lock the mutex
+            this.lock.lock();
+
+            // On exit
+            scope(exit)
+            {
+                // Unlock the mutex
+                this.lock.unlock();
+            }
+
+            // Remove the key
+            return this.map.remove(key);
+        }
+
         /** 
          * Runs at the latest every
          * `expirationTime` ticks
