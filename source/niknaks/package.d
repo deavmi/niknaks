@@ -32,3 +32,11 @@ public import niknaks.arrays;
  * data structures
  */
 public import niknaks.debugging;
+
+/**
+ * Container types
+ *
+ * Useful data structures
+ * that are templatised
+ */
+public import niknaks.containers;
