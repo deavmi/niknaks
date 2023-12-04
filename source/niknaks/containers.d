@@ -139,6 +139,7 @@ public template CacheMap(K, V)
         private Thread checker;
         private bool isRunning;
         private Condition condVar;
+        private Duration sweepInterval;
         
         /** 
          * Constructs a new cache map with the
@@ -149,14 +150,17 @@ public template CacheMap(K, V)
          *   replFunc = the replacement delegate
          *   expirationTime = the expiration
          * deadline
+         *   sweepInterval = the interval at
+         * which the sweeper thread should
+         * run at to check for expired entries
          */
-        this(ReplacementDelegate replFunc, Duration expirationTime = dur!("seconds")(10))
+        this(ReplacementDelegate replFunc, Duration expirationTime = dur!("seconds")(10), Duration sweepInterval = dur!("seconds")(10))
         {
             this.replFunc = replFunc;
             this.lock = new Mutex();
             this.expirationTime = expirationTime;
 
-          
+            this.sweepInterval = sweepInterval;
             this.condVar = new Condition(this.lock);
             this.checker = new Thread(&checkerFunc);
             this.isRunning = true;
@@ -173,10 +177,13 @@ public template CacheMap(K, V)
          *   replFunc = the replacement function
          *   expirationTime = the expiration
          * deadline
+         *   sweepInterval = the interval at
+         * which the sweeper thread should
+         * run at to check for expired entries
          */
-        this(ReplacementFunction replFunc, Duration expirationTime = dur!("seconds")(10))
+        this(ReplacementFunction replFunc, Duration expirationTime = dur!("seconds")(10), Duration sweepInterval = dur!("seconds")(10))
         {
-            this(toDelegate(replFunc));
+            this(toDelegate(replFunc), expirationTime, sweepInterval);
         }
 
         /** 
@@ -384,8 +391,8 @@ public template CacheMap(K, V)
                     this.lock.unlock();
                 }
 
-                // Sleep until timeout
-                this.condVar.wait(this.expirationTime);
+                // Sleep until sweep interval
+                this.condVar.wait(this.sweepInterval);
 
                 // Run the expiration check
                 K[] marked;
@@ -476,6 +483,7 @@ unittest
         return i;
     }
 
+    // Create a CacheMap with 10 second expiration and 10 second sweeping interval
     CacheMap!(string, int) map = new CacheMap!(string, int)(&getVal, dur!("seconds")(10));
 
     // Get the value
@@ -502,6 +510,41 @@ unittest
 }
 
 /**
+ * Creates a `CacheMap` which tests out
+ * the on-access expiration checking of
+ * entries by accessing an entry faster
+ * then the sweep interval and by
+ * having an expiration interval below
+ * the aforementioned interval
+ */
+unittest
+{
+    int i = 0;
+    int getVal(string)
+    {
+        i++;
+        return i;
+    }
+
+    // Create a CacheMap with 5 second expiration and 10 second sweeping interval
+    CacheMap!(string, int) map = new CacheMap!(string, int)(&getVal, dur!("seconds")(5), dur!("seconds")(10));
+
+    // Get the value
+    int tValue = map.get("Tristan");
+    assert(tValue == 1);
+
+    // Wait for 5 seconds (the entry should then be expired by then for on-access check)
+    Thread.sleep(dur!("seconds")(5));
+
+    // Get the value (should have replacement function run)
+    tValue = map.get("Tristan");
+    assert(tValue == 2);
+
+    // Destroy the map (such that it ends the sweeper
+    destroy(map);
+}
+
+/**
  * Tests the usage of the `CacheMap`,
  * specifically the explicit key
  * removal method
@@ -515,7 +558,8 @@ unittest
         return i;
     }
 
-    CacheMap!(string, int) map = new CacheMap!(string, int)(&getVal, dur!("seconds")(10));
+    // Create a CacheMap with 10 second expiration and 10 second sweeping interval
+    CacheMap!(string, int) map = new CacheMap!(string, int)(&getVal, dur!("seconds")(10), dur!("seconds")(10));
 
     // Get the value
     int tValue = map.get("Tristan");
