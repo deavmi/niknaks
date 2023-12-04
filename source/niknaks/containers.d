@@ -469,7 +469,7 @@ public template CacheMap(K, V)
  */
 unittest
 {
-    int i=0;
+    int i = 0;
     int getVal(string)
     {
         i++;
@@ -482,17 +482,22 @@ unittest
     int tValue = map.get("Tristan");
     assert(tValue == 1);
 
+    // Get the value (should still be cached)
     tValue = map.get("Tristan");
     assert(tValue == 1);
 
+    // Wait for expiry (by sweeping thread)
     Thread.sleep(dur!("seconds")(11));
 
+    // Should call replacement function
     tValue = map.get("Tristan");
     assert(tValue == 2);
 
-
+    // Wait for expiry (by sweeping thread)
     writeln("Sleeping now 11 secs");
     Thread.sleep(dur!("seconds")(11));
+
+    // Destroy the map (such that it ends the sweeper)
     destroy(map);
 }
 
@@ -503,7 +508,7 @@ unittest
  */
 unittest
 {
-    int i=0;
+    int i = 0;
     int getVal(string)
     {
         i++;
@@ -523,5 +528,6 @@ unittest
     tValue = map.get("Tristan");
     assert(tValue == 2);
 
+    // Destroy the map (such that it ends the sweeper
     destroy(map);
 }
