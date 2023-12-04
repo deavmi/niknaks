@@ -36,6 +36,9 @@ is expected to grow over time.
     * **Automagic** dumping of arrays to textual representation
         * Supports arrays-of-arrays-of...
     * Some textual manipulation routines as well
+* `niknaks.containers`
+    * Some useful container types
+    * Things such as `CacheMap`
 
 ## License
 
