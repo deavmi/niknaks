@@ -103,8 +103,23 @@ private template Entry(V)
  */
 public template CacheMap(K, V)
 {
-    private alias ReplacementDelegate = V delegate(K);
-    private alias ReplacementFunction = V function(K);
+    /** 
+     * A replacement function which takes
+     * in the key of type `K` and returns
+     * a value of type `V`
+     *
+     * This is the delegate-based variant
+     */
+    public alias ReplacementDelegate = V delegate(K);
+
+    /** 
+     * A replacement function which takes
+     * in the key of type `K` and returns
+     * a value of type `V`
+     *
+     * This is the function-based variant
+     */
+    public alias ReplacementFunction = V function(K);
 
     /** 
      * A caching map which when queried
