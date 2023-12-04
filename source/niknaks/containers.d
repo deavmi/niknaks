@@ -4,8 +4,6 @@
 module niknaks.containers;
 
 import core.sync.mutex : Mutex;
-
-
 import std.datetime : Duration, dur;
 import std.datetime.stopwatch : StopWatch, AutoStart;
 import core.thread : Thread;
