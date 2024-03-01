@@ -297,21 +297,21 @@ private void writerButStringOnly(string msg)
     writeln(msg);
 }
 
-public mixin template FuncDebug(alias functionName, void function (string) writer = &writerButStringOnly)
-// if
-// (
-//     isCallable!(writer) &&
-//     (
-//         (variadicFunctionStyle!(writer) == Variadic.no && arity!(writer) >= 1) ||
-//         (variadicFunctionStyle!(writer) == Variadic.typesafe)
-//     )
-    
-// )
+private mixin template FuncDebugBase(alias functionName, alias writer)
 {
+    private string functionNameStr = __traits(identifier, functionName);
     private alias formalParemeterNames = ParameterIdentifierTuple!(functionName);
     private alias arguments = __traits(parameters);
-    private string functionNameStr = __traits(identifier, functionName);
-
+    
+    /** 
+     * Enter a function
+     *
+     * Params:
+     *   showArguments = `false` by default, this
+     * selects whether or not the formal paremeter
+     * names and argument values should be printed
+     * out following the entry message
+     */
     public void enter(bool showArguments = false)
     {
         string enterMessage = format("%s(): Enter", functionNameStr);
@@ -344,12 +344,24 @@ public mixin template FuncDebug(alias functionName, void function (string) write
     }
 }
 
+public mixin template FuncDebug(alias functionName, void function(string) writer = &writerButStringOnly)
+{
+    private mixin FuncDebugBase!(functionName, writer);
+}
+
+public mixin template FuncDebug(alias functionName, void delegate(string) writer = &writerButStringOnly)
+{
+    private mixin FuncDebugBase!(functionName, writer);
+}
+
 unittest
 {
     void myFunc(int x, int y)
     {
         mixin FuncDebug!(myFunc);
         enter(true);
+
+        say("Your momma fat");
 
         leave();
     }
