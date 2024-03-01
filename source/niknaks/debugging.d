@@ -291,6 +291,7 @@ import std.traits : ParameterIdentifierTuple;
 
 import std.traits : isCallable, variadicFunctionStyle, Variadic, arity;
 
+import std.stdio : writeln;
 
 private void writerButStringOnly(string msg)
 {
@@ -323,6 +324,14 @@ private mixin template FuncDebugBase(alias functionName, alias writer)
         }
     }
 
+    /** 
+     * Prints the formal parameter names
+     * and their respective argument values
+     *
+     * Params:
+     *   spc = the spacer to provide, default
+     * is one tab
+     */
     public void args(string spc = genTabs(1))
     {
         static foreach(i; 0..formalParemeterNames.length)
@@ -331,12 +340,22 @@ private mixin template FuncDebugBase(alias functionName, alias writer)
         }
     }
 
+    /** 
+     * Prints a message from within the
+     * function
+     *
+     * Params:
+     *   message = the message
+     */
     public void say(string message)
     {
         string debugMessage = format("%s(): %s", functionNameStr, message);
         writer(debugMessage);
     }
 
+    /** 
+     * Leaves a function
+     */
     public void leave()
     {
         string leaveMessage = format("%s(): Leave", functionNameStr);
@@ -352,6 +371,33 @@ public mixin template FuncDebug(alias functionName, void function(string) writer
 public mixin template FuncDebug(alias functionName, void delegate(string) writer = &writerButStringOnly)
 {
     private mixin FuncDebugBase!(functionName, writer);
+}
+
+unittest
+{
+    string[] written;
+    void testWriter(string s)
+    {
+        written ~= s;
+    }
+
+    void myFunc(int x, int y)
+    {
+        mixin FuncDebug!(myFunc, &testWriter);
+        enter(true);
+
+        say("Your momma fat");
+
+        leave();
+    }
+
+    myFunc(69, 420);
+
+    assert(written[0] == format("%s(): Enter", "myFunc"));
+    assert(written[1] == "\tx = 69");
+    assert(written[2] == "\ty = 420");
+    assert(written[3] == format("%s(): %s", "myFunc", "Your momma fat"));
+    assert(written[4] == format("%s(): Leave", "myFunc"));
 }
 
 unittest
