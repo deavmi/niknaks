@@ -291,15 +291,6 @@ import std.traits : ParameterIdentifierTuple;
 
 import std.traits : isCallable, variadicFunctionStyle, Variadic, arity;
 
-public void outt(string msg)
-{
-
-}
-
-public void outtBad()
-{
-
-}
 
 private void writerButStringOnly(string msg)
 {
