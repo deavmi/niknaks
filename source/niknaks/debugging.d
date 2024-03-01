@@ -276,3 +276,92 @@ private string dumpArray_rec(T)(T[] array, size_t start, size_t end, size_t dept
 
     return output;
 }
+
+public mixin template FuncDebug()
+{
+    private alias formalParameters = __traits(parameters);
+    private alias funcName = __traits(identifier, __traits(parent, FuncDebug));
+
+}
+
+import std.string : format;
+
+import std.traits : ParameterIdentifierTuple;
+
+
+import std.traits : isCallable, variadicFunctionStyle, Variadic, arity;
+
+public void outt(string msg)
+{
+
+}
+
+public void outtBad()
+{
+
+}
+
+private void writerButStringOnly(string msg)
+{
+    writeln(msg);
+}
+
+public mixin template FuncDebug(alias functionName, void function (string) writer = &writerButStringOnly)
+// if
+// (
+//     isCallable!(writer) &&
+//     (
+//         (variadicFunctionStyle!(writer) == Variadic.no && arity!(writer) >= 1) ||
+//         (variadicFunctionStyle!(writer) == Variadic.typesafe)
+//     )
+    
+// )
+{
+    private alias formalParemeterNames = ParameterIdentifierTuple!(functionName);
+    private alias arguments = __traits(parameters);
+    private string functionNameStr = __traits(identifier, functionName);
+
+    public void enter(bool showArguments = false)
+    {
+        string enterMessage = format("%s(): Enter", functionNameStr);
+        writer(enterMessage);
+
+        if(showArguments)
+        {
+            args();
+        }
+    }
+
+    public void args(string spc = genTabs(1))
+    {
+        static foreach(i; 0..formalParemeterNames.length)
+        {
+            writer(format("%s%s = %s", spc, formalParemeterNames[i], to!(string)(arguments[i])));
+        }
+    }
+
+    public void say(string message)
+    {
+        string debugMessage = format("%s(): %s", functionNameStr, message);
+        writer(debugMessage);
+    }
+
+    public void leave()
+    {
+        string leaveMessage = format("%s(): Leave", functionNameStr);
+        writer(leaveMessage);
+    }
+}
+
+unittest
+{
+    void myFunc(int x, int y)
+    {
+        mixin FuncDebug!(myFunc);
+        enter(true);
+
+        leave();
+    }
+
+    myFunc(69, 420);
+}
