@@ -277,31 +277,27 @@ private string dumpArray_rec(T)(T[] array, size_t start, size_t end, size_t dept
     return output;
 }
 
-public mixin template FuncDebug()
-{
-    private alias formalParameters = __traits(parameters);
-    private alias funcName = __traits(identifier, __traits(parent, FuncDebug));
-
-}
-
 import std.string : format;
-
 import std.traits : ParameterIdentifierTuple;
-
-
-import std.traits : isCallable, variadicFunctionStyle, Variadic, arity;
-
-import std.stdio : writeln;
 
 private void writerButStringOnly(string msg)
 {
+    import std.stdio : writeln;
     writeln(msg);
 }
 
-private mixin template FuncDebugBase(alias functionName, alias writer)
+/** 
+ * Base mixin for debugging tooling
+ *
+ * Params:
+ *   func = the function's symbol
+ *   writer = the callable to use to write
+ * using
+ */
+private mixin template FuncDebugBase(alias func, alias writer)
 {
-    private string functionNameStr = __traits(identifier, functionName);
-    private alias formalParemeterNames = ParameterIdentifierTuple!(functionName);
+    private string functionNameStr = __traits(identifier, func);
+    private alias formalParemeterNames = ParameterIdentifierTuple!(func);
     private alias arguments = __traits(parameters);
     
     /** 
@@ -363,14 +359,42 @@ private mixin template FuncDebugBase(alias functionName, alias writer)
     }
 }
 
-public mixin template FuncDebug(alias functionName, void function(string) writer = &writerButStringOnly)
+/** 
+ * Function debugging mixin
+ * with the given function
+ * and the writer to use
+ *
+ * Params:
+ *   func = the function's
+ * symbol
+ *   writer = the string-callable
+ * function to use for writing
+ * (by default this is a proxy
+ * to `writeln(string)`)
+ * the messages to
+ */
+public mixin template FuncDebug(alias func, void function(string) writer = &writerButStringOnly)
 {
-    private mixin FuncDebugBase!(functionName, writer);
+    private mixin FuncDebugBase!(func, writer);
 }
 
-public mixin template FuncDebug(alias functionName, void delegate(string) writer = &writerButStringOnly)
+/** 
+ * Function debugging mixin
+ * with the given function
+ * and the writer to use
+ *
+ * Params:
+ *   func = the function's
+ * symbol
+ *   writer = the string-callable
+ * delegate to use for writing
+ * (by default this is a proxy
+ * to `writeln(string)`)
+ * the messages to
+ */
+public mixin template FuncDebug(alias func, void delegate(string) writer = &writerButStringOnly)
 {
-    private mixin FuncDebugBase!(functionName, writer);
+    private mixin FuncDebugBase!(func, writer);
 }
 
 unittest
