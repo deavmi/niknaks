@@ -280,6 +280,14 @@ private string dumpArray_rec(T)(T[] array, size_t start, size_t end, size_t dept
 import std.string : format;
 import std.traits : ParameterIdentifierTuple;
 
+/** 
+ * Proxy function to call
+ * `std.stdio`'s `writeln'
+ * function
+ *
+ * Params:
+ *   msg = the message
+ */
 private void writerButStringOnly(string msg)
 {
     import std.stdio : writeln;
