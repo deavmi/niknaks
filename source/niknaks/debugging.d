@@ -384,6 +384,27 @@ public mixin template FuncDebug(alias func, void function(string) writer = &writ
     mixin FuncDebugBase!(func, writer);
 }
 
+/**
+ * Usage of the `FuncDebug` mixin
+ * template using the default writer
+ * function which writes to standard
+ * output
+ */
+unittest
+{
+    void myFunc(int x, int y)
+    {
+        mixin FuncDebug!(myFunc);
+        enter(true);
+
+        say("Good day governor");
+
+        leave();
+    }
+
+    myFunc(69, 420);
+}
+
 /** 
  * Function debugging mixin
  * with the given function
@@ -403,6 +424,11 @@ public mixin template FuncDebug(alias func, void delegate(string) writer = &writ
     mixin FuncDebugBase!(func, writer);
 }
 
+/**
+ * Example usage of the `FuncDebug`
+ * mixin template using a custom
+ * writer delegate
+ */
 unittest
 {
     string[] written;
@@ -416,7 +442,7 @@ unittest
         mixin FuncDebug!(myFunc, &testWriter);
         enter(true);
 
-        say("Your momma fat");
+        say("Good day governor");
 
         leave();
     }
@@ -426,21 +452,6 @@ unittest
     assert(written[0] == format("%s(): Enter", "myFunc"));
     assert(written[1] == "\tx = 69");
     assert(written[2] == "\ty = 420");
-    assert(written[3] == format("%s(): %s", "myFunc", "Your momma fat"));
+    assert(written[3] == format("%s(): %s", "myFunc", "Good day governor"));
     assert(written[4] == format("%s(): Leave", "myFunc"));
-}
-
-unittest
-{
-    void myFunc(int x, int y)
-    {
-        mixin FuncDebug!(myFunc);
-        enter(true);
-
-        say("Your momma fat");
-
-        leave();
-    }
-
-    myFunc(69, 420);
 }
