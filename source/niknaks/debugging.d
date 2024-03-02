@@ -3,12 +3,14 @@
  */
 module niknaks.debugging;
 
-import std.traits : isArray, ForeachType;
+import std.traits : isArray, ForeachType, ParameterIdentifierTuple;
 import std.conv : to;
+import std.string : format;
+import std.stdio : writeln;
 
 version(unittest)
 {
-    import std.stdio : writeln, write;
+    import std.stdio : write;
 }
 
 /** 
@@ -275,4 +277,181 @@ private string dumpArray_rec(T)(T[] array, size_t start, size_t end, size_t dept
     }
 
     return output;
+}
+
+/** 
+ * Proxy function to call
+ * `std.stdio`'s `writeln'
+ * function
+ *
+ * Params:
+ *   msg = the message
+ */
+private void writerButStringOnly(string msg)
+{
+    writeln(msg);
+}
+
+/** 
+ * Base mixin for debugging tooling
+ *
+ * Params:
+ *   func = the function's symbol
+ *   writer = the callable to use to write
+ * using
+ */
+private mixin template FuncDebugBase(alias func, alias writer)
+{
+    private string functionNameStr = __traits(identifier, func);
+    private alias formalParemeterNames = ParameterIdentifierTuple!(func);
+    private alias arguments = __traits(parameters);
+    
+    /** 
+     * Enter a function
+     *
+     * Params:
+     *   showArguments = `false` by default, this
+     * selects whether or not the formal paremeter
+     * names and argument values should be printed
+     * out following the entry message
+     */
+    public void enter(bool showArguments = false)
+    {
+        string enterMessage = format("%s(): Enter", functionNameStr);
+        writer(enterMessage);
+
+        if(showArguments)
+        {
+            args();
+        }
+    }
+
+    /** 
+     * Prints the formal parameter names
+     * and their respective argument values
+     *
+     * Params:
+     *   spc = the spacer to provide, default
+     * is one tab
+     */
+    public void args(string spc = genTabs(1))
+    {
+        static foreach(i; 0..formalParemeterNames.length)
+        {
+            writer(format("%s%s = %s", spc, formalParemeterNames[i], to!(string)(arguments[i])));
+        }
+    }
+
+    /** 
+     * Prints a message from within the
+     * function
+     *
+     * Params:
+     *   message = the message
+     */
+    public void say(string message)
+    {
+        string debugMessage = format("%s(): %s", functionNameStr, message);
+        writer(debugMessage);
+    }
+
+    /** 
+     * Leaves a function
+     */
+    public void leave()
+    {
+        string leaveMessage = format("%s(): Leave", functionNameStr);
+        writer(leaveMessage);
+    }
+}
+
+/** 
+ * Function debugging mixin
+ * with the given function
+ * and the writer to use
+ *
+ * Params:
+ *   func = the function's
+ * symbol
+ *   writer = the string-callable
+ * function to use for writing
+ * (by default this is a proxy
+ * to `writeln(string)`)
+ * the messages to
+ */
+public mixin template FuncDebug(alias func, void function(string) writer = &writerButStringOnly)
+{
+    mixin FuncDebugBase!(func, writer);
+}
+
+/**
+ * Usage of the `FuncDebug` mixin
+ * template using the default writer
+ * function which writes to standard
+ * output
+ */
+unittest
+{
+    void myFunc(int x, int y)
+    {
+        mixin FuncDebug!(myFunc);
+        enter(true);
+
+        say("Good day governor");
+
+        leave();
+    }
+
+    myFunc(69, 420);
+}
+
+/** 
+ * Function debugging mixin
+ * with the given function
+ * and the writer to use
+ *
+ * Params:
+ *   func = the function's
+ * symbol
+ *   writer = the string-callable
+ * delegate to use for writing
+ * (by default this is a proxy
+ * to `writeln(string)`)
+ * the messages to
+ */
+public mixin template FuncDebug(alias func, void delegate(string) writer = &writerButStringOnly)
+{
+    mixin FuncDebugBase!(func, writer);
+}
+
+/**
+ * Example usage of the `FuncDebug`
+ * mixin template using a custom
+ * writer delegate
+ */
+unittest
+{
+    string[] written;
+    void testWriter(string s)
+    {
+        written ~= s;
+    }
+
+    void myFunc(int x, int y)
+    {
+        mixin FuncDebug!(myFunc, &testWriter);
+        enter(true);
+
+        say("Good day governor");
+
+        leave();
+    }
+
+    myFunc(69, 420);
+
+    assert(written[0] == format("%s(): Enter", "myFunc"));
+    assert(written[1] == "\tx = 69");
+    assert(written[2] == "\ty = 420");
+    assert(written[3] == format("%s(): %s", "myFunc", "Good day governor"));
+    assert(written[4] == format("%s(): Leave", "myFunc"));
 }

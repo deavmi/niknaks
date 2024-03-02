@@ -35,6 +35,7 @@ is expected to grow over time.
 * `niknaks.debugging`
     * **Automagic** dumping of arrays to textual representation
         * Supports arrays-of-arrays-of...
+    * Enter-leave (with argument and name printing) for methods
     * Some textual manipulation routines as well
 * `niknaks.containers`
     * Some useful container types
