@@ -3,12 +3,14 @@
  */
 module niknaks.debugging;
 
-import std.traits : isArray, ForeachType;
+import std.traits : isArray, ForeachType, ParameterIdentifierTuple;
 import std.conv : to;
+import std.string : format;
+import std.stdio : writeln;
 
 version(unittest)
 {
-    import std.stdio : writeln, write;
+    import std.stdio : write;
 }
 
 /** 
@@ -277,9 +279,6 @@ private string dumpArray_rec(T)(T[] array, size_t start, size_t end, size_t dept
     return output;
 }
 
-import std.string : format;
-import std.traits : ParameterIdentifierTuple;
-
 /** 
  * Proxy function to call
  * `std.stdio`'s `writeln'
@@ -290,7 +289,6 @@ import std.traits : ParameterIdentifierTuple;
  */
 private void writerButStringOnly(string msg)
 {
-    import std.stdio : writeln;
     writeln(msg);
 }
 
