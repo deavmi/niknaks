@@ -381,7 +381,7 @@ private mixin template FuncDebugBase(alias func, alias writer)
  */
 public mixin template FuncDebug(alias func, void function(string) writer = &writerButStringOnly)
 {
-    private mixin FuncDebugBase!(func, writer);
+    mixin FuncDebugBase!(func, writer);
 }
 
 /** 
@@ -400,7 +400,7 @@ public mixin template FuncDebug(alias func, void function(string) writer = &writ
  */
 public mixin template FuncDebug(alias func, void delegate(string) writer = &writerButStringOnly)
 {
-    private mixin FuncDebugBase!(func, writer);
+    mixin FuncDebugBase!(func, writer);
 }
 
 unittest
