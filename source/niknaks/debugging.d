@@ -381,7 +381,14 @@ public mixin template FuncDebugBase(alias func, alias writer)
  */
 public mixin template FuncDebug(alias func, void function(string) writer = &writerButStringOnly)
 {
-    import niknaks.debugging : FuncDebugBase;
+    // We must do this because the code gets parameterized
+    // and then dumped and refers to things not in the scope
+    // where it is mixed-in
+    //
+    // TODO: See if we can make this a mixin in-and-of-itself
+    import niknaks.debugging : FuncDebugBase, genTabs, genX;
+    import std.traits : ParameterIdentifierTuple;
+
     mixin FuncDebugBase!(func, writer);
 }
 
@@ -422,7 +429,14 @@ unittest
  */
 public mixin template FuncDebug(alias func, void delegate(string) writer = &writerButStringOnly)
 {
+    // We must do this because the code gets parameterized
+    // and then dumped and refers to things not in the scope
+    // where it is mixed-in
+    //
+    // TODO: See if we can make this a mixin in-and-of-itself
+    import niknaks.debugging : FuncDebugBase, genTabs, genX;
     import std.traits : ParameterIdentifierTuple;
+    
     mixin FuncDebugBase!(func, writer);
 }
 
