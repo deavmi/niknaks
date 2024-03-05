@@ -422,7 +422,7 @@ unittest
  */
 public mixin template FuncDebug(alias func, void delegate(string) writer = &writerButStringOnly)
 {
-    import std.traits : ParameterIdentifierTuple
+    import std.traits : ParameterIdentifierTuple;
     mixin FuncDebugBase!(func, writer);
 }
 
