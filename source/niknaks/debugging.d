@@ -381,6 +381,7 @@ public mixin template FuncDebugBase(alias func, alias writer)
  */
 public mixin template FuncDebug(alias func, void function(string) writer = &writerButStringOnly)
 {
+    import niknaks.debugging : FuncDebugBase;
     mixin FuncDebugBase!(func, writer);
 }
 
