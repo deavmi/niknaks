@@ -3,7 +3,7 @@
  */
 module niknaks.debugging;
 
-import std.traits : isArray, ForeachType, ParameterIdentifierTuple;
+import std.traits : isArray, ForeachType;
 import std.conv : to;
 import std.string : format;
 import std.stdio : writeln;
@@ -422,6 +422,7 @@ unittest
  */
 public mixin template FuncDebug(alias func, void delegate(string) writer = &writerButStringOnly)
 {
+    import std.traits : ParameterIdentifierTuple
     mixin FuncDebugBase!(func, writer);
 }
 
