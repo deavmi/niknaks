@@ -300,7 +300,7 @@ private void writerButStringOnly(string msg)
  *   writer = the callable to use to write
  * using
  */
-private mixin template FuncDebugBase(alias func, alias writer)
+public mixin template FuncDebugBase(alias func, alias writer)
 {
     private string functionNameStr = __traits(identifier, func);
     private alias formalParemeterNames = ParameterIdentifierTuple!(func);
