@@ -3,6 +3,8 @@
  */
 module niknaks.arrays;
 
+import niknaks.functional : Predicate;
+
 /** 
  * Checks if the given value is present in
  * the given array
@@ -201,9 +203,6 @@ unittest
     }
 }
 
-
-import niknaks.functional : Predicate, predicateOf;
-
 /** 
  * Filters items by the given predicate
  *
@@ -221,6 +220,11 @@ public void filter(T)(T[] filterIn, Predicate!(T) predicate, ref T[] filterOut)
             filterOut ~= t;
         }
     }
+}
+
+version(unittest)
+{
+    import niknaks.functional : predicateOf;
 }
 
 /**
