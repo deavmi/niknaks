@@ -204,6 +204,14 @@ unittest
 
 import niknaks.functional : Predicate, predicateOf;
 
+/** 
+ * Filters items by the given predicate
+ *
+ * Params:
+ *   filterIn = the array to filer
+ *   predicate = the predicate to use
+ *   filterOut = output array
+ */
 public void filter(T)(T[] filterIn, Predicate!(T) predicate, ref T[] filterOut)
 {
     foreach(T t; filterIn)
@@ -215,6 +223,9 @@ public void filter(T)(T[] filterIn, Predicate!(T) predicate, ref T[] filterOut)
     }
 }
 
+/**
+ * Tests the array filtering method
+ */
 unittest
 {
     bool onlyEven(int i)
@@ -229,6 +240,5 @@ unittest
 
     // TODO: See why not auto detecting the array type
     filter!(int)(vals, predicateOf!(onlyEven), vals_got);
-    assert(vals_got == vals_expected);
-    
+    assert(vals_got == vals_expected);   
 }
