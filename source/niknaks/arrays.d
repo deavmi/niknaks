@@ -204,7 +204,7 @@ unittest
 
 import niknaks.functional : Predicate, predicateOf;
 
-public void filter(T)(T[] filterIn, Predicate!(T) predicate, T[] filterOut)
+public void filter(T)(T[] filterIn, Predicate!(T) predicate, ref T[] filterOut)
 {
     foreach(T t; filterIn)
     {
