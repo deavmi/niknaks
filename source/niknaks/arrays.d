@@ -3,6 +3,8 @@
  */
 module niknaks.arrays;
 
+import niknaks.functional : Predicate;
+
 /** 
  * Checks if the given value is present in
  * the given array
@@ -199,4 +201,48 @@ unittest
     {
         assert(isPresent(values, i) == true);
     }
+}
+
+/** 
+ * Filters items by the given predicate
+ *
+ * Params:
+ *   filterIn = the array to filer
+ *   predicate = the predicate to use
+ *   filterOut = output array
+ */
+public void filter(T)(T[] filterIn, Predicate!(T) predicate, ref T[] filterOut)
+{
+    foreach(T t; filterIn)
+    {
+        if(predicate(t))
+        {
+            filterOut ~= t;
+        }
+    }
+}
+
+version(unittest)
+{
+    import niknaks.functional : predicateOf;
+}
+
+/**
+ * Tests the array filtering method
+ */
+unittest
+{
+    bool onlyEven(int i)
+    {
+        return i % 2 == 0;
+    }
+
+    int[] vals = [0, 1, 2, 3];
+    
+    int[] vals_expected = [0, 2];
+    int[] vals_got;
+
+    // TODO: See why not auto detecting the array type
+    filter!(int)(vals, predicateOf!(onlyEven), vals_got);
+    assert(vals_got == vals_expected);   
 }
