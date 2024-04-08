@@ -5,7 +5,6 @@
  */
 module niknaks.mechanisms;
 
-// import niknaks.functional : Predicate;
 import std.functional : toDelegate;
 import std.datetime : Duration;
 import std.datetime.stopwatch : StopWatch, AutoStart;
