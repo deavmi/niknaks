@@ -67,6 +67,9 @@ public class Delay
             this.timer.reset();
         }
 
+        // Start timer
+        this.timer.start();
+
         // Try get verdict initially
         bool result = verdictProvider();
 
@@ -75,9 +78,6 @@ public class Delay
         {
             return;
         }
-
-        // Start timer
-        this.timer.start();
 
         // Whilst still in time window
         while(this.timer.peek() < this.timeout)
