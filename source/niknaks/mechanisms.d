@@ -60,6 +60,13 @@ public class Delay
 
     public void go()
     {
+        // On leave stop-and-reset (this is for re-use)
+        scope(exit)
+        {
+            this.timer.stop();
+            this.timer.reset();
+        }
+
         // Try get verdict initially
         bool result = verdictProvider();
 
