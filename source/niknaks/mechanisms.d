@@ -123,6 +123,10 @@ public class Delay
 
     /** 
      * Performs the delay mechanism
+     *
+     * Throws:
+     *    DelayTimeoutException if
+     * we time out
      */
     public void go()
     {
