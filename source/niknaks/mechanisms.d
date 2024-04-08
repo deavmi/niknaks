@@ -120,6 +120,30 @@ unittest
     
 }
 
+version(unittest)
+{
+    bool alwaysFalseFunc()
+    {
+        return false;
+    }
+}
+
+unittest
+{
+    Delay delay = new Delay(&alwaysFalseFunc, dur!("seconds")(1), dur!("seconds")(1));
+
+    try
+    {
+        delay.go();
+        assert(false);
+    }
+    catch(DelayTimeoutException e)
+    {
+        assert(true);
+    }
+    
+}
+
 unittest
 {
     bool alwaysTrue()
