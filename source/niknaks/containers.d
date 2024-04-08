@@ -1,5 +1,7 @@
 /**
  * Container types
+ *
+ * Authors: Tristan Brice Velloza Kildaire (deavmi)
  */
 module niknaks.containers;
 

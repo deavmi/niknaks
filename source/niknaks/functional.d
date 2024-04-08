@@ -1,5 +1,7 @@
 /**
  * Functional tooling
+ *
+ * Authors: Tristan Brice Velloza Kildaire (deavmi)
  */
 module niknaks.functional;
 

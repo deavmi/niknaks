@@ -1,5 +1,7 @@
 /**
  * Helpful niknaks or "things" that you may grasp for now and then
+ *
+ * Authors: Tristan Brice Velloza Kildaire (deavmi)
  */
 module niknaks;
 
