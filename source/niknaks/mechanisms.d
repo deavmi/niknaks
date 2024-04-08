@@ -11,13 +11,34 @@ import std.datetime : Duration;
 import std.datetime.stopwatch : StopWatch, AutoStart;
 import core.thread : Thread;
 
+/** 
+ * A verdict-providing function
+ */
 public alias VerdictProviderFunction = bool function();
+
+/** 
+ * A verdict-providing delegate
+ */
 public alias VerdictProviderDelegate = bool delegate();
 
+/** 
+ * An exception thrown when a `Delay`
+ * mechanism times out
+ */
 public final class DelayTimeoutException : Exception
 {
+    /** 
+     * The offending delay mechanism
+     */
     private Delay delay;
 
+    /** 
+     * Constructs a new exception with
+     * the offending `Delay`
+     *
+     * Params:
+     *   delay = the offending `Delay`
+     */
     this(Delay delay)
     {
         super("Timed out whilst attempting delay mechanism");
@@ -25,6 +46,12 @@ public final class DelayTimeoutException : Exception
         this.delay = delay;
     }
 
+    /** 
+     * Returns the offending delay
+     * mechanism
+     *
+     * Returns: the `Delay`
+     */
     public Delay getDelay()
     {
         return this.delay;
@@ -42,10 +69,35 @@ public final class DelayTimeoutException : Exception
  */
 public class Delay
 {
+    /** 
+     * The interval to retry
+     * and the total timeout
+     */
     private Duration interval, timeout;
+
+    /** 
+     * The delegate to call
+     * to obtain a verdict
+     */
     private VerdictProviderDelegate verdictProvider;
+
+    /** 
+     * Internal timer
+     */
     private StopWatch timer = StopWatch(AutoStart.no);
 
+    /** 
+     * Constructs a new delay mechanism
+     * with the given delegate to call
+     * in order to determine the verdict,
+     * an interval to call it at and the
+     * total timeout
+     *
+     * Params:
+     *   verdictProvider = the provider of the verdicts
+     *   interval = thje interval to retry at
+     *   timeout = the timeout
+     */
     this(VerdictProviderDelegate verdictProvider, Duration interval, Duration timeout)
     {
         this.verdictProvider = verdictProvider;
@@ -53,11 +105,26 @@ public class Delay
         this.timeout = timeout;
     }
 
+    /** 
+     * Constructs a new delay mechanism
+     * with the given function to call
+     * in order to determine the verdict,
+     * an interval to call it at and the
+     * total timeout
+     *
+     * Params:
+     *   verdictProvider = the provider of the verdicts
+     *   interval = thje interval to retry at
+     *   timeout = the timeout
+     */
     this(VerdictProviderFunction verdictProvider, Duration interval, Duration timeout)
     {
         this(toDelegate(verdictProvider), interval, timeout);
     }
 
+    /** 
+     * Performs the delay mechanism
+     */
     public void go()
     {
         // On leave stop-and-reset (this is for re-use)
