@@ -14,6 +14,23 @@ import core.thread : Thread;
 public alias VerdictProviderFunction = bool function();
 public alias VerdictProviderDelegate = bool delegate();
 
+public final class DelayTimeoutException : Exception
+{
+    private Delay delay;
+
+    this(Delay delay)
+    {
+        super("Timed out whilst attempting delay mechanism");
+
+        this.delay = delay;
+    }
+
+    public Delay getDelay()
+    {
+        return this.delay;
+    }
+}
+
 /** 
  * A mechanism that consumes a function
  * and calls it at a regular interval,
@@ -72,7 +89,7 @@ public class Delay
         }
         
         // If we get here it is because we timed out
-        throw new Exception("Timed out"); // TODO: Make a custom exception rather
+        throw new DelayTimeoutException(this);
     }
 
 }
@@ -96,7 +113,7 @@ unittest
         delay.go();
         assert(false);
     }
-    catch(Exception e)
+    catch(DelayTimeoutException e)
     {
         assert(true);
     }
@@ -117,7 +134,7 @@ unittest
         delay.go();
         assert(true);
     }
-    catch(Exception e)
+    catch(DelayTimeoutException e)
     {
         assert(false);
     }
@@ -146,7 +163,7 @@ unittest
         delay.go();
         assert(true);
     }
-    catch(Exception e)
+    catch(DelayTimeoutException e)
     {
         assert(false);
     }
