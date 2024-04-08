@@ -173,6 +173,11 @@ version(unittest)
     import std.datetime : dur;
 }
 
+/**
+ * Tests out the delay mechanism
+ * with a verdict provider (as a
+ * delegate) which is always false
+ */
 unittest
 {
     bool alwaysFalse()
@@ -202,6 +207,11 @@ version(unittest)
     }
 }
 
+/**
+ * Tests out the delay mechanism
+ * with a verdict provider (as a
+ * function) which is always false
+ */
 unittest
 {
     Delay delay = new Delay(&alwaysFalseFunc, dur!("seconds")(1), dur!("seconds")(1));
@@ -218,6 +228,11 @@ unittest
     
 }
 
+/**
+ * Tests out the delay mechanism
+ * with a verdict provider (as a
+ * function) which is always true
+ */
 unittest
 {
     bool alwaysTrue()
@@ -238,6 +253,12 @@ unittest
     }
 }
 
+/**
+ * Tests out the delay mechanism
+ * with a verdict provider (as a
+ * delegate) which is only true
+ * on the second call
+ */
 unittest
 {
     int cnt = 0;
