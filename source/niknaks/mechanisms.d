@@ -336,6 +336,7 @@ public class Prompter
         }
 
         this.closeOnDestruct = closeOnDestruct;
+        this.source = source;
     }
 
     public void addPrompt(Prompt prompt)
@@ -346,15 +347,28 @@ public class Prompter
     public Prompt[] prompt()
     {
         char[] buff;
+        string ans;
 
-        foreach(Prompt prompt; this.prompts)
+        foreach(ref Prompt prompt; this.prompts)
         {
-            import std.stdio : write;
-            write(prompt.getPrompt());
+            scope(exit)
+            {
+                buff.length = 0;
+            }
 
+            import std.stdio : write, writeln;
+            import std.string : strip;
+            write(prompt.getPrompt());
             
             this.source.readln(buff);
-            prompt.fill(cast(string)buff);
+            writeln("Bytes: ", cast(byte[])buff);
+            
+            ans = cast(string)buff;
+            ans = strip(ans);
+            prompt.fill(ans);
+
+            import std.string : format;
+            writeln(format("'%s'", ans));
         }
 
         return this.prompts;
@@ -375,6 +389,24 @@ version(unittest)
     import std.conv : to;
 }
 
+import std.stdio;
+
+unittest
+{
+    Pipe p = pipe();
+
+    writeln(p.writeEnd.isOpen());
+
+    p.writeEnd.writeln("Fok");
+    p.writeEnd.writeln("Doos");
+    import std.stdio;
+    p.writeEnd.flush();
+
+    writeln("Readnln");
+
+    writeln(p.readEnd.readln());
+}
+
 unittest
 {
     Pipe pipe = pipe();
@@ -383,6 +415,8 @@ unittest
     Prompt p1 = Prompt("What is your name?");
     Prompt p2 = Prompt("How old are you");
 
+
+    writeln("Ya", pipe.readEnd().isOpen());
     Prompter p = new Prompter(pipe.readEnd());
     p.addPrompt(p1);
     p.addPrompt(p2);
@@ -392,8 +426,12 @@ unittest
 
     writeEnd.writeln("Tristan Brice Velloza Kildaire");
     writeEnd.writeln(1);
+    writeEnd.flush();
 
     Prompt[] ans = p.prompt();
+
+    import std.string : format;
+    writeln(format("Value: '%s'", ans[0].getValue()));
 
     assert(ans[0].getValue() == "Tristan Brice Velloza Kildaire");
     assert(to!(int)(ans[1].getValue()) == 1); // TODO: Allow union conversion later
