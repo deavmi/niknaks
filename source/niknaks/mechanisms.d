@@ -308,6 +308,11 @@ public struct Prompt
         return this.prompt;
     }
 
+    public string getValue()
+    {
+        return this.value;
+    }
+
     public void fill(string value)
     {
         this.value = value;
@@ -325,7 +330,7 @@ public class Prompter
 
     this(File source, bool closeOnDestruct = false)
     {
-        if(source.isOpen())
+        if(!source.isOpen())
         {
             throw new Exception("Source not open");
         }
@@ -338,7 +343,7 @@ public class Prompter
         this.prompts ~= prompt;
     }
 
-    public void prompt()
+    public Prompt[] prompt()
     {
         char[] buff;
 
@@ -351,6 +356,8 @@ public class Prompter
             this.source.readln(buff);
             prompt.fill(cast(string)buff);
         }
+
+        return this.prompts;
     }
 
     ~this()
@@ -360,4 +367,34 @@ public class Prompter
             this.source.close();
         }
     }
+}
+
+version(unittest)
+{
+    import std.process : pipe, Pipe;
+    import std.conv : to;
+}
+
+unittest
+{
+    Pipe pipe = pipe();
+
+    // Add two prompts
+    Prompt p1 = Prompt("What is your name?");
+    Prompt p2 = Prompt("How old are you");
+
+    Prompter p = new Prompter(pipe.readEnd());
+    p.addPrompt(p1);
+    p.addPrompt(p2);
+
+    // Fill up pipe with data for read end
+    File writeEnd = pipe.writeEnd();
+
+    writeEnd.writeln("Tristan Brice Velloza Kildaire");
+    writeEnd.writeln(1);
+
+    Prompt[] ans = p.prompt();
+
+    assert(ans[0].getValue() == "Tristan Brice Velloza Kildaire");
+    assert(to!(int)(ans[1].getValue()) == 1); // TODO: Allow union conversion later
 }
