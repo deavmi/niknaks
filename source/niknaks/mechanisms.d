@@ -292,3 +292,72 @@ unittest
 }
 
 
+
+public struct Prompt
+{
+    private string prompt;
+    private string value;
+
+    this(string prompt)
+    {
+        this.prompt = prompt;
+    }
+
+    public string getPrompt()
+    {
+        return this.prompt;
+    }
+
+    public void fill(string value)
+    {
+        this.value = value;
+    }
+}
+
+import std.stdio : File;
+
+public class Prompter
+{
+    private File source;
+    private bool closeOnDestruct;
+
+    private Prompt[] prompts;
+
+    this(File source, bool closeOnDestruct = false)
+    {
+        if(source.isOpen())
+        {
+            throw new Exception("Source not open");
+        }
+
+        this.closeOnDestruct = closeOnDestruct;
+    }
+
+    public void addPrompt(Prompt prompt)
+    {
+        this.prompts ~= prompt;
+    }
+
+    public void prompt()
+    {
+        char[] buff;
+
+        foreach(Prompt prompt; this.prompts)
+        {
+            import std.stdio : write;
+            write(prompt.getPrompt());
+
+            
+            this.source.readln(buff);
+            prompt.fill(cast(string)buff);
+        }
+    }
+
+    ~this()
+    {
+        if(this.closeOnDestruct)
+        {
+            this.source.close();
+        }
+    }
+}
