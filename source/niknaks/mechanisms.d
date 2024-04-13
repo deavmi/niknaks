@@ -321,6 +321,16 @@ public struct Prompt
 
 import std.stdio : File;
 
+/** 
+ * A prompting mechanism
+ * which can be filled up
+ * with questions and a
+ * file-based source to
+ * read answers in from
+ * and associate with
+ * their original respective
+ * questions
+ */
 public class Prompter
 {
     private File source;
@@ -328,6 +338,21 @@ public class Prompter
 
     private Prompt[] prompts;
 
+    /** 
+     * Constructs a new prompter
+     * with the given file source
+     * from where the input is to
+     * be read from.
+     *
+     * Params:
+     *   source = the `File` to
+     * read from
+     *   closeOnDestruct = if
+     * set to `true` then on
+     * destruction we will close
+     * the source, if `false` it
+     * is left untouched
+     */
     this(File source, bool closeOnDestruct = false)
     {
         if(!source.isOpen())
