@@ -411,27 +411,22 @@ unittest
 {
     Pipe pipe = pipe();
 
-    // Add two prompts
-    Prompt p1 = Prompt("What is your name?");
-    Prompt p2 = Prompt("How old are you");
-
-
-    writeln("Ya", pipe.readEnd().isOpen());
+    // Create a prompter with some prompts
     Prompter p = new Prompter(pipe.readEnd());
-    p.addPrompt(p1);
-    p.addPrompt(p2);
+    p.addPrompt(Prompt("What is your name?"));
+    p.addPrompt(Prompt("How old are you"));
 
     // Fill up pipe with data for read end
     File writeEnd = pipe.writeEnd();
-
     writeEnd.writeln("Tristan Brice Velloza Kildaire");
     writeEnd.writeln(1);
     writeEnd.flush();
 
+    // Perform the prompt and get the
+    // answers back out
     Prompt[] ans = p.prompt();
 
-    import std.string : format;
-    writeln(format("Value: '%s'", ans[0].getValue()));
+    writeln(ans);
 
     assert(ans[0].getValue() == "Tristan Brice Velloza Kildaire");
     assert(to!(int)(ans[1].getValue()) == 1); // TODO: Allow union conversion later
