@@ -590,3 +590,17 @@ unittest
     // Destroy the map (such that it ends the sweeper
     destroy(map);
 }
+
+
+public class Tree(T)
+{
+    private T value;
+    private Tree!(T)[] children;
+
+    this(T value)
+    {
+        this.value = value;
+    }
+
+    public T[] dfs()
+}
