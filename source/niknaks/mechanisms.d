@@ -389,24 +389,6 @@ version(unittest)
     import std.conv : to;
 }
 
-import std.stdio;
-
-unittest
-{
-    Pipe p = pipe();
-
-    writeln(p.writeEnd.isOpen());
-
-    p.writeEnd.writeln("Fok");
-    p.writeEnd.writeln("Doos");
-    import std.stdio;
-    p.writeEnd.flush();
-
-    writeln("Readnln");
-
-    writeln(p.readEnd.readln());
-}
-
 unittest
 {
     Pipe pipe = pipe();
