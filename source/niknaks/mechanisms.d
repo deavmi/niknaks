@@ -387,6 +387,7 @@ version(unittest)
 {
     import std.process : pipe, Pipe;
     import std.conv : to;
+    import std.stdio : writeln;
 }
 
 unittest
