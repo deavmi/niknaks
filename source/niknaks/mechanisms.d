@@ -292,28 +292,56 @@ unittest
     }
 }
 
-
-
+/** 
+ * A user-defined prompt
+ */
 public struct Prompt
 {
-    private string prompt;
+    private string query;
     private string value;
 
-    this(string prompt)
+    /** 
+     * Constructs a new prompt
+     * with the given query
+     *
+     * Params:
+     *   query = the prompt
+     * query itself
+     */
+    this(string query)
     {
-        this.prompt = prompt;
+        this.query = query;
     }
 
-    public string getPrompt()
+    /** 
+     * Gets the prompt query
+     *
+     * Returns: the query
+     */
+    public string getQuery()
     {
-        return this.prompt;
+        return this.query;
     }
 
+    /** 
+     * Retrieves this prompt's
+     * answer
+     *
+     * Returns: the answer
+     */
     public string getValue()
     {
         return this.value;
     }
 
+    /** 
+     * Fill this prompt's
+     * query with a corresponding
+     * answer
+     *
+     * Params:
+     *   value = the answer
+     */
     public void fill(string value)
     {
         this.value = value;
@@ -413,7 +441,7 @@ public class Prompter
 
             import std.stdio : write, writeln;
             import std.string : strip;
-            write(prompt.getPrompt());
+            write(prompt.getQuery());
             
             this.source.readln(buff);
             writeln("Bytes: ", cast(byte[])buff);
