@@ -9,6 +9,7 @@ import std.functional : toDelegate;
 import std.datetime : Duration;
 import std.datetime.stopwatch : StopWatch, AutoStart;
 import core.thread : Thread;
+import std.stdio : File;
 
 /** 
  * A verdict-providing function
@@ -319,8 +320,6 @@ public struct Prompt
     }
 }
 
-import std.stdio : File;
-
 /** 
  * A prompting mechanism
  * which can be filled up
@@ -333,9 +332,20 @@ import std.stdio : File;
  */
 public class Prompter
 {
+    /** 
+     * Source file
+     */
     private File source;
+
+    /** 
+     * Whether or not to close
+     * the source file on destruction
+     */
     private bool closeOnDestruct;
 
+    /** 
+     * Prompts to query by
+     */
     private Prompt[] prompts;
 
     /** 
@@ -352,6 +362,10 @@ public class Prompter
      * destruction we will close
      * the source, if `false` it
      * is left untouched
+     *
+     * Throws:
+     *   Exception if the provided
+     * `File` is not open
      */
     this(File source, bool closeOnDestruct = false)
     {
@@ -364,11 +378,27 @@ public class Prompter
         this.source = source;
     }
 
+    /** 
+     * Appends the given prompt
+     *
+     * Params:
+     *   prompt = the prompt
+     */
     public void addPrompt(Prompt prompt)
     {
         this.prompts ~= prompt;
     }
 
+    /** 
+     * Performs the prompting
+     * by querying each attached
+     * prompt for an answer
+     * which is then associated
+     * with the given prompt
+     *
+     * Returns: the answered
+     * prompts
+     */
     public Prompt[] prompt()
     {
         char[] buff;
@@ -399,6 +429,9 @@ public class Prompter
         return this.prompts;
     }
 
+    /** 
+     * Destructor
+     */
     ~this()
     {
         if(this.closeOnDestruct)
