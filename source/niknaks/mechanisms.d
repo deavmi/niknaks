@@ -462,16 +462,6 @@ public class Prompter
     }
 }
 
-unittest
-{
-    byte[] b = [65,66,66,65];
-    string h = cast(string)b;
-    import std.stdio : writeln;
-    writeln("Before: ", h);
-    b[1] = 65;
-    writeln("After: ", h);
-}
-
 version(unittest)
 {
     import std.process : pipe, Pipe;
