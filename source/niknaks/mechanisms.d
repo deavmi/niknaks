@@ -9,6 +9,8 @@ import std.functional : toDelegate;
 import std.datetime : Duration;
 import std.datetime.stopwatch : StopWatch, AutoStart;
 import core.thread : Thread;
+import std.stdio : File, write;
+import std.string : strip;
 
 /** 
  * A verdict-providing function
@@ -291,4 +293,203 @@ unittest
     }
 }
 
+/** 
+ * A user-defined prompt
+ */
+public struct Prompt
+{
+    private string query;
+    private string value;
 
+    /** 
+     * Constructs a new prompt
+     * with the given query
+     *
+     * Params:
+     *   query = the prompt
+     * query itself
+     */
+    this(string query)
+    {
+        this.query = query;
+    }
+
+    /** 
+     * Gets the prompt query
+     *
+     * Returns: the query
+     */
+    public string getQuery()
+    {
+        return this.query;
+    }
+
+    /** 
+     * Retrieves this prompt's
+     * answer
+     *
+     * Returns: the answer
+     */
+    public string getValue()
+    {
+        return this.value;
+    }
+
+    /** 
+     * Fill this prompt's
+     * query with a corresponding
+     * answer
+     *
+     * Params:
+     *   value = the answer
+     */
+    public void fill(string value)
+    {
+        this.value = value;
+    }
+}
+
+/** 
+ * A prompting mechanism
+ * which can be filled up
+ * with questions and a
+ * file-based source to
+ * read answers in from
+ * and associate with
+ * their original respective
+ * questions
+ */
+public class Prompter
+{
+    /** 
+     * Source file
+     */
+    private File source;
+
+    /** 
+     * Whether or not to close
+     * the source file on destruction
+     */
+    private bool closeOnDestruct;
+
+    /** 
+     * Prompts to query by
+     */
+    private Prompt[] prompts;
+
+    /** 
+     * Constructs a new prompter
+     * with the given file source
+     * from where the input is to
+     * be read from.
+     *
+     * Params:
+     *   source = the `File` to
+     * read from
+     *   closeOnDestruct = if
+     * set to `true` then on
+     * destruction we will close
+     * the source, if `false` it
+     * is left untouched
+     *
+     * Throws:
+     *   Exception if the provided
+     * `File` is not open
+     */
+    this(File source, bool closeOnDestruct = false)
+    {
+        if(!source.isOpen())
+        {
+            throw new Exception("Source not open");
+        }
+
+        this.closeOnDestruct = closeOnDestruct;
+        this.source = source;
+    }
+
+    /** 
+     * Appends the given prompt
+     *
+     * Params:
+     *   prompt = the prompt
+     */
+    public void addPrompt(Prompt prompt)
+    {
+        this.prompts ~= prompt;
+    }
+
+    /** 
+     * Performs the prompting
+     * by querying each attached
+     * prompt for an answer
+     * which is then associated
+     * with the given prompt
+     *
+     * Returns: the answered
+     * prompts
+     */
+    public Prompt[] prompt()
+    {
+        char[] buff;
+
+        foreach(ref Prompt prompt; this.prompts)
+        {
+            scope(exit)
+            {
+                buff.length = 0;
+            }
+
+            // Perform the query
+            write(prompt.getQuery());
+            this.source.readln(buff);
+
+            // Fill answer into prompt
+            prompt.fill(strip(cast(string)buff));
+        }
+
+        return this.prompts;
+    }
+
+    /** 
+     * Destructor
+     */
+    ~this()
+    {
+        if(this.closeOnDestruct)
+        {
+            this.source.close();
+        }
+    }
+}
+
+version(unittest)
+{
+    import std.process : pipe, Pipe;
+    import std.conv : to;
+    import std.stdio : writeln;
+}
+
+unittest
+{
+    Pipe pipe = pipe();
+
+    // Create a prompter with some prompts
+    Prompter p = new Prompter(pipe.readEnd());
+    p.addPrompt(Prompt("What is your name?"));
+    p.addPrompt(Prompt("How old are you"));
+
+    // Fill up pipe with data for read end
+    File writeEnd = pipe.writeEnd();
+    writeEnd.writeln("Tristan Brice Velloza Kildaire");
+    writeEnd.writeln(1);
+    writeEnd.flush();
+
+    // Perform the prompt and get the
+    // answers back out
+    Prompt[] ans = p.prompt();
+
+    writeln(ans);
+
+    assert(ans[0].getValue() == "Tristan Brice Velloza Kildaire");
+    assert(to!(int)(ans[1].getValue()) == 1); // TODO: Allow union conversion later
+}
