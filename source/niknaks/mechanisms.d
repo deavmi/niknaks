@@ -9,7 +9,8 @@ import std.functional : toDelegate;
 import std.datetime : Duration;
 import std.datetime.stopwatch : StopWatch, AutoStart;
 import core.thread : Thread;
-import std.stdio : File;
+import std.stdio : File, write;
+import std.string : strip;
 
 /** 
  * A verdict-providing function
@@ -430,7 +431,6 @@ public class Prompter
     public Prompt[] prompt()
     {
         char[] buff;
-        string ans;
 
         foreach(ref Prompt prompt; this.prompts)
         {
@@ -439,19 +439,12 @@ public class Prompter
                 buff.length = 0;
             }
 
-            import std.stdio : write, writeln;
-            import std.string : strip;
+            // Perform the query
             write(prompt.getQuery());
-            
             this.source.readln(buff);
-            writeln("Bytes: ", cast(byte[])buff);
-            
-            ans = cast(string)buff;
-            ans = strip(ans);
-            prompt.fill(ans);
 
-            import std.string : format;
-            writeln(format("'%s'", ans));
+            // Fill answer into prompt
+            prompt.fill(strip(cast(string)buff));
         }
 
         return this.prompts;
@@ -467,6 +460,16 @@ public class Prompter
             this.source.close();
         }
     }
+}
+
+unittest
+{
+    byte[] b = [65,66,66,65];
+    string h = cast(string)b;
+    import std.stdio : writeln;
+    writeln("Before: ", h);
+    b[1] = 65;
+    writeln("After: ", h);
 }
 
 version(unittest)
