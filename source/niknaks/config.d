@@ -373,4 +373,15 @@ unittest
     // Update it
     reg["age"] = ConfigEntry.ofNumeric(25);
     assert(cast(int)reg["age"] == 25);
+
+    // Should not be able to set entry it not yet existent
+    try
+    {
+        reg.setEntry("male", ConfigEntry.ofFlag(true));
+        assert(false);
+    }
+    catch(RegistryException e)
+    {
+
+    }
 }
