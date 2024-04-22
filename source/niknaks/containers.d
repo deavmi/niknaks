@@ -629,6 +629,16 @@ public class Tree(T)
         this.value = value;
     }
 
+    public void appendValue(T value)
+    {
+
+    }
+
+    public void appendNode(Tree!(T) node)
+    {
+        this.children ~= node;
+    }
+
     public T[] dfs(InclusionStratergy!(T) strat = toDelegate(&Always!(T).always))
     {
         T[] collected;
@@ -660,6 +670,15 @@ version(unittest)
 unittest
 {
     Tree!(string) treeOfStrings = new Tree!(string)("Top");
+
+    Tree!(string) subtree_1 = new Tree!(string)("1");
+    Tree!(string) subtree_2 = new Tree!(string)("2");
+    Tree!(string) subtree_3 = new Tree!(string)("3");
+
+    treeOfStrings.appendNode(subtree_1);
+    treeOfStrings.appendNode(subtree_2);
+    treeOfStrings.appendNode(subtree_3);
+
 
     string[] result = treeOfStrings.dfs();
     writeln("dfs: ", result);
