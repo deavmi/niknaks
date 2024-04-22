@@ -181,3 +181,90 @@ unittest
         
     }
 }
+
+public final class RegistryException : Exception
+{
+    this(string msg)
+    {
+        super(msg);
+    }
+}
+
+public struct Registry
+{
+    private ConfigEntry[string] entries;
+    private bool allowOverwriteEntry;
+
+    this(bool allowOverwritingOfEntries)
+    {
+        setAllowOverwrite(allowOverwritingOfEntries);
+    }
+
+    public bool hasEntry(string name)
+    {
+        return getEntry0(name) !is null;
+    }
+
+    private ConfigEntry* getEntry0(string name)
+    {
+        ConfigEntry* potEntry = name in this.entries;
+        return potEntry;
+    }
+
+
+    public bool getEntry_nothrow(string name, ref ConfigEntry entry)
+    {
+        ConfigEntry* potEntry = getEntry0(name);
+        if(potEntry is null)
+        {
+            return false;
+        }
+
+        entry = *potEntry;
+        return true;
+    }
+
+    public ConfigEntry getEntry(string name)
+    {
+        ConfigEntry entry = ConfigEntry.ofFlag(true); // Note: COnstructor Must be SOMETHING
+        if(!getEntry_nothrow(name, entry))
+        {
+            throw new RegistryException(format("Cannot find an entry by the name of '%s'", name));
+        }
+
+        return entry;
+    }
+
+    public void setAllowOverwrite(bool flag)
+    {
+        this.allowOverwriteEntry = flag;
+    }
+
+    public void newEntry(string name, ConfigEntry entry)
+    {
+        // Obtain the address of the value that occupies the value
+        // the key in the map
+        ConfigEntry* entryExist = getEntry0(name);
+
+        // If something is present but overwiritng is disabled
+        if((entryExist !is null) && !this.allowOverwriteEntry)
+        {
+            throw new RegistryException(format("An entry already exists at '%s' and overwriting is not allowed", name));
+        }
+        // If something is present and overwiring is enabled
+        else if(entryExist !is null)
+        {
+            // Now simply update the data in-place
+            *entryExist = entry;
+        }
+        // If nothing is present
+        else
+        {
+            // Then create the entry
+            this.entries[name] = entry;
+        }
+        
+        
+        
+    }
+}
