@@ -369,4 +369,8 @@ unittest
     // Add a new entry and test its prescence
     reg["age"] = ConfigEntry.ofNumeric(24);
     assert(cast(int)reg["age"] == 24);
+
+    // Update it
+    reg["age"] = ConfigEntry.ofNumeric(25);
+    assert(cast(int)reg["age"] == 25);
 }
