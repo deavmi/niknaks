@@ -68,9 +68,14 @@ public struct ConfigEntry
         return ConfigEntry(tmp, type.ARRAY);
     }
 
+    public ConfigType getType()
+    {
+        return this.type;
+    }
+
     private bool ensureTypeMatch0(ConfigType requested)
     {
-        return this.type == requested;
+        return getType() == requested;
     }
 
     // TODO: Add a check for "value set"
