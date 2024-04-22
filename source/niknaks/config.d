@@ -228,6 +228,28 @@ public final class RegistryException : Exception
     }
 }
 
+public struct RegistryEntry
+{
+    private string name;
+    private ConfigEntry val;
+
+    this(string name, ConfigEntry entry)
+    {
+        this.name = name;
+        this.val = entry;
+    }
+
+    public string getName()
+    {
+        return this.name;
+    }
+
+    public ConfigEntry getEntry()
+    {
+        return this.val;
+    }
+}
+
 public struct Registry
 {
     private ConfigEntry[string] entries;
