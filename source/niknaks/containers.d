@@ -591,6 +591,32 @@ unittest
     destroy(map);
 }
 
+// TODO: make delegate kak
+// public interface InclusionStratergy(T)
+// {
+//     public bool include(T item);
+// }
+
+// private class AlwaysStrat(T) : InclusionStratergy
+// {
+//     public override bool include(T item)
+//     {
+//         return true;
+//     }
+// }
+
+public template Always(T)
+{
+    public bool always(T)
+    {
+        return true;
+    }
+}
+
+public template InclusionStratergy(T)
+{
+    public alias InclusionStratergy = bool delegate(T item);
+}
 
 public class Tree(T)
 {
@@ -602,5 +628,38 @@ public class Tree(T)
         this.value = value;
     }
 
-    public T[] dfs()
+    public T[] dfs(InclusionStratergy!(T) strat)
+    {
+        T[] collected;
+        foreach(Tree!(T) child; this.children)
+        {
+            if(strat(child.value))
+            {
+                collected ~= child.dfs(strat);
+                
+            }
+        }
+
+        if(strat(this.value))
+        {
+            collected ~= this.value;
+        }
+        
+        return collected;
+    }
+}
+
+
+version(unittest)
+{
+    import std.functional : toDelegate;
+    import std.stdio : writeln;
+}
+
+unittest
+{
+    Tree!(string) treeOfStrings = new Tree!(string)("Top");
+
+    string[] result = treeOfStrings.dfs(toDelegate(&Always!(string).always));
+    writeln("dfs: ", result);
 }
