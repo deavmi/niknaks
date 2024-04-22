@@ -278,14 +278,14 @@ public struct Registry
         this.allowOverwriteEntry = flag;
     }
 
-    public void newEntry(string name, ConfigEntry entry)
+    private void newEntry(string name, ConfigEntry entry, bool allowOverWriteNow)
     {
         // Obtain the address of the value that occupies the value
         // the key in the map
         ConfigEntry* entryExist = getEntry0(name);
 
         // If something is present but overwiritng is disabled
-        if((entryExist !is null) && !this.allowOverwriteEntry)
+        if((entryExist !is null) && !allowOverWriteNow)
         {
             throw new RegistryException(format("An entry already exists at '%s' and overwriting is not allowed", name));
         }
@@ -303,6 +303,11 @@ public struct Registry
         }
     }
 
+    public void newEntry(string name, ConfigEntry entry)
+    {
+        newEntry(name, entry, this.allowOverwriteEntry);
+    }
+
     public void setEntry(string name, ConfigEntry entry)
     {
 
@@ -311,6 +316,15 @@ public struct Registry
     public ConfigEntry opIndex(string name)
     {
         return getEntry(name);
+    }
+
+    // ALlows overwriting ALWAYS
+    // or should it NOT?
+    public ConfigEntry opIndexAssign(ConfigEntry entry, string name)
+    {
+        newEntry(name, entry, true);
+
+        return entry;
     }
 
     // public ConfigEntry[] entries()
@@ -346,4 +360,8 @@ unittest
 
     // Check that the entry still has the right value
     assert(cast(string)reg["name"] == "Tristan");
+
+    // Add a new entry and test its prescence
+    reg["age"] = ConfigEntry.ofNumeric(24);
+    assert(cast(int)reg["age"] == 24);
 }
