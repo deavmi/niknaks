@@ -607,16 +607,37 @@ unittest
 
 public template Always(T)
 {
-    public bool always(T)
+    public bool Always(Tree!(T) treeNode)
     {
+        version(unittest)
+        {
+            import std.stdio : writeln;
+            writeln("Strat for: ", treeNode);
+        }
         return true;
+    }
+}
+
+public template Nothing(T)
+{
+    public void Nothing(Tree!(T) treeNode)
+    {
+
     }
 }
 
 public template InclusionStratergy(T)
 {
-    public alias InclusionStratergy = bool delegate(T item);
+    public alias InclusionStratergy = bool delegate(Tree!(T) item);
 }
+
+// Called prior to visitation?
+public template TouchStratergy(T)
+{
+    public alias TouchStratergy = void delegate(Tree!(T) item);
+}
+
+import std.string : format;
 
 // TODO: Technically this is a graph
 public class Tree(T)
@@ -639,24 +660,40 @@ public class Tree(T)
         this.children ~= node;
     }
 
-    public T[] dfs(InclusionStratergy!(T) strat = toDelegate(&Always!(T).always))
+    public T[] dfs
+    (
+        InclusionStratergy!(T) strat = toDelegate(&Always!(T)),
+        TouchStratergy!(T) touch = toDelegate(&Nothing!(T))
+    )
     {
         T[] collected;
         foreach(Tree!(T) child; this.children)
         {
-            if(strat(child.value))
+            if(strat(child))
             {
+                // Touch
+                touch(child);
+
+                // Visit
                 collected ~= child.dfs(strat);
-                
             }
         }
 
-        if(strat(this.value))
+        if(strat(this))
         {
+            // Touch
+            touch(this);
+
+            // "Visit"
             collected ~= this.value;
         }
         
         return collected;
+    }
+
+    public override string toString()
+    {
+        return format("TreeNode [val: %s]", this.value);
     }
 }
 
@@ -665,6 +702,11 @@ version(unittest)
 {
     import std.functional : toDelegate;
     import std.stdio : writeln;
+
+    private void DebugTouch(T)(Tree!(T) node)
+    {
+        writeln("Touching tree node ", node);
+    }
 }
 
 unittest
@@ -680,6 +722,9 @@ unittest
     treeOfStrings.appendNode(subtree_3);
 
 
-    string[] result = treeOfStrings.dfs();
+    InclusionStratergy!(string) strat = toDelegate(&Always!(string));
+    TouchStratergy!(string) touch = toDelegate(&DebugTouch!(string));
+
+    string[] result = treeOfStrings.dfs(strat, touch);
     writeln("dfs: ", result);
 }
