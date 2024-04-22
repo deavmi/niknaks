@@ -278,7 +278,7 @@ public struct Registry
         this.allowOverwriteEntry = flag;
     }
 
-    private void newEntry(string name, ConfigEntry entry, bool allowOverWriteNow)
+    private void newEntry(string name, ConfigEntry entry, bool allowOverWriteNow, bool allowSetOnCreation)
     {
         // Obtain the address of the value that occupies the value
         // the key in the map
@@ -295,22 +295,27 @@ public struct Registry
             // Now simply update the data in-place
             *entryExist = entry;
         }
-        // If nothing is present
-        else
+        // If nothing is present but setting-on-creation is enabled
+        else if(allowSetOnCreation)
         {
             // Then create the entry
             this.entries[name] = entry;
+        }
+        // If nothing is present BUT setting-on-creation was NOT allowed
+        else
+        {
+            throw new RegistryException(format("Cannot set-on-creation for entry '%s' as it is not allowed", name));
         }
     }
 
     public void newEntry(string name, ConfigEntry entry)
     {
-        newEntry(name, entry, this.allowOverwriteEntry);
+        newEntry(name, entry, this.allowOverwriteEntry, true);
     }
 
     public void setEntry(string name, ConfigEntry entry)
     {
-
+        newEntry(name, entry, this.allowOverwriteEntry, false);
     }
 
     public ConfigEntry opIndex(string name)
@@ -322,7 +327,7 @@ public struct Registry
     // or should it NOT?
     public ConfigEntry opIndexAssign(ConfigEntry entry, string name)
     {
-        newEntry(name, entry, true);
+        newEntry(name, entry, true, true);
 
         return entry;
     }
