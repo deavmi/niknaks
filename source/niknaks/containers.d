@@ -618,6 +618,7 @@ public template InclusionStratergy(T)
     public alias InclusionStratergy = bool delegate(T item);
 }
 
+// TODO: Technically this is a graph
 public class Tree(T)
 {
     private T value;
