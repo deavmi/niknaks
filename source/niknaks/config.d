@@ -364,6 +364,11 @@ public struct Registry
 
         return entrieS;
     }
+
+    public RegistryEntry[] opSlice()
+    {
+        return getEntries();
+    }
 }
 
 unittest
