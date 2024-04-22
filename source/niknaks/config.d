@@ -31,13 +31,32 @@ public struct ConfigEntry
     private ConfigValue value;
     private ConfigType type;
 
-    @disable
-    private this();
+    // If set at all
+    private bool isSet = false;
+
+    private void ensureSet()
+    {
+        if(!this.isSet)
+        {
+            throw new ConfigException("This config entry has not yet been set");
+        }
+    }
+
+    private void set()
+    {
+        this.isSet = true;
+    }
+
+    // TODO: Must have an unset flag
+    // @disable
+    // private this();
 
     private this(ConfigValue value, ConfigType type)
     {
         this.value = value;
         this.type = type;
+
+        set();
     }
 
     public static ConfigEntry ofText(string text)
@@ -88,12 +107,14 @@ public struct ConfigEntry
 
     public int numeric()
     {
+        ensureSet;
         ensureTypeMatch(ConfigType.NUMERIC);
         return this.value.integer;
     }
 
     public string[] array()
     {
+        ensureSet;
         ensureTypeMatch(ConfigType. ARRAY);
         return this.value.textArray;
     }
@@ -105,6 +126,7 @@ public struct ConfigEntry
 
     public bool flag()
     {
+        ensureSet;
         ensureTypeMatch(ConfigType.FLAG);
         return this.value.flag;
     }
@@ -121,6 +143,7 @@ public struct ConfigEntry
 
     public string text()
     {
+        ensureSet;
         ensureTypeMatch(ConfigType.TEXT);
         return this.value.text;
     }
@@ -226,7 +249,7 @@ public struct Registry
 
     public ConfigEntry getEntry(string name)
     {
-        ConfigEntry entry = ConfigEntry.ofFlag(true); // Note: COnstructor Must be SOMETHING
+        ConfigEntry entry;
         if(!getEntry_nothrow(name, entry))
         {
             throw new RegistryException(format("Cannot find an entry by the name of '%s'", name));
@@ -263,8 +286,49 @@ public struct Registry
             // Then create the entry
             this.entries[name] = entry;
         }
-        
-        
-        
     }
+
+    public void setEntry(string name, ConfigEntry entry)
+    {
+
+    }
+
+    public ConfigEntry opIndex(string name)
+    {
+        return getEntry(name);
+    }
+
+    // public ConfigEntry[] entries()
+    // {
+    //     ConfigEntry[] entrieS;
+    //     foreach(ConfigEntry entry; this.entries)
+    //     {
+
+    //     }
+    // }
+}
+
+unittest
+{
+    Registry reg = Registry(false);
+
+    // Add an entry
+    reg.newEntry("name", ConfigEntry.ofText("Tristan"));
+
+    // Check it exists
+    assert(reg.hasEntry("name"));
+
+    // Adding it again should fail
+    try
+    {
+        reg.newEntry("name", ConfigEntry.ofText("Tristan2"));
+        assert(false);
+    }
+    catch(RegistryException e)
+    {
+
+    }
+
+    // Check that the entry still has the right value
+    assert(cast(string)reg["name"] == "Tristan");
 }
