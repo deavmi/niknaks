@@ -205,6 +205,21 @@ unittest
     }
 }
 
+unittest
+{
+    ConfigEntry entry;
+
+    try
+    {
+        entry[];
+        assert(false);
+    }
+    catch(ConfigException e)
+    {
+        
+    }
+}
+
 public final class RegistryException : Exception
 {
     this(string msg)
