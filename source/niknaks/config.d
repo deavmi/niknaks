@@ -354,14 +354,16 @@ public struct Registry
         return entry;
     }
 
-    // public ConfigEntry[] entries()
-    // {
-    //     ConfigEntry[] entrieS;
-    //     foreach(ConfigEntry entry; this.entries)
-    //     {
+    public RegistryEntry[] getEntries()
+    {
+        RegistryEntry[] entrieS;
+        foreach(string entryName; this.entries.keys())
+        {
+            entrieS ~= RegistryEntry(entryName, this.entries[entryName]);
+        }
 
-    //     }
-    // }
+        return entrieS;
+    }
 }
 
 unittest
