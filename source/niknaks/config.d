@@ -371,6 +371,11 @@ public struct Registry
     }
 }
 
+version(unittest)
+{
+    import std.stdio : writeln;
+}
+
 unittest
 {
     Registry reg = Registry(false);
@@ -413,4 +418,9 @@ unittest
     {
 
     }
+
+    // All entries
+    RegistryEntry[] all = reg[];
+    assert(all.length == 2);
+    writeln(all);
 }
