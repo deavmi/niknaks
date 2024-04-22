@@ -126,12 +126,47 @@ public struct ConfigEntry
         ensureTypeMatch(ConfigType.TEXT);
         return this.value.text;
     }
+
+    public T opCast(T)()
+    {
+        static if(__traits(isSame, T, bool))
+        {
+            return flag();
+        }
+        else static if(__traits(isSame, T, string))
+        {
+            return text();
+        }
+        else static if(__traits(isSame, T, int))
+        {
+            return numeric();
+        }
+        
+        else static if(__traits(isSame, T, string[]))
+        {
+            return array();
+        }
+        else
+        {
+            pragma(msg, "ConfigEntry opCast(): Cannot cast to a type '", T, "'");
+            static assert(false);
+        }
+    }
 }
 
 unittest
 {
     ConfigEntry entry = ConfigEntry.ofArray(["hello", "world"]);
     assert(entry[] == ["hello", "world"]);
+
+    entry = ConfigEntry.ofNumeric(1);
+    assert(entry.numeric() == 1);
+
+    entry = ConfigEntry.ofText("hello");
+    assert(cast(string)entry == "hello");
+
+    entry = ConfigEntry.ofFlag(true);
+    assert(entry);
 }
 
 unittest
