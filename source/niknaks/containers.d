@@ -628,7 +628,7 @@ public class Tree(T)
         this.value = value;
     }
 
-    public T[] dfs(InclusionStratergy!(T) strat)
+    public T[] dfs(InclusionStratergy!(T) strat = toDelegate(&Always!(T).always))
     {
         T[] collected;
         foreach(Tree!(T) child; this.children)
@@ -660,6 +660,6 @@ unittest
 {
     Tree!(string) treeOfStrings = new Tree!(string)("Top");
 
-    string[] result = treeOfStrings.dfs(toDelegate(&Always!(string).always));
+    string[] result = treeOfStrings.dfs();
     writeln("dfs: ", result);
 }
