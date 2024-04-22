@@ -78,8 +78,6 @@ public struct ConfigEntry
         return getType() == requested;
     }
 
-    // TODO: Add a check for "value set"
-
     private void ensureTypeMatch(ConfigType requested)
     {
         if(!ensureTypeMatch0(requested))
