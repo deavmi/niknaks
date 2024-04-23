@@ -675,7 +675,7 @@ public class Tree(T)
                 touch(child);
 
                 // Visit
-                collected ~= child.dfs(strat);
+                collected ~= child.dfs(strat, touch);
             }
         }
 
