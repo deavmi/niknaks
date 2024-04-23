@@ -666,27 +666,47 @@ public class Tree(T)
         TouchStratergy!(T) touch = toDelegate(&Nothing!(T))
     )
     {
+        version(unittest)
+        {
+            writeln("dfs entry: ", this);
+        }
+        
         T[] collected;
-        foreach(Tree!(T) child; this.children)
+        scope(exit)
+        {
+            version(unittest)
+            {
+                writeln("leaving node ", this, " with collected ", collected);
+            }
+        }
+
+        // Touch
+        touch(this); // root[x]
+
+        foreach(Tree!(T) child; this.children) // subtree[x], 
         {
             if(strat(child))
             {
-                // Touch
-                touch(child);
+                version(unittest)
+                {
+                    writeln("dfs, strat good for child: ", child);
+                }
 
                 // Visit
                 collected ~= child.dfs(strat, touch);
             }
+            else
+            {
+                version(unittest)
+                {
+                    writeln("dfs, strat ignored for child: ", child);
+                }
+            }
         }
 
-        if(strat(this))
-        {
-            // Touch
-            touch(this);
-
-            // "Visit"
-            collected ~= this.value;
-        }
+        // "Visit"
+        collected ~= this.value;
+        
         
         return collected;
     }
