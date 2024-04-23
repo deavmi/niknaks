@@ -728,3 +728,55 @@ unittest
     string[] result = treeOfStrings.dfs(strat, touch);
     writeln("dfs: ", result);
 }
+
+public class VisitationTree(T) : Tree!(T)
+{
+    private bool visisted;    
+
+    this(T value)
+    {
+        super(value);
+    }
+
+    public T[] linearize()
+    {
+        return dfs(toDelegate(&_shouldVisit), toDelegate(&_touch));
+    }
+
+    private static bool _shouldVisit(Tree!(T) tnode)
+    {
+        VisitationTree!(T) vnode = cast(VisitationTree!(T))tnode;
+        return vnode && !vnode.isVisited();
+    }
+
+    private static void _touch(Tree!(T) tnode)
+    {
+        VisitationTree!(T) vnode = cast(VisitationTree!(T))tnode;
+        if(vnode)
+        {
+            vnode.mark();
+        }
+    }
+
+    private void mark()
+    {
+        this.visisted = true;
+    }
+    
+    private bool isVisited()
+    {
+        return this.visisted;
+    }
+}
+
+unittest
+{
+    VisitationTree!(string) root = new VisitationTree!(string)("root");
+
+    VisitationTree!(string) thing = new VisitationTree!(string)("subtree");
+    root.appendNode(thing);
+    thing.appendNode(root);
+
+    writeln(root.linearize());
+
+}
