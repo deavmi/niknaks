@@ -443,11 +443,11 @@ unittest
     assert(cast(string)reg["name"] == "Tristan");
 
     // Add a new entry and test its prescence
-    reg["age"] = ConfigEntry.ofNumeric(24);
+    reg["age"] = 24;
     assert(cast(int)reg["age"] == 24);
 
     // Update it
-    reg["age"] = ConfigEntry.ofNumeric(25);
+    reg["age"] = 25;
     assert(cast(int)reg["age"] == 25);
 
     // Should not be able to set entry it not yet existent
