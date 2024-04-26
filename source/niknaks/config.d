@@ -335,6 +335,28 @@ public struct Registry
         newEntry(name, entry, this.allowOverwriteEntry, true);
     }
 
+    // TOD: Add on-the-spot ConfigEntry creastion
+
+    public void newEntry(string name, int numeric)
+    {
+        newEntry(name, ConfigEntry.ofNumeric(numeric));
+    }
+
+    public void newEntry(string name, string text)
+    {
+        newEntry(name, ConfigEntry.ofText(text));
+    }
+
+    public void newEntry(string name, bool flag)
+    {
+        newEntry(name, ConfigEntry.ofFlag(flag));
+    }
+
+    public void newEntry(string name, string[] array)
+    {
+        newEntry(name, ConfigEntry.ofArray(array));
+    }
+
     public void setEntry(string name, ConfigEntry entry)
     {
         newEntry(name, entry, this.allowOverwriteEntry, false);
@@ -347,12 +369,32 @@ public struct Registry
 
     // ALlows overwriting ALWAYS
     // or should it NOT?
-    public ConfigEntry opIndexAssign(ConfigEntry entry, string name)
+    public void opIndexAssign(ConfigEntry entry, string name)
     {
         newEntry(name, entry, true, true);
-
-        return entry;
     }
+
+    public void opIndexAssign(int numeric, string name)
+    {
+        opIndexAssign(ConfigEntry.ofNumeric(numeric), name);
+    }
+
+    public void opIndexAssign(string entry, string name)
+    {
+        opIndexAssign(ConfigEntry.ofText(entry), name);
+    }
+
+    public void opIndexAssign(bool flag, string name)
+    {
+        opIndexAssign(ConfigEntry.ofFlag(flag), name);
+    }
+
+    public void opIndexAssign(string[] array, string name)
+    {
+        opIndexAssign(ConfigEntry.ofArray(array), name);
+    }
+
+    
 
     public RegistryEntry[] getEntries()
     {
