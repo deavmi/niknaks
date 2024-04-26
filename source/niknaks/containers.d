@@ -844,17 +844,17 @@ public class Tree(T)
     //     return idx < this.children.length ? this.children[idx].getValue() : T.init;
     // }
 
-    private bool isTreeNodeType(E)()
+    private static bool isTreeNodeType(E)()
     {
-        return __traits(isSame, E, Tree!(T)[]);
+        return __traits(isSame, E, Tree!(T));
     }
 
-    private bool isTreeValueType(E)()
+    private static bool isTreeValueType(E)()
     {
-        return __traits(isSame, E, T[]);
+        return __traits(isSame, E, T);
     }
 
-    public E opSlice(E)()
+    public E[] opSlice(E)()
     if(isTreeNodeType!(E) || isTreeValueType!(E))
     {
         // If the children as tree nodes is requested
@@ -865,16 +865,20 @@ public class Tree(T)
         else static if(isTreeValueType!(E))
         {
             T[] slice;
-            foreach(Tree!(Tree) tnode; this.children)
+            foreach(Tree!(T) tnode; this.children)
             {
                 slice ~= tnode.getValue();
             }
             return slice;
-            import std.algorithm.iteration : map;
-
-            return map!(&getValue, this.children);
+            // import std.algorithm.iteration : map;
+            // return map!(getValue)(this.children)[];
         }
     }
+
+    // public E opIndex(E)()
+    // {
+
+    // }
 
     public T getValue()
     {
@@ -973,6 +977,13 @@ unittest
     assert(result[1] == "2");
     assert(result[2] == "3");
     assert(result[3] == "Top");
+
+
+    auto i = treeOfStrings.opSlice!(Tree!(string))();
+    writeln("Siblings: ", i);
+
+    auto p = treeOfStrings.opSlice!(string)();
+    writeln("Siblings (vals): ", p);
 }
 
 public class VisitationTree(T) : Tree!(T)
