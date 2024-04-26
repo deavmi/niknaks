@@ -797,6 +797,10 @@ unittest
     root.appendNode(thing);
     thing.appendNode(root);
 
-    writeln(root.linearize());
+    string[] linearized = root.linearize();
+    writeln(linearized);
+
+    assert(linearized[0] == "subtree");
+    assert(linearized[1] == "root");
 
 }
