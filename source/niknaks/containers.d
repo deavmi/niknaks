@@ -875,6 +875,11 @@ public class Tree(T)
         }
     }
 
+    public T[] opSlice()
+    {
+        return opSlice!(T)();
+    }
+
     // public E opIndex(E)()
     // {
 
@@ -984,6 +989,7 @@ unittest
 
     auto p = treeOfStrings.opSlice!(string)();
     writeln("Siblings (vals): ", p);
+    assert(p == treeOfStrings[]);
 }
 
 public class VisitationTree(T) : Tree!(T)
