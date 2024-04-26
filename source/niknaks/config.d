@@ -279,7 +279,8 @@ public struct Registry
         return potEntry;
     }
 
-    public ConfigEntry* opBinary(string op, string)(string name)
+
+    public ConfigEntry* opBinaryRight(string op)(string name)
     if(op == "in")
     {
         return getEntry0(name);
@@ -488,6 +489,8 @@ unittest
     // Update it
     reg["age"] = 25;
     assert(cast(int)reg["age"] == 25);
+
+    ConfigEntry* ageEntry = "age" in reg;
 
     // Should not be able to set entry it not yet existent
     try
