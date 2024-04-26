@@ -266,11 +266,7 @@ public struct Registry
         setAllowOverwrite(allowOverwritingOfEntries);
     }
 
-    public ConfigEntry* opBinary(string op, string)(string name)
-    if(op == "in")
-    {
-        return getEntry0(name);
-    }
+    
 
     public bool hasEntry(string name)
     {
@@ -283,6 +279,11 @@ public struct Registry
         return potEntry;
     }
 
+    public ConfigEntry* opBinary(string op, string)(string name)
+    if(op == "in")
+    {
+        return getEntry0(name);
+    }
 
     public bool getEntry_nothrow(string name, ref ConfigEntry entry)
     {
