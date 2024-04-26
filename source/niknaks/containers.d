@@ -596,7 +596,7 @@ unittest
 // then 0 moves into 1's place
 // 0's position is then filled with T.init
 
-public T[] shift(T)(T[] array, size_t position, bool rightwards = false, bool shrink = false)
+public T[] shiftInto(T)(T[] array, size_t position, bool rightwards = false, bool shrink = false)
 {
     // Out of range
     if(position >= array.length)
@@ -629,6 +629,32 @@ public T[] shift(T)(T[] array, size_t position, bool rightwards = false, bool sh
             array = array[1..$];
         }
     }
+    // if leftwards
+    else
+    {
+        // nothing furtherright
+        if(position == array.length-1)
+        {
+            return array;
+        }
+
+        for(size_t i = position; i < array.length-1; i++)
+        {
+            array[i] = array[i+1];
+        }
+
+        // no shrink, then fill with T.init
+        if(!shrink)
+        {
+            array[$-1] = T.init;
+        }
+        // chomp right-hand side
+        else
+        {
+            array = array[0..$-1];
+        }
+    }
+
     
     return array;
 }
@@ -637,57 +663,83 @@ public T[] shift(T)(T[] array, size_t position, bool rightwards = false, bool sh
 unittest
 {
     int[] numbas = [1, 5, 2];
-    numbas = numbas.shift(1, true);
+    numbas = numbas.shiftInto(1, true);
 
     // should now be [0, 1, 2]
     writeln(numbas);
     assert(numbas == [0, 1, 2]);
 
     numbas = [1, 5, 2];
-    numbas = numbas.shift(0, true);
+    numbas = numbas.shiftInto(0, true);
 
     // should now be [1, 5, 2]
     writeln(numbas);
     assert(numbas == [1, 5, 2]);
     
     numbas = [1, 5, 2];
-    numbas = numbas.shift(2, true);
+    numbas = numbas.shiftInto(2, true);
 
     // should now be [0, 1, 5]
     writeln(numbas);
     assert(numbas == [0, 1, 5]);
 
     numbas = [1, 2];
-    numbas = numbas.shift(1, true);
+    numbas = numbas.shiftInto(1, true);
 
     // should now be [0, 1]
     writeln(numbas);
     assert(numbas == [0, 1]);
 
     numbas = [1, 2];
-    numbas = numbas.shift(0, true);
+    numbas = numbas.shiftInto(0, true);
 
     // should now be [1, 2]
     writeln(numbas);
     assert(numbas == [1, 2]);
 
     numbas = [];
-    numbas = numbas.shift(0, true);
+    numbas = numbas.shiftInto(0, false);
 
     // should now be []
     writeln(numbas);
     assert(numbas == []);
 }
 
-public T[] remove(T)(T[] array, size_t idx)
+// leftwards testung (no shrink)
+unittest
 {
-    // Return your array on this
-    if(!(idx < array.length))
-    {
-        return array;
-    }
+    int[] numbas = [1, 5, 2];
+    numbas = numbas.shiftInto(1, false);
 
-    return null;
+    // should now be [1, 2, 0]
+    writeln(numbas);
+    assert(numbas == [1, 2, 0]);
+
+    numbas = [1, 5, 2];
+    numbas = numbas.shiftInto(0, false);
+
+    // should now be [5, 2, 0]
+    writeln(numbas);
+    assert(numbas == [5, 2, 0]);
+    
+    numbas = [1, 5, 2];
+    numbas = numbas.shiftInto(2, false);
+
+    // should now be [1, 5, 2]
+    writeln(numbas);
+    assert(numbas == [1, 5, 2]);
+
+    numbas = [];
+    numbas = numbas.shiftInto(0, true);
+
+    // should now be []
+    writeln(numbas);
+    assert(numbas == []);
+}
+
+public T[] removeResize(T)(T[] array, size_t position)
+{
+    return array.shiftInto(position, false, true);
 }
 
 // TODO: make delegate kak
@@ -767,16 +819,24 @@ public class Tree(T)
     public bool removeNode(Tree!(T) node)
     {
         bool found = false;
+        size_t idx;
         for(size_t i = 0; i < this.children.length; i++)
         {
             found = this.children[i] == node;
             if(found)
             {
-                
+                idx = i;
+                break;
             }
         }
 
-        return true;
+        // if(found)
+        // {
+        //     this.children = this.children.removeResize(idx, true, true);
+        //     return true;
+        // }
+
+        return false;
     }
 
     public T[] dfs
