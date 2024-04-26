@@ -868,7 +868,7 @@ public class Tree(T)
             T[] slice;
             foreach(Tree!(T) tnode; this.children)
             {
-                slice ~= tnode.getValue();
+                slice ~= tnode.value;
             }
             return slice;
             // import std.algorithm.iteration : map;
@@ -892,18 +892,13 @@ public class Tree(T)
         // If the child as a value itself is requested
         else static if(isTreeValueType!(E))
         {
-            return this.children[idx].getValue();
+            return this.children[idx].value;
         }
     }
 
     public T opIndex(size_t idx)
     {
         return opIndex!(T)(idx);
-    }
-
-    public T getValue()
-    {
-        return this.value;
     }
 
     public T[] dfs
@@ -1009,6 +1004,10 @@ unittest
     auto p = treeOfStrings.opSlice!(string)();
     writeln("Siblings (vals): ", p);
     assert(p == treeOfStrings[]);
+
+
+    assert(treeOfStrings.removeNode(subtree_1));
+    assert(!treeOfStrings.removeNode(subtree_1));
 }
 
 public class VisitationTree(T) : Tree!(T)
