@@ -344,33 +344,53 @@ public struct Registry
         }
     }
 
+    /** 
+     * Creates a new entry and adds it
+     *
+     * An exception is thrown if an entry
+     * at that key exists and the policy
+     * for overwriting is to deny
+     *
+     * Params:
+     *   name = the key
+     *   entry = the configuration entry
+     */
     public void newEntry(string name, ConfigEntry entry)
     {
         newEntry(name, entry, this.allowOverwriteEntry, true);
     }
 
-    // TOD: Add on-the-spot ConfigEntry creastion
-
+    /** 
+     * See_Also: `newEntry(name, ConfigEntry)` 
+     */
     public void newEntry(string name, int numeric)
     {
         newEntry(name, ConfigEntry.ofNumeric(numeric));
     }
 
+    /** 
+     * See_Also: `newEntry(name, ConfigEntry)` 
+     */
     public void newEntry(string name, string text)
     {
         newEntry(name, ConfigEntry.ofText(text));
     }
 
+    /** 
+     * See_Also: `newEntry(name, ConfigEntry)` 
+     */
     public void newEntry(string name, bool flag)
     {
         newEntry(name, ConfigEntry.ofFlag(flag));
     }
 
+    /** 
+     * See_Also: `newEntry(name, ConfigEntry)` 
+     */
     public void newEntry(string name, string[] array)
     {
         newEntry(name, ConfigEntry.ofArray(array));
     }
-
 
     /** 
      * Sets the entry at the given name
