@@ -394,8 +394,6 @@ public struct Registry
         opIndexAssign(ConfigEntry.ofArray(array), name);
     }
 
-    
-
     public RegistryEntry[] getEntries()
     {
         RegistryEntry[] entrieS;
