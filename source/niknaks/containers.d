@@ -830,13 +830,23 @@ public class Tree(T)
             }
         }
 
-        // if(found)
-        // {
-        //     this.children = this.children.removeResize(idx, true, true);
-        //     return true;
-        // }
+        if(found)
+        {
+            this.children = this.children.removeResize(idx);
+            return true;
+        }
 
         return false;
+    }
+
+    public T opIndex(size_t idx)
+    {
+        return idx < this.children.length ? this.children[idx].getValue() : T.init;
+    }
+
+    public T getValue()
+    {
+        return this.value;
     }
 
     public T[] dfs
