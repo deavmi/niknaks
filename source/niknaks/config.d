@@ -2,6 +2,12 @@ module niknaks.config;
 
 import std.string : format;
 
+
+version(unittest)
+{
+    import std.stdio : writeln;
+}
+
 private union ConfigValue
 {
     string text;
@@ -409,11 +415,6 @@ public struct Registry
     {
         return getEntries();
     }
-}
-
-version(unittest)
-{
-    import std.stdio : writeln;
 }
 
 unittest
