@@ -747,6 +747,11 @@ unittest
 
     string[] result = treeOfStrings.dfs(strat, touch);
     writeln("dfs: ", result);
+
+    assert(result[0] == "1");
+    assert(result[1] == "2");
+    assert(result[2] == "3");
+    assert(result[3] == "Top");
 }
 
 public class VisitationTree(T) : Tree!(T)
