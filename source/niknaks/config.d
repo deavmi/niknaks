@@ -266,6 +266,12 @@ public struct Registry
         setAllowOverwrite(allowOverwritingOfEntries);
     }
 
+    public ConfigEntry* opBinary(string op, string)(string name)
+    if(op == "in")
+    {
+        return getEntry0(name);
+    }
+
     public bool hasEntry(string name)
     {
         return getEntry0(name) !is null;
