@@ -378,7 +378,10 @@ public struct Registry
      *
      * This will throw an exception if
      * the entry trying to be set does
-     * not yet exist
+     * not yet exist.
+     *
+     * Overwriting will only be allowed
+     * if the policy allows it.
      *
      * Params:
      *   name = the key
@@ -390,18 +393,15 @@ public struct Registry
         newEntry(name, entry, this.allowOverwriteEntry, false);
     }
 
-    
-
-    // ALlows overwriting ALWAYS
-    // or should it NOT? 
-
     /** 
      * Assigns the provided configuration
      * entry to the provided name
      *
      * Take note that using this method
      * will create the entry if it does
-     * not yet exist
+     * not yet exist.
+     *
+     * It will also ALWAYS allow overwriting.
      *
      * Params:
      *   entry = the entry to add
