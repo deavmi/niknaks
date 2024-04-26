@@ -290,7 +290,7 @@ public struct Registry
         return true;
     }
 
-    public ConfigEntry getEntry(string name)
+    public ConfigEntry opIndex(string name)
     {
         ConfigEntry entry;
         if(!getEntry_nothrow(name, entry))
@@ -368,39 +368,71 @@ public struct Registry
         newEntry(name, entry, this.allowOverwriteEntry, false);
     }
 
-    public ConfigEntry opIndex(string name)
-    {
-        return getEntry(name);
-    }
+    
 
     // ALlows overwriting ALWAYS
     // or should it NOT?
+
+    /** 
+     * Assigns the provided configuration
+     * entry to the provided name
+     *
+     * Take note that using this method
+     * will both create the entry if it
+     * does not yet exist
+     *
+     * Params:
+     *   entry = the entry to add
+     *   name = the name at which to
+     * add the entry
+     */
     public void opIndexAssign(ConfigEntry entry, string name)
     {
         newEntry(name, entry, true, true);
     }
 
+    /** 
+     * See_Also: `opIndexAssign(ConfigEntry, string)`
+     */
     public void opIndexAssign(int numeric, string name)
     {
         opIndexAssign(ConfigEntry.ofNumeric(numeric), name);
     }
 
+    /** 
+     * See_Also: `opIndexAssign(ConfigEntry, string)`
+     */
     public void opIndexAssign(string entry, string name)
     {
         opIndexAssign(ConfigEntry.ofText(entry), name);
     }
 
+    /** 
+     * See_Also: `opIndexAssign(ConfigEntry, string)`
+     */
     public void opIndexAssign(bool flag, string name)
     {
         opIndexAssign(ConfigEntry.ofFlag(flag), name);
     }
 
+    /** 
+     * See_Also: `opIndexAssign(ConfigEntry, string)`
+     */
     public void opIndexAssign(string[] array, string name)
     {
         opIndexAssign(ConfigEntry.ofArray(array), name);
     }
 
-    public RegistryEntry[] getEntries()
+    /** 
+     * Returns all the entries in the
+     * registry as a mapping of their
+     * name to their configuration entry
+     *
+     * See_Also: RegistryEntry
+     * Returns: an array of registry
+     * entries
+     */
+    public RegistryEntry[] opSlice()
     {
         RegistryEntry[] entrieS;
         foreach(string entryName; this.entries.keys())
@@ -409,11 +441,6 @@ public struct Registry
         }
 
         return entrieS;
-    }
-
-    public RegistryEntry[] opSlice()
-    {
-        return getEntries();
     }
 }
 
