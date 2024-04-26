@@ -490,7 +490,13 @@ unittest
     reg["age"] = 25;
     assert(cast(int)reg["age"] == 25);
 
+    // Obtain a handle on the configuration
+    // entry, then update it and read it back
+    // to confirm
     ConfigEntry* ageEntry = "age" in reg;
+    *ageEntry = ConfigEntry.ofNumeric(69_420);
+    assert(cast(int)reg["age"] == 69_420);
+
 
     // Should not be able to set entry it not yet existent
     try
