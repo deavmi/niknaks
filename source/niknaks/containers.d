@@ -839,9 +839,41 @@ public class Tree(T)
         return false;
     }
 
-    public T opIndex(size_t idx)
+    // public T opIndex(size_t idx)
+    // {
+    //     return idx < this.children.length ? this.children[idx].getValue() : T.init;
+    // }
+
+    private bool isTreeNodeType(E)()
     {
-        return idx < this.children.length ? this.children[idx].getValue() : T.init;
+        return __traits(isSame, E, Tree!(T)[]);
+    }
+
+    private bool isTreeValueType(E)()
+    {
+        return __traits(isSame, E, T[]);
+    }
+
+    public E opSlice(E)()
+    if(isTreeNodeType!(E) || isTreeValueType!(E))
+    {
+        // If the children as tree nodes is requested
+        static if(isTreeNodeType!(E))
+        {
+            return this.children;
+        }
+        else static if(isTreeValueType!(E))
+        {
+            T[] slice;
+            foreach(Tree!(Tree) tnode; this.children)
+            {
+                slice ~= tnode.getValue();
+            }
+            return slice;
+            import std.algorithm.iteration : map;
+
+            return map!(&getValue, this.children);
+        }
     }
 
     public T getValue()
