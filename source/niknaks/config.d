@@ -417,6 +417,12 @@ public struct Registry
     }
 }
 
+/**
+ * Tests out the working with the
+ * registry in order to manage
+ * a set of named configuration
+ * entries
+ */
 unittest
 {
     Registry reg = Registry(false);
