@@ -986,6 +986,9 @@ unittest
 
     auto i = treeOfStrings.opSlice!(Tree!(string))();
     writeln("Siblings: ", i);
+    assert(i[0] == subtree_1);
+    assert(i[1] == subtree_2);
+    assert(i[2] == subtree_3);
 
     auto p = treeOfStrings.opSlice!(string)();
     writeln("Siblings (vals): ", p);
