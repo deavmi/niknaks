@@ -371,6 +371,20 @@ public struct Registry
         newEntry(name, ConfigEntry.ofArray(array));
     }
 
+
+    /** 
+     * Sets the entry at the given name
+     * to the provided entry
+     *
+     * This will throw an exception if
+     * the entry trying to be set does
+     * not yet exist
+     *
+     * Params:
+     *   name = the key
+     *   entry = the configuration
+     * entry
+     */
     public void setEntry(string name, ConfigEntry entry)
     {
         newEntry(name, entry, this.allowOverwriteEntry, false);
@@ -379,15 +393,15 @@ public struct Registry
     
 
     // ALlows overwriting ALWAYS
-    // or should it NOT?
+    // or should it NOT? 
 
     /** 
      * Assigns the provided configuration
      * entry to the provided name
      *
      * Take note that using this method
-     * will both create the entry if it
-     * does not yet exist
+     * will create the entry if it does
+     * not yet exist
      *
      * Params:
      *   entry = the entry to add
