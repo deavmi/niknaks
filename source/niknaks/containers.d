@@ -591,6 +591,105 @@ unittest
     destroy(map);
 }
 
+// Given [0, 1, 5]
+// and shift right at index 1
+// then 0 moves into 1's place
+// 0's position is then filled with T.init
+
+public T[] shift(T)(T[] array, size_t position, bool rightwards = false, bool shrink = false)
+{
+    // Out of range
+    if(position >= array.length)
+    {
+        return array;
+    }
+
+    // if rightwards
+    if(rightwards)
+    {
+        // nothing further left than index 0
+        if(!position)
+        {
+            return array;
+        }
+
+        for(size_t i = position; i > 0; i--)
+        {
+            array[i] = array[i-1];
+        }
+
+        // no shrink, then fill with T.init
+        if(!shrink)
+        {
+            array[0] = T.init;
+        }
+        // chomp left-hand side
+        else
+        {
+            array = array[1..$];
+        }
+    }
+    
+    return array;
+}
+
+// rightwards testung (no shrink)
+unittest
+{
+    int[] numbas = [1, 5, 2];
+    numbas = numbas.shift(1, true);
+
+    // should now be [0, 1, 2]
+    writeln(numbas);
+    assert(numbas == [0, 1, 2]);
+
+    numbas = [1, 5, 2];
+    numbas = numbas.shift(0, true);
+
+    // should now be [1, 5, 2]
+    writeln(numbas);
+    assert(numbas == [1, 5, 2]);
+    
+    numbas = [1, 5, 2];
+    numbas = numbas.shift(2, true);
+
+    // should now be [0, 1, 5]
+    writeln(numbas);
+    assert(numbas == [0, 1, 5]);
+
+    numbas = [1, 2];
+    numbas = numbas.shift(1, true);
+
+    // should now be [0, 1]
+    writeln(numbas);
+    assert(numbas == [0, 1]);
+
+    numbas = [1, 2];
+    numbas = numbas.shift(0, true);
+
+    // should now be [1, 2]
+    writeln(numbas);
+    assert(numbas == [1, 2]);
+
+    numbas = [];
+    numbas = numbas.shift(0, true);
+
+    // should now be []
+    writeln(numbas);
+    assert(numbas == []);
+}
+
+public T[] remove(T)(T[] array, size_t idx)
+{
+    // Return your array on this
+    if(!(idx < array.length))
+    {
+        return array;
+    }
+
+    return null;
+}
+
 // TODO: make delegate kak
 // public interface InclusionStratergy(T)
 // {
@@ -650,14 +749,34 @@ public class Tree(T)
         this.value = value;
     }
 
-    public void appendValue(T value)
+    this()
     {
 
+    }
+
+    public void setValue(T value)
+    {
+        this.value = value;
     }
 
     public void appendNode(Tree!(T) node)
     {
         this.children ~= node;
+    }
+
+    public bool removeNode(Tree!(T) node)
+    {
+        bool found = false;
+        for(size_t i = 0; i < this.children.length; i++)
+        {
+            found = this.children[i] == node;
+            if(found)
+            {
+                
+            }
+        }
+
+        return true;
     }
 
     public T[] dfs
