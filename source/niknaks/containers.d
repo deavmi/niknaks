@@ -862,6 +862,7 @@ public class Tree(T)
         {
             return this.children;
         }
+        // If the children as values themselves is requested
         else static if(isTreeValueType!(E))
         {
             T[] slice;
@@ -880,10 +881,25 @@ public class Tree(T)
         return opSlice!(T)();
     }
 
-    // public E opIndex(E)()
-    // {
+    public E opIndex(E)(size_t idx)
+    if(isTreeNodeType!(E) || isTreeValueType!(E))
+    {
+        // If the cjild as a tree node is requested
+        static if(isTreeNodeType!(E))
+        {
+            return this.children[idx];
+        }
+        // If the child as a value itself is requested
+        else static if(isTreeValueType!(E))
+        {
+            return this.children[idx].getValue();
+        }
+    }
 
-    // }
+    public T opIndex(size_t idx)
+    {
+        return opIndex!(T)(idx);
+    }
 
     public T getValue()
     {
