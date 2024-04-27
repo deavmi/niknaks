@@ -349,16 +349,6 @@ public T[] shiftIntoRightwards(T)(T[] array, size_t position, bool shrink = fals
     return shiftInto(array, position, true, shrink);
 }
 
-/** 
- * Leftwards shifting into
- *
- * See_Also: `shiftInto`
- */
-public T[] shiftIntoLeftwards(T)(T[] array, size_t position, bool shrink = false)
-{
-    return shiftInto(array, position, false, shrink);
-}
-
 /**
  * Tests the rightwards shifting
  */
@@ -412,6 +402,16 @@ unittest
     // should now be [1, 2]
     writeln(numbas);
     assert(numbas == [1, 2]);
+}
+
+/** 
+ * Leftwards shifting into
+ *
+ * See_Also: `shiftInto`
+ */
+public T[] shiftIntoLeftwards(T)(T[] array, size_t position, bool shrink = false)
+{
+    return shiftInto(array, position, false, shrink);
 }
 
 /**
