@@ -1,4 +1,6 @@
 /** 
+ * Configuration management
+ *
  * Configuration entries and
  * a registry in which to
  * manage a set of them
