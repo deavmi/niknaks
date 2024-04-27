@@ -781,12 +781,29 @@ public template Nothing(T)
     }
 }
 
+/** 
+ * The inclusion stratergy which
+ * will be called upon the tree
+ * node prior to it being visited
+ * during a dfs operation.
+ *
+ * It is a predicate to determine
+ * whether or not the tree node
+ * in concern should be recursed
+ * upon.
+ */
 public template InclusionStratergy(T)
 {
     public alias InclusionStratergy = bool delegate(Tree!(T) item);
 }
 
-// Called prior to visitation?
+/** 
+ * This is called on a tree node
+ * as part of the first action
+ * that takes place during the
+ * visitation of said node during
+ * a dfs operation.
+ */
 public template TouchStratergy(T)
 {
     public alias TouchStratergy = void delegate(Tree!(T) item);
