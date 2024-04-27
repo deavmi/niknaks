@@ -226,13 +226,7 @@ unittest
     }
 }
 
-public final class RegistryException : Exception
-{
-    this(string msg)
-    {
-        super(msg);
-    }
-}
+
 
 /** 
  * An entry derived from
@@ -278,6 +272,19 @@ public struct RegistryEntry
     public ConfigEntry getEntry()
     {
         return this.val;
+    }
+}
+
+/** 
+ * An exception thrown when something
+ * goes wrong with your usage of the
+ * `Registry`
+ */
+public final class RegistryException : Exception
+{
+    private this(string msg)
+    {
+        super(msg);
     }
 }
 
