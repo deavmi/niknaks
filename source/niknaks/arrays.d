@@ -455,6 +455,17 @@ unittest
     assert(numbas == [1, 2]);
 }
 
+/** 
+ * Removes the element at the
+ * provided position in the
+ * given array
+ *
+ * Params:
+ *   array = the array
+ *   position = position of
+ * element to remove
+ * Returns: the array
+ */
 public T[] removeResize(T)(T[] array, size_t position)
 {
     return array.shiftInto(position, false, true);
