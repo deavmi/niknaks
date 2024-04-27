@@ -265,27 +265,63 @@ public struct Registry
     {
         setAllowOverwrite(allowOverwritingOfEntries);
     }
-
     
-
+    /** 
+     * Checks if an entry is present
+     *
+     * Params:
+     *   name = the name
+     * Returns: `true` if present,
+     * otherwise `false`
+     */
     public bool hasEntry(string name)
     {
         return getEntry0(name) !is null;
     }
 
+    /** 
+     * Ontains a pointer to the configuration
+     * entry at the given key.
+     *
+     * Params:
+     *   name = the key
+     * Returns: a `ConfigEntry*` if found,
+     * otherwise `null`
+     */
     private ConfigEntry* getEntry0(string name)
     {
         ConfigEntry* potEntry = name in this.entries;
         return potEntry;
     }
 
-
+    /** 
+     * Obtains a pointer to the configuration
+     * entry at the given key. Allowing you
+     * to swap out its contents directly if
+     * you want to.
+     *
+     * Params:
+     *   name = the key
+     * Returns: a `ConfigEntry*` if found,
+     * otherwise `null`
+     */
     public ConfigEntry* opBinaryRight(string op)(string name)
     if(op == "in")
     {
         return getEntry0(name);
     }
 
+    /** 
+     * Obtain a configuration entry
+     * at the given key
+     *
+     * Params:
+     *   name = the key
+     *   entry = the found entry
+     * (if any)
+     * Returns: `true` if found,
+     * otherwise `false` 
+     */
     public bool getEntry_nothrow(string name, ref ConfigEntry entry)
     {
         ConfigEntry* potEntry = getEntry0(name);
@@ -298,6 +334,16 @@ public struct Registry
         return true;
     }
 
+    /** 
+     * Obtain a configuration entry
+     * at the given key
+     *
+     * Params:
+     *   name = the key
+     * Returns: a configuration entry
+     * Throws: RegistryException if
+     * there is no entry at that key
+     */
     public ConfigEntry opIndex(string name)
     {
         ConfigEntry entry;
@@ -309,6 +355,14 @@ public struct Registry
         return entry;
     }
 
+    /** 
+     * Set whether or not the overwriting
+     * of an entry should be allowed
+     *
+     * Params:
+     *   flag = `true` if to allow, `false`
+     * if to deny
+     */
     public void setAllowOverwrite(bool flag)
     {
         this.allowOverwriteEntry = flag;
