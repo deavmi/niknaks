@@ -19,6 +19,16 @@ version(unittest)
     import std.stdio : writeln;
 }
 
+version(unittest)
+{
+    import std.functional : toDelegate;
+
+    private void DebugTouch(T)(Tree!(T) node)
+    {
+        writeln("Touching tree node ", node);
+    }
+}
+
 /** 
  * Represents an entry of
  * some value of type `V`
@@ -817,18 +827,6 @@ public class Tree(T)
     public override string toString()
     {
         return format("TreeNode [val: %s]", this.value);
-    }
-}
-
-
-version(unittest)
-{
-    import std.functional : toDelegate;
-    import std.stdio : writeln;
-
-    private void DebugTouch(T)(Tree!(T) node)
-    {
-        writeln("Touching tree node ", node);
     }
 }
 
