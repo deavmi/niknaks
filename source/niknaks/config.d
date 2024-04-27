@@ -256,11 +256,27 @@ public struct RegistryEntry
     }
 }
 
+/** 
+ * A registry for managing
+ * multiple mappings of
+ * string-based names to
+ * configuration entries
+ */
 public struct Registry
 {
     private ConfigEntry[string] entries;
     private bool allowOverwriteEntry;
 
+    /** 
+     * Creates a new `Registry`
+     * and sets the overwriting policy
+     *
+     * Params:
+     *   allowOverwritingOfEntries = `true`
+     * if you want to allow overwriting of
+     * previously added entries, otherwise
+     * `false`
+     */
     this(bool allowOverwritingOfEntries)
     {
         setAllowOverwrite(allowOverwritingOfEntries);
