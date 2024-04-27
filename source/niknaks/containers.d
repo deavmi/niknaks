@@ -681,42 +681,42 @@ public T[] shiftIntoLeftwards(T)(T[] array, size_t position, bool shrink = false
 unittest
 {
     int[] numbas = [1, 5, 2];
-    numbas = numbas.shiftInto(1, true);
+    numbas = numbas.shiftIntoRightwards(1);
 
     // should now be [0, 1, 2]
     writeln(numbas);
     assert(numbas == [0, 1, 2]);
 
     numbas = [1, 5, 2];
-    numbas = numbas.shiftInto(0, true);
+    numbas = numbas.shiftIntoRightwards(0);
 
     // should now be [1, 5, 2]
     writeln(numbas);
     assert(numbas == [1, 5, 2]);
     
     numbas = [1, 5, 2];
-    numbas = numbas.shiftInto(2, true);
+    numbas = numbas.shiftIntoRightwards(2);
 
     // should now be [0, 1, 5]
     writeln(numbas);
     assert(numbas == [0, 1, 5]);
 
     numbas = [1, 2];
-    numbas = numbas.shiftInto(1, true);
+    numbas = numbas.shiftIntoRightwards(1);
 
     // should now be [0, 1]
     writeln(numbas);
     assert(numbas == [0, 1]);
 
     numbas = [1, 2];
-    numbas = numbas.shiftInto(0, true);
+    numbas = numbas.shiftIntoRightwards(0);
 
     // should now be [1, 2]
     writeln(numbas);
     assert(numbas == [1, 2]);
 
     numbas = [];
-    numbas = numbas.shiftInto(0, false);
+    numbas = numbas.shiftIntoRightwards(0);
 
     // should now be []
     writeln(numbas);
@@ -727,28 +727,28 @@ unittest
 unittest
 {
     int[] numbas = [1, 5, 2];
-    numbas = numbas.shiftInto(1, false);
+    numbas = numbas.shiftIntoLeftwards(1);
 
     // should now be [1, 2, 0]
     writeln(numbas);
     assert(numbas == [1, 2, 0]);
 
     numbas = [1, 5, 2];
-    numbas = numbas.shiftInto(0, false);
+    numbas = numbas.shiftIntoLeftwards(0);
 
     // should now be [5, 2, 0]
     writeln(numbas);
     assert(numbas == [5, 2, 0]);
     
     numbas = [1, 5, 2];
-    numbas = numbas.shiftInto(2, false);
+    numbas = numbas.shiftIntoLeftwards(2);
 
     // should now be [1, 5, 2]
     writeln(numbas);
     assert(numbas == [1, 5, 2]);
 
     numbas = [];
-    numbas = numbas.shiftInto(0, true);
+    numbas = numbas.shiftIntoLeftwards(0);
 
     // should now be []
     writeln(numbas);
