@@ -11,6 +11,7 @@ import std.datetime.stopwatch : StopWatch, AutoStart;
 import core.thread : Thread;
 import core.sync.condition : Condition;
 import std.functional : toDelegate;
+import std.string : format;
 
 version(unittest)
 {
@@ -604,7 +605,34 @@ unittest
 // then 0 moves into 1's place
 // 0's position is then filled with T.init
 
-public T[] shiftInto(T)(T[] array, size_t position, bool rightwards = false, bool shrink = false)
+/** 
+ * Shifts a subset of the elements of
+ * the given array to a given position
+ * either from the left or right.
+ *
+ * Optionally allowing the shrinking
+ * of the array after the process,
+ * otherwise the last element shifted's
+ * previous value will be set to the
+ * value specified.
+ *
+ * Params:
+ *   array = the input array
+ *   position = the position to shift 
+ * onto
+ *   rightwards = if `true` then shift
+ * elements into the position rightwards,
+ * else leftwards (which is also the default)
+ *   shrink = if set to `true` then
+ * the array will be resized to exclude
+ * the now "empty" element
+ *   filler = the value to place in
+ * the space where the last element
+ * shifted no longer occupies, by default
+ * this is `T.init`
+ * Returns: the shifted array
+ */
+public T[] shiftInto(T)(T[] array, size_t position, bool rightwards = false, bool shrink = false, T filler = T.init)
 {
     // Out of range
     if(position >= array.length)
@@ -626,10 +654,10 @@ public T[] shiftInto(T)(T[] array, size_t position, bool rightwards = false, boo
             array[i] = array[i-1];
         }
 
-        // no shrink, then fill with T.init
+        // no shrink, then fill with filler
         if(!shrink)
         {
-            array[0] = T.init;
+            array[0] = filler;
         }
         // chomp left-hand side
         else
@@ -651,10 +679,10 @@ public T[] shiftInto(T)(T[] array, size_t position, bool rightwards = false, boo
             array[i] = array[i+1];
         }
 
-        // no shrink, then fill with T.init
+        // no shrink, then fill with filler
         if(!shrink)
         {
-            array[$-1] = T.init;
+            array[$-1] = filler;
         }
         // chomp right-hand side
         else
@@ -809,7 +837,7 @@ public template TouchStratergy(T)
     public alias TouchStratergy = void delegate(Tree!(T) item);
 }
 
-import std.string : format;
+
 
 // TODO: Technically this is a graph
 public class Tree(T)
