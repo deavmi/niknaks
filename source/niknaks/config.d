@@ -59,9 +59,19 @@ public struct ConfigEntry
     private ConfigValue value;
     private ConfigType type;
 
-    // If set at all
+    /** 
+     * A flag which is used to
+     * know if a value has been
+     * set at all. This helps
+     * with the fact that 
+     * an entry can be constructed
+     * without having a value set
+     */
     private bool isSet = false;
 
+    /** 
+     * Ensures a value is set
+     */
     private void ensureSet()
     {
         if(!this.isSet)
@@ -70,6 +80,10 @@ public struct ConfigEntry
         }
     }
 
+    /**
+     * Marks this entry as having
+     * a value set
+     */
     private void set()
     {
         this.isSet = true;
@@ -79,6 +93,14 @@ public struct ConfigEntry
     // @disable
     // private this();
 
+    /** 
+     * Constructs a new `ConfigEntry`
+     * with the given value and type
+     *
+     * Params:
+     *   value = the value itself
+     *   type = the value's type
+     */
     private this(ConfigValue value, ConfigType type)
     {
         this.value = value;
