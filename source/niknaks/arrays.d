@@ -249,11 +249,6 @@ unittest
     assert(vals_got == vals_expected);   
 }
 
-// Given [0, 1, 5]
-// and shift right at index 1
-// then 0 moves into 1's place
-// 0's position is then filled with T.init
-
 /** 
  * Shifts a subset of the elements of
  * the given array to a given position
@@ -344,17 +339,29 @@ public T[] shiftInto(T)(T[] array, size_t position, bool rightwards = false, boo
     return array;
 }
 
+/** 
+ * Rightwards shifting into
+ *
+ * See_Also: `shiftInto`
+ */
 public T[] shiftIntoRightwards(T)(T[] array, size_t position, bool shrink = false)
 {
     return shiftInto(array, position, true, shrink);
 }
 
+/** 
+ * Leftwards shifting into
+ *
+ * See_Also: `shiftInto`
+ */
 public T[] shiftIntoLeftwards(T)(T[] array, size_t position, bool shrink = false)
 {
     return shiftInto(array, position, false, shrink);
 }
 
-// rightwards testung (no shrink)
+/**
+ * Tests the rightwards shifting
+ */
 unittest
 {
     int[] numbas = [1, 5, 2];
@@ -398,9 +405,18 @@ unittest
     // should now be []
     writeln(numbas);
     assert(numbas == []);
+
+    numbas = [1, 5, 2];
+    numbas = numbas.shiftIntoRightwards(1, true);
+
+    // should now be [1, 2]
+    writeln(numbas);
+    assert(numbas == [1, 2]);
 }
 
-// leftwards testung (no shrink)
+/**
+ * Tests the leftwards shifting
+ */
 unittest
 {
     int[] numbas = [1, 5, 2];
@@ -430,6 +446,13 @@ unittest
     // should now be []
     writeln(numbas);
     assert(numbas == []);
+
+    numbas = [1, 5, 2];
+    numbas = numbas.shiftIntoLeftwards(1, true);
+
+    // should now be [1, 2]
+    writeln(numbas);
+    assert(numbas == [1, 2]);
 }
 
 public T[] removeResize(T)(T[] array, size_t position)
