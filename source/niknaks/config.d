@@ -1,7 +1,13 @@
+/** 
+ * Configuration entries and
+ * a registry in which to
+ * manage a set of them
+ *
+ * Authors: Tristan Brice Velloza Kildaire (deavmi)
+ */
 module niknaks.config;
 
 import std.string : format;
-
 
 version(unittest)
 {
@@ -109,6 +115,14 @@ public struct ConfigEntry
         set();
     }
 
+    /** 
+     * Creates a new configuration entry
+     * containing text
+     *
+     * Params:
+     *   text = the text
+     * Returns: a `ConfigEntry`
+     */
     public static ConfigEntry ofText(string text)
     {
         ConfigValue tmp;
@@ -116,6 +130,14 @@ public struct ConfigEntry
         return ConfigEntry(tmp, type.TEXT);
     }
 
+    /** 
+     * Creates a new configuration entry
+     * containing an integer
+     *
+     * Params:
+     *   i = the integer
+     * Returns: a `ConfigEntry`
+     */
     public static ConfigEntry ofNumeric(int i)
     {
         ConfigValue tmp;
@@ -123,6 +145,14 @@ public struct ConfigEntry
         return ConfigEntry(tmp, type.NUMERIC);
     }
 
+    /** 
+     * Creates a new configuration entry
+     * containing a flag
+     *
+     * Params:
+     *   flag = the flag
+     * Returns: a `ConfigEntry`
+     */
     public static ConfigEntry ofFlag(bool flag)
     {
         ConfigValue tmp;
@@ -130,6 +160,14 @@ public struct ConfigEntry
         return ConfigEntry(tmp, type.FLAG);
     }
 
+    /** 
+     * Creates a new configuration entry
+     * containing a textual array
+     *
+     * Params:
+     *   array = the textual array
+     * Returns: a `ConfigEntry`
+     */
     public static ConfigEntry ofArray(string[] array)
     {
         ConfigValue tmp;
@@ -137,16 +175,40 @@ public struct ConfigEntry
         return ConfigEntry(tmp, type.ARRAY);
     }
 
+    /** 
+     * Returns the type of the
+     * entry's value
+     *
+     * Returns: a `ConfigType`
+     */
     public ConfigType getType()
     {
         return this.type;
     }
 
+    /** 
+     * Ensures the requested type
+     * matches the current type
+     * set
+     *
+     * Params:
+     *   requested = the requested
+     * type
+     * Returns: `true` if the types
+     * are the same, `false` otherwise
+     */
     private bool ensureTypeMatch0(ConfigType requested)
     {
         return getType() == requested;
     }
 
+    /** 
+     * A version of the type
+     * matcher but which throws
+     * an exception on type mismatch
+     *
+     * See_Also: `ensureTypeMatch0(ConfigType)`
+     */
     private void ensureTypeMatch(ConfigType requested)
     {
         if(!ensureTypeMatch0(requested))
@@ -155,6 +217,15 @@ public struct ConfigEntry
         }
     }
 
+    /** 
+     * Obtains the numeric value
+     * of this entry
+     *
+     * Returns: an integer
+     * Throws: ConfigException if
+     * the type of the value in this
+     * entry is not numeric
+     */
     public int numeric()
     {
         ensureSet;
@@ -162,6 +233,15 @@ public struct ConfigEntry
         return this.value.integer;
     }
 
+    /** 
+     * Obtains the textual array
+     * value of this entry
+     *
+     * Returns: a `string[]`
+     * Throws: ConfigException if
+     * the type of the value in this
+     * entry is not a textual array
+     */
     public string[] array()
     {
         ensureSet;
@@ -169,11 +249,23 @@ public struct ConfigEntry
         return this.value.textArray;
     }
 
+    /** 
+     * See_Also: `array()`
+     */
     public string[] opSlice()
     {
         return array();
     }
 
+    /** 
+     * Obtains the flag value
+     * of this entry
+     *
+     * Returns: a `string[]`
+     * Throws: ConfigException if
+     * the type of the value in this
+     * entry is not a flag
+     */
     public bool flag()
     {
         ensureSet;
@@ -181,16 +273,31 @@ public struct ConfigEntry
         return this.value.flag;
     }
 
+    /** 
+     * See_Also: `flag()`
+     */
     public bool isTrue()
     {
         return flag() == true;
     }
 
+    /** 
+     * See_Also: `flag()`
+     */
     public bool isFalse()
     {
         return flag() == false;
     }
 
+    /** 
+     * Obtains the text value
+     * of this entry
+     *
+     * Returns: a string
+     * Throws: ConfigException if
+     * the type of the value in this
+     * entry is not a string
+     */
     public string text()
     {
         ensureSet;
@@ -198,6 +305,15 @@ public struct ConfigEntry
         return this.value.text;
     }
 
+    /** 
+     * Obtains the value of this
+     * configuration entry dependant
+     * on the requested casting type
+     * and matching that to the supported
+     * types of the configuration entry
+     *
+     * Returns: a value of type `T`
+     */
     public T opCast(T)()
     {
         static if(__traits(isSame, T, bool))
