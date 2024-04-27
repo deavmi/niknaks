@@ -8,6 +8,16 @@ version(unittest)
     import std.stdio : writeln;
 }
 
+/** 
+ * A union which expands to
+ * the byte-width of its
+ * biggest member, allowing
+ * us to have space enough
+ * for any one exclusive member
+ * at a time
+ *
+ * See_Also: ConfigEntry
+ */
 private union ConfigValue
 {
     string text;
@@ -16,6 +26,9 @@ private union ConfigValue
     string[] textArray;
 }
 
+/** 
+ * The type of the entry
+ */
 public enum ConfigType
 {
     TEXT,
@@ -24,14 +37,23 @@ public enum ConfigType
     ARRAY
 }
 
+/** 
+ * An exception thrown when you misuse
+ * a configuration entry
+ */
 public final class ConfigException : Exception
 {
-    this(string msg)
+    private this(string msg)
     {
         super(msg);
     }
 }
 
+/** 
+ * A configuration entry which
+ * acts as a typed union and
+ * supports certain fixed types
+ */
 public struct ConfigEntry
 {
     private ConfigValue value;
@@ -181,6 +203,11 @@ public struct ConfigEntry
     }
 }
 
+/**
+ * Tests out using the configuration
+ * entry and its various operator
+ * overloads
+ */
 unittest
 {
     ConfigEntry entry = ConfigEntry.ofArray(["hello", "world"]);
@@ -196,6 +223,10 @@ unittest
     assert(entry);
 }
 
+/** 
+ * Tests out the erroneous usage of a
+ * configuration entry
+ */
 unittest
 {
     ConfigEntry entry = ConfigEntry.ofText("hello");
@@ -211,6 +242,10 @@ unittest
     }
 }
 
+/** 
+ * Tests out the erroneous usage of a
+ * configuration entry
+ */
 unittest
 {
     ConfigEntry entry;
@@ -225,8 +260,6 @@ unittest
         
     }
 }
-
-
 
 /** 
  * An entry derived from
