@@ -667,6 +667,16 @@ public T[] shiftInto(T)(T[] array, size_t position, bool rightwards = false, boo
     return array;
 }
 
+public T[] shiftIntoRightwards(T)(T[] array, size_t position, bool shrink = false)
+{
+    return shiftInto(array, position, true, shrink);
+}
+
+public T[] shiftIntoLeftwards(T)(T[] array, size_t position, bool shrink = false)
+{
+    return shiftInto(array, position, false, shrink);
+}
+
 // rightwards testung (no shrink)
 unittest
 {
