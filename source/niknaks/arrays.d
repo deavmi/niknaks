@@ -470,3 +470,16 @@ public T[] removeResize(T)(T[] array, size_t position)
 {
     return array.shiftInto(position, false, true);
 }
+
+/**
+ * Tests removing an element from an array
+ */
+unittest
+{
+    int[] numbas = [1, 5, 2];
+    numbas = numbas.removeResize(1);
+
+    // should now be [1, 2]
+    writeln(numbas);
+    assert(numbas == [1, 2]);
+}
