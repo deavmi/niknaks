@@ -314,6 +314,25 @@ public struct Registry
         this.allowOverwriteEntry = flag;
     }
 
+    /** 
+     * Adds a new configuration entry at the
+     * given key and allows you to choose
+     * certain behaviors based on the
+     * existence or non-existence of
+     * an entry at the same key.
+     *
+     * Params:
+     *   name = the name of the entry
+     *   entry = the entry itself
+     *   allowOverWriteNow = if `true`
+     * then if an entry exists already
+     * at that key it will be overwritten,
+     * otherwise an exception will be thrown
+     *   allowSetOnCreation = if there is
+     * no entry at the given key then,
+     * if `true`, an entry will be created,
+     * otherwise an exception will be thrown
+     */
     private void newEntry(string name, ConfigEntry entry, bool allowOverWriteNow, bool allowSetOnCreation)
     {
         // Obtain the address of the value that occupies the value
