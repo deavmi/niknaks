@@ -832,6 +832,9 @@ version(unittest)
     }
 }
 
+/**
+ * Test out usage of the tree
+ */
 unittest
 {
     Tree!(string) treeOfStrings = new Tree!(string)("Top");
