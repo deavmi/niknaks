@@ -872,6 +872,27 @@ unittest
     assert(!treeOfStrings.removeNode(subtree_1));
 }
 
+/** 
+ * A kind-of a tree which has the ability
+ * to linearize all of its nodes which
+ * results in performing a depth first
+ * search resulting in the collection of
+ * all nodes into a single array with
+ * elements on the left hand side being
+ * the most leafiest (and left-to-right
+ * on the same depth are in said order).
+ *
+ * It also marks a node as visited on
+ * entry to it via the dfs call to it.
+ *
+ * When dfs is performed, a child node
+ * is only recursed upon if it has not
+ * yet been visited.
+ *
+ * With all this, it means a graph of
+ * relations can be flattened into an
+ * array.
+ */
 public class VisitationTree(T) : Tree!(T)
 {
     private bool visisted;    
