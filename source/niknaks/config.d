@@ -39,9 +39,24 @@ private union ConfigValue
  */
 public enum ConfigType
 {
+    /** 
+     * A string
+     */
     TEXT,
+
+    /** 
+     * An integer
+     */
     NUMERIC,
+
+    /** 
+     * A boolean
+     */
     FLAG,
+
+    /** 
+     * A string array
+     */
     ARRAY
 }
 
