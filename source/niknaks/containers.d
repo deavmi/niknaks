@@ -897,22 +897,51 @@ public class VisitationTree(T) : Tree!(T)
 {
     private bool visisted;    
 
+    /** 
+     * Constructs a new node
+     *
+     * Params:
+     *   value = the value
+     */
     this(T value)
     {
         super(value);
     }
 
+    /** 
+     * Performs the linearization
+     *
+     * Returns: the linearized list
+     */
     public T[] linearize()
     {
         return dfs(toDelegate(&_shouldVisit), toDelegate(&_touch));
     }
 
+    /** 
+     * The inclusion startergy
+     *
+     * Params:
+     *   tnode = the tree node
+     * Returns: `true` if not
+     * yet visited or incompatible
+     * node type
+     */
     private static bool _shouldVisit(Tree!(T) tnode)
     {
         VisitationTree!(T) vnode = cast(VisitationTree!(T))tnode;
         return vnode && !vnode.isVisited();
     }
 
+    /** 
+     * The touching stratergy
+     *
+     * Only works on compatible
+     * tree nodes
+     *
+     * Params:
+     *   tnode = the tree node
+     */
     private static void _touch(Tree!(T) tnode)
     {
         VisitationTree!(T) vnode = cast(VisitationTree!(T))tnode;
@@ -922,17 +951,31 @@ public class VisitationTree(T) : Tree!(T)
         }
     }
 
+    /** 
+     * Marks this node as
+     * visited
+     */
     private void mark()
     {
         this.visisted = true;
     }
     
+    /** 
+     * Checks this node has been
+     * visited
+     *
+     * Returns: `true` if visited,
+     * otherwise `false`
+     */
     private bool isVisited()
     {
         return this.visisted;
     }
 }
 
+/**
+ * Tests out using the visitation tree
+ */
 unittest
 {
     VisitationTree!(string) root = new VisitationTree!(string)("root");
@@ -946,5 +989,4 @@ unittest
 
     assert(linearized[0] == "subtree");
     assert(linearized[1] == "root");
-
 }
