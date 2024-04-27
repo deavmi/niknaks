@@ -248,3 +248,225 @@ unittest
     filter!(int)(vals, predicateOf!(onlyEven), vals_got);
     assert(vals_got == vals_expected);   
 }
+
+/** 
+ * Shifts a subset of the elements of
+ * the given array to a given position
+ * either from the left or right.
+ *
+ * Optionally allowing the shrinking
+ * of the array after the process,
+ * otherwise the last element shifted's
+ * previous value will be set to the
+ * value specified.
+ *
+ * Params:
+ *   array = the input array
+ *   position = the position to shift 
+ * onto
+ *   rightwards = if `true` then shift
+ * elements into the position rightwards,
+ * else leftwards (which is also the default)
+ *   shrink = if set to `true` then
+ * the array will be resized to exclude
+ * the now "empty" element
+ *   filler = the value to place in
+ * the space where the last element
+ * shifted no longer occupies, by default
+ * this is `T.init`
+ * Returns: the shifted array
+ */
+public T[] shiftInto(T)(T[] array, size_t position, bool rightwards = false, bool shrink = false, T filler = T.init)
+{
+    // Out of range
+    if(position >= array.length)
+    {
+        return array;
+    }
+
+    // if rightwards
+    if(rightwards)
+    {
+        // nothing further left than index 0
+        if(!position)
+        {
+            return array;
+        }
+
+        for(size_t i = position; i > 0; i--)
+        {
+            array[i] = array[i-1];
+        }
+
+        // no shrink, then fill with filler
+        if(!shrink)
+        {
+            array[0] = filler;
+        }
+        // chomp left-hand side
+        else
+        {
+            array = array[1..$];
+        }
+    }
+    // if leftwards
+    else
+    {
+        // nothing furtherright
+        if(position == array.length-1)
+        {
+            return array;
+        }
+
+        for(size_t i = position; i < array.length-1; i++)
+        {
+            array[i] = array[i+1];
+        }
+
+        // no shrink, then fill with filler
+        if(!shrink)
+        {
+            array[$-1] = filler;
+        }
+        // chomp right-hand side
+        else
+        {
+            array = array[0..$-1];
+        }
+    }
+
+    
+    return array;
+}
+
+/** 
+ * Rightwards shifting into
+ *
+ * See_Also: `shiftInto`
+ */
+public T[] shiftIntoRightwards(T)(T[] array, size_t position, bool shrink = false)
+{
+    return shiftInto(array, position, true, shrink);
+}
+
+/**
+ * Tests the rightwards shifting
+ */
+unittest
+{
+    int[] numbas = [1, 5, 2];
+    numbas = numbas.shiftIntoRightwards(1);
+
+    // should now be [0, 1, 2]
+    writeln(numbas);
+    assert(numbas == [0, 1, 2]);
+
+    numbas = [1, 5, 2];
+    numbas = numbas.shiftIntoRightwards(0);
+
+    // should now be [1, 5, 2]
+    writeln(numbas);
+    assert(numbas == [1, 5, 2]);
+    
+    numbas = [1, 5, 2];
+    numbas = numbas.shiftIntoRightwards(2);
+
+    // should now be [0, 1, 5]
+    writeln(numbas);
+    assert(numbas == [0, 1, 5]);
+
+    numbas = [1, 2];
+    numbas = numbas.shiftIntoRightwards(1);
+
+    // should now be [0, 1]
+    writeln(numbas);
+    assert(numbas == [0, 1]);
+
+    numbas = [1, 2];
+    numbas = numbas.shiftIntoRightwards(0);
+
+    // should now be [1, 2]
+    writeln(numbas);
+    assert(numbas == [1, 2]);
+
+    numbas = [];
+    numbas = numbas.shiftIntoRightwards(0);
+
+    // should now be []
+    writeln(numbas);
+    assert(numbas == []);
+
+    numbas = [1, 5, 2];
+    numbas = numbas.shiftIntoRightwards(1, true);
+
+    // should now be [1, 2]
+    writeln(numbas);
+    assert(numbas == [1, 2]);
+}
+
+/** 
+ * Leftwards shifting into
+ *
+ * See_Also: `shiftInto`
+ */
+public T[] shiftIntoLeftwards(T)(T[] array, size_t position, bool shrink = false)
+{
+    return shiftInto(array, position, false, shrink);
+}
+
+/**
+ * Tests the leftwards shifting
+ */
+unittest
+{
+    int[] numbas = [1, 5, 2];
+    numbas = numbas.shiftIntoLeftwards(1);
+
+    // should now be [1, 2, 0]
+    writeln(numbas);
+    assert(numbas == [1, 2, 0]);
+
+    numbas = [1, 5, 2];
+    numbas = numbas.shiftIntoLeftwards(0);
+
+    // should now be [5, 2, 0]
+    writeln(numbas);
+    assert(numbas == [5, 2, 0]);
+    
+    numbas = [1, 5, 2];
+    numbas = numbas.shiftIntoLeftwards(2);
+
+    // should now be [1, 5, 2]
+    writeln(numbas);
+    assert(numbas == [1, 5, 2]);
+
+    numbas = [];
+    numbas = numbas.shiftIntoLeftwards(0);
+
+    // should now be []
+    writeln(numbas);
+    assert(numbas == []);
+
+    numbas = [1, 5, 2];
+    numbas = numbas.shiftIntoLeftwards(1, true);
+
+    // should now be [1, 2]
+    writeln(numbas);
+    assert(numbas == [1, 2]);
+}
+
+/** 
+ * Removes the element at the
+ * provided position in the
+ * given array
+ *
+ * Params:
+ *   array = the array
+ *   position = position of
+ * element to remove
+ * Returns: the array
+ */
+public T[] removeResize(T)(T[] array, size_t position)
+{
+    return array.shiftInto(position, false, true);
+}
