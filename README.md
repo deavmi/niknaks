@@ -42,6 +42,8 @@ is expected to grow over time.
     * Things such as `CacheMap`
 * `niknaks.mechanisms`
     * User-defined input prompter, retry mechanisms
+* `niknaks.config`
+    * Configuration entries and management
 
 ## License
 
