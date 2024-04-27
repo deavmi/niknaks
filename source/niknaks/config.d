@@ -234,22 +234,47 @@ public final class RegistryException : Exception
     }
 }
 
+/** 
+ * An entry derived from
+ * the `Registry` containing
+ * the name and the configuration
+ * entry itself
+ */
 public struct RegistryEntry
 {
     private string name;
     private ConfigEntry val;
 
+    /** 
+     * Constructs a new `RegistryEntry`
+     * with the given name and configuration
+     * entry
+     *
+     * Params:
+     *   name = the name
+     *   entry = the entry itself
+     */
     this(string name, ConfigEntry entry)
     {
         this.name = name;
         this.val = entry;
     }
 
+    /** 
+     * Obtains the entry's name
+     *
+     * Returns: the name
+     */
     public string getName()
     {
         return this.name;
     }
 
+    /** 
+     * Obtains the entry itself
+     *
+     * Returns: a `ConfigEntry`
+     */
     public ConfigEntry getEntry()
     {
         return this.val;
