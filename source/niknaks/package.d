@@ -42,3 +42,12 @@ public import niknaks.debugging;
  * that are templatised
  */
 public import niknaks.containers;
+
+/** 
+ * Configuration management
+ *
+ * Configuration entries and
+ * a registry in which to
+ * manage a set of them
+ */
+public import niknaks.config;

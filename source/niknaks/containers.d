@@ -358,6 +358,14 @@ public template CacheMap(K, V)
         }
 
         /** 
+         * See_Also: get 
+         */
+        public V opIndex(K key)
+        {
+            return get(key);
+        }
+
+        /** 
          * Removes the given key
          * returning whether or
          * not it was a success
@@ -502,18 +510,18 @@ unittest
     CacheMap!(string, int) map = new CacheMap!(string, int)(&getVal, dur!("seconds")(10));
 
     // Get the value
-    int tValue = map.get("Tristan");
+    int tValue = map["Tristan"];
     assert(tValue == 1);
 
     // Get the value (should still be cached)
-    tValue = map.get("Tristan");
+    tValue = map["Tristan"];
     assert(tValue == 1);
 
     // Wait for expiry (by sweeping thread)
     Thread.sleep(dur!("seconds")(11));
 
     // Should call replacement function
-    tValue = map.get("Tristan");
+    tValue = map["Tristan"];
     assert(tValue == 2);
 
     // Wait for expiry (by sweeping thread)
@@ -545,14 +553,14 @@ unittest
     CacheMap!(string, int) map = new CacheMap!(string, int)(&getVal, dur!("seconds")(5), dur!("seconds")(10));
 
     // Get the value
-    int tValue = map.get("Tristan");
+    int tValue = map["Tristan"];
     assert(tValue == 1);
 
     // Wait for 5 seconds (the entry should then be expired by then for on-access check)
     Thread.sleep(dur!("seconds")(5));
 
     // Get the value (should have replacement function run)
-    tValue = map.get("Tristan");
+    tValue = map["Tristan"];
     assert(tValue == 2);
 
     // Destroy the map (such that it ends the sweeper
@@ -577,14 +585,14 @@ unittest
     CacheMap!(string, int) map = new CacheMap!(string, int)(&getVal, dur!("seconds")(10), dur!("seconds")(10));
 
     // Get the value
-    int tValue = map.get("Tristan");
+    int tValue = map["Tristan"];
     assert(tValue == 1);
 
     // Remove the key
     assert(map.removeKey("Tristan"));
 
     // Get the value
-    tValue = map.get("Tristan");
+    tValue = map["Tristan"];
     assert(tValue == 2);
 
     // Destroy the map (such that it ends the sweeper

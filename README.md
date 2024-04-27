@@ -40,6 +40,10 @@ is expected to grow over time.
 * `niknaks.containers`
     * Some useful container types
     * Things such as `CacheMap`
+* `niknaks.mechanisms`
+    * User-defined input prompter, retry mechanisms
+* `niknaks.config`
+    * Configuration entries and management
 
 ## License
 
