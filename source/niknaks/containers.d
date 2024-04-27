@@ -760,20 +760,6 @@ public T[] removeResize(T)(T[] array, size_t position)
     return array.shiftInto(position, false, true);
 }
 
-// TODO: make delegate kak
-// public interface InclusionStratergy(T)
-// {
-//     public bool include(T item);
-// }
-
-// private class AlwaysStrat(T) : InclusionStratergy
-// {
-//     public override bool include(T item)
-//     {
-//         return true;
-//     }
-// }
-
 public template Always(T)
 {
     public bool Always(Tree!(T) treeNode)
