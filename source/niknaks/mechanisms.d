@@ -12,6 +12,13 @@ import core.thread : Thread;
 import std.stdio : File, write;
 import std.string : strip;
 
+version(unittest)
+{
+    import std.process : pipe, Pipe;
+    import std.conv : to;
+    import std.stdio : writeln;
+}
+
 /** 
  * A verdict-providing function
  */
@@ -298,8 +305,10 @@ unittest
  */
 public struct Prompt
 {
+    private bool isMultiValue;
+    private bool allowEmpty;
     private string query;
-    private string value;
+    private string[] value;
 
     /** 
      * Constructs a new prompt
@@ -308,10 +317,14 @@ public struct Prompt
      * Params:
      *   query = the prompt
      * query itself
+     *   isMultiValue = if the
+     * query allows for multiple
+     * inputs
      */
-    this(string query)
+    this(string query, bool isMultiValue = false)
     {
         this.query = query;
+        this.isMultiValue = isMultiValue;
     }
 
     /** 
@@ -328,11 +341,43 @@ public struct Prompt
      * Retrieves this prompt's
      * answer
      *
-     * Returns: the answer
+     * Params:
+     *   answer = the first
+     * answer is placed here
+     * (if any)
+     * Returns: `true` if there
+     * is at least one answer,
+     * `false` otherwise
      */
-    public string getValue()
+    public bool getValue(ref string answer)
     {
-        return this.value;
+        if(this.value.length)
+        {
+            answer = this.value[0];
+            return true;
+        }
+
+        return false;
+    }
+
+    /** 
+     * Retrieves this prompt's
+     * multiple anwers
+     *
+     * Params:
+     *  answers = the answers
+     * (if any)
+     * Returns: `true` if there
+     * are answers, `false` otherwise
+     */
+    public bool getValues(ref string[] answers)
+    {
+        if(this.value)
+        {
+            answers = this.value;
+            return true;
+        }
+        return false;
     }
 
     /** 
@@ -345,7 +390,15 @@ public struct Prompt
      */
     public void fill(string value)
     {
-        this.value = value;
+        this.value ~= value;
+    }
+}
+
+public final class PromptException : Exception
+{
+    private this(string msg)
+    {
+        super(msg);
     }
 }
 
@@ -442,9 +495,17 @@ public class Prompter
             // Perform the query
             write(prompt.getQuery());
             this.source.readln(buff);
+            string ans = strip(cast(string)buff);
+
+            // import std.string : empty;
+            // if(prompt.allowEmpty && ans.empty())
+            // {
+
+            // }
+            
 
             // Fill answer into prompt
-            prompt.fill(strip(cast(string)buff));
+            prompt.fill(ans);
         }
 
         return this.prompts;
@@ -462,13 +523,11 @@ public class Prompter
     }
 }
 
-version(unittest)
-{
-    import std.process : pipe, Pipe;
-    import std.conv : to;
-    import std.stdio : writeln;
-}
-
+/**
+ * Creating two single-valued prompts
+ * and then extracting the answers to
+ * them out
+ */
 unittest
 {
     Pipe pipe = pipe();
@@ -490,6 +549,11 @@ unittest
 
     writeln(ans);
 
-    assert(ans[0].getValue() == "Tristan Brice Velloza Kildaire");
-    assert(to!(int)(ans[1].getValue()) == 1); // TODO: Allow union conversion later
+    string nameVal;
+    assert(ans[0].getValue(nameVal));
+    assert(nameVal == "Tristan Brice Velloza Kildaire");
+
+    string ageVal;
+    assert(ans[1].getValue(ageVal));
+    assert(to!(int)(ageVal) == 1); // TODO: Allow union conversion later
 }
