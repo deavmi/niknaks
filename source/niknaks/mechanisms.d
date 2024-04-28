@@ -489,7 +489,7 @@ public class Prompter
     {
         char[] buff;
 
-        foreach(ref Prompt prompt; this.prompts)
+        prompt_loop: foreach(ref Prompt prompt; this.prompts)
         {
             scope(exit)
             {
@@ -503,6 +503,13 @@ public class Prompter
 
                 do
                 {
+                    // If EOF signalled to us then
+                    // exit
+                    if(this.source.eof())
+                    {
+                        break prompt_loop;
+                    }
+
                     scope(exit)
                     {
                         buff.length = 0;
@@ -527,6 +534,13 @@ public class Prompter
                 string ans;
                 do
                 {
+                    // If EOF signalled to us then
+                    // exit
+                    if(this.source.eof())
+                    {
+                        break prompt_loop;
+                    }
+                    
                     // Perform the query
                     write(prompt.getQuery());
                     this.source.readln(buff);
