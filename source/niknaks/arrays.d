@@ -483,3 +483,58 @@ unittest
     writeln(numbas);
     assert(numbas == [1, 2]);
 }
+
+/** 
+ * Returns a version of
+ * the input array with
+ * only unique elements.
+ *
+ * If the input array's
+ * length is 0 or 1 then
+ * it is immediately returned
+ * as an optimization.
+ *
+ * Params:
+ *   array = the input array
+ * Returns: an array with
+ * only unique elements
+ */
+public T[] unique(T)(T[] array)
+{
+    // optimize
+    if(array.length == 0 || array.length == 1)
+    {
+        return array;
+    }
+
+    T[] newArray;
+    foreach(T elem; array)
+    {
+        if(!isPresent(newArray, elem))
+        {
+            newArray ~= elem;
+        }
+    }
+
+    return newArray;
+}
+
+/**
+ * Tests out using the uniqueness method
+ */
+unittest
+{
+    // Empty or 1 elem should not re-allocate
+    int[] vals = [];
+    int[] newVals = unique(vals);
+    assert(vals.ptr == newVals.ptr);
+
+    vals = [1];
+    newVals = unique(vals);
+    assert(vals.ptr == newVals.ptr);
+
+    // Copy triggering cases
+    vals = [1,1];
+    newVals = unique(vals);
+    assert(newVals == [1]);
+}
