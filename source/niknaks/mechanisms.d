@@ -319,12 +319,16 @@ public struct Prompt
      * query itself
      *   isMultiValue = if the
      * query allows for multiple
-     * inputs
+     * inputs (default is `false`)
+     *   allowEmpty = if the
+     * answer may be empty (default
+     * is `true`)
      */
-    this(string query, bool isMultiValue = false)
+    this(string query, bool isMultiValue = false, bool allowEmpty = false)
     {
         this.query = query;
         this.isMultiValue = isMultiValue;
+        this.allowEmpty = allowEmpty;
     }
 
     /** 
@@ -499,6 +503,11 @@ public class Prompter
 
                 do
                 {
+                    scope(exit)
+                    {
+                        buff.length = 0;
+                    }
+
                     // Perform the query
                     write(prompt.getQuery());
                     this.source.readln(buff);
@@ -578,4 +587,42 @@ unittest
     string ageVal;
     assert(ans[1].getValue(ageVal));
     assert(to!(int)(ageVal) == 1); // TODO: Allow union conversion later
+}
+
+/**
+ * Creating a single-value prompt
+ * which CANNOT be empty and then
+ * also a multi-valued prompt
+ */
+unittest
+{
+    Pipe pipe = pipe();
+
+    // Create a prompter with some prompts
+    Prompter p = new Prompter(pipe.readEnd());
+    p.addPrompt(Prompt("What is your name?", false, false));
+    p.addPrompt(Prompt("Enter the names of your friends", true));
+
+    // Fill up pipe with data for read end
+    File writeEnd = pipe.writeEnd();
+    writeEnd.writeln(""); // Purposefully do empty (for name)
+    writeEnd.writeln("Tristan Brice Velloza Kildaire"); // Now actually fill it in (for name)
+    writeEnd.writeln("Thomas");
+    writeEnd.writeln("Risima");
+    writeEnd.writeln("");
+    writeEnd.flush();
+
+    // Perform the prompt and get the
+    // answers back out
+    Prompt[] ans = p.prompt();
+
+    writeln(ans);
+
+    string nameVal;
+    assert(ans[0].getValue(nameVal));
+    assert(nameVal == "Tristan Brice Velloza Kildaire");
+
+    string[] friends;
+    assert(ans[1].getValues(friends));
+    assert(friends == ["Thomas", "Risima"]);
 }
