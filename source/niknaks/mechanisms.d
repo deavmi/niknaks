@@ -528,10 +528,6 @@ public class Prompter
                 // Fill answer into prompt
                 prompt.fill(ans);
             }
-
-            
-
-            
         }
 
         return this.prompts;
