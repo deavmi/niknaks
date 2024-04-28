@@ -399,14 +399,6 @@ public struct Prompt
     }
 }
 
-public final class PromptException : Exception
-{
-    private this(string msg)
-    {
-        super(msg);
-    }
-}
-
 /** 
  * A prompting mechanism
  * which can be filled up
