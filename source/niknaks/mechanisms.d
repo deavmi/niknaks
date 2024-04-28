@@ -10,7 +10,7 @@ import std.datetime : Duration;
 import std.datetime.stopwatch : StopWatch, AutoStart;
 import core.thread : Thread;
 import std.stdio : File, write;
-import std.string : strip;
+import std.string : strip, empty;
 
 version(unittest)
 {
@@ -492,20 +492,46 @@ public class Prompter
                 buff.length = 0;
             }
 
-            // Perform the query
-            write(prompt.getQuery());
-            this.source.readln(buff);
-            string ans = strip(cast(string)buff);
+            // Prompt until empty
+            if(prompt.isMultiValue)
+            {
+                string ans;
 
-            // import std.string : empty;
-            // if(prompt.allowEmpty && ans.empty())
-            // {
+                do
+                {
+                    // Perform the query
+                    write(prompt.getQuery());
+                    this.source.readln(buff);
+                    ans = strip(cast(string)buff);
 
-            // }
+                    // If not empty, then add
+                    if(!ans.empty())
+                    {
+                        prompt.fill(ans);
+                    }
+                }
+                while(!ans.empty());
+            }
+            // Prompt once (or more depending on policy)
+            else
+            {
+                string ans;
+                do
+                {
+                    // Perform the query
+                    write(prompt.getQuery());
+                    this.source.readln(buff);
+                    ans = strip(cast(string)buff);
+                }
+                while(ans.empty() && !prompt.allowEmpty);
+
+                // Fill answer into prompt
+                prompt.fill(ans);
+            }
+
             
 
-            // Fill answer into prompt
-            prompt.fill(ans);
+            
         }
 
         return this.prompts;
