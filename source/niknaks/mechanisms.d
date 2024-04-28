@@ -376,11 +376,12 @@ public struct Prompt
      */
     public bool getValues(ref string[] answers)
     {
-        if(this.value)
+        if(this.value.length)
         {
             answers = this.value;
             return true;
         }
+        
         return false;
     }
 
@@ -540,7 +541,7 @@ public class Prompter
                     {
                         break prompt_loop;
                     }
-                    
+
                     // Perform the query
                     write(prompt.getQuery());
                     this.source.readln(buff);
