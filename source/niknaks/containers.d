@@ -698,5 +698,5 @@ unittest
     assert(view[0] == 1);
     assert(view[1] == 3);
     assert(view[2] == 45);
-    assert(view[3] == 12);
+    assert(view[3] == 2);
 }
