@@ -676,6 +676,17 @@ if(isSector!(SectorType)())
         throw new ArrayIndexError(idx, opDollar());
     }
 
+    public T[] opSlice()
+    {
+        T[] buff;
+        foreach(SectorType sector; this.sectors)
+        {
+            buff ~= sector[];
+        }
+
+        return buff;
+    }
+
     // Takes the data, constructs a kind-of SectorType
     // and adds it
     public void add(T[] data)
@@ -699,4 +710,7 @@ unittest
     assert(view[1] == 3);
     assert(view[2] == 45);
     assert(view[3] == 2);
+
+    int[] all = view[];
+    assert(all == [1,3,45,2]);
 }
