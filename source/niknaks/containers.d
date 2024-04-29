@@ -598,3 +598,105 @@ unittest
     // Destroy the map (such that it ends the sweeper
     destroy(map);
 }
+
+private struct Sector(T)
+{
+    private T[] data;
+
+    this(T[] data)
+    {
+        this.data = data;
+    }
+
+    public T opIndex(size_t idx)
+    {
+        return this.data[idx];
+    }
+
+    public size_t opDollar()
+    {
+        return this.data.length;
+    }
+
+    public T[] opSlice(size_t start, size_t end)
+    {
+        return this.data[start..end];
+    }
+
+    public T[] opSlice()
+    {
+        return opSlice(0, opDollar);
+    }
+
+}
+
+// TODO: Make a bit better
+private bool isSector(S)()
+{
+    return __traits(hasMember, S, "opIndex");
+}
+
+public struct View(T, SectorType = Sector!(T))
+if(isSector!(SectorType)())
+{
+    private SectorType[] sectors;
+    // private 
+
+    private size_t computeTotalLen()
+    {
+        size_t l;
+        foreach(SectorType sector; this.sectors)
+        {
+            l += sector.opDollar();
+        }
+        return l;
+    }
+
+    public size_t opDollar()
+    {
+        return this.computeTotalLen();
+    }
+
+    public T opIndex(size_t idx)
+    {
+        size_t thunk;
+        foreach(SectorType sector; this.sectors)
+        {
+            if(idx-thunk < sector.opDollar())
+            {
+                return sector[idx-thunk];
+            }
+            else
+            {
+                thunk += sector.opDollar();
+            }
+        }
+
+        import core.exception : ArrayIndexError;
+        throw new ArrayIndexError(idx, opDollar());
+    }
+
+    // Takes the data, constructs a kind-of SectorType
+    // and adds it
+    public void add(T[] data)
+    {
+        this.sectors ~= SectorType(data);
+    }
+}
+
+unittest
+{
+    View!(int) view;
+    assert(view.opDollar() == 0);
+
+    view.add([1,3,45]);
+    assert(view.opDollar() == 3);
+
+    view.add([2]);
+    assert(view.opDollar() == 4);
+
+    assert(view[0] == 1);
+    assert(view[1] == 3);
+    assert(view[2] == 45);
+    assert(view[3] == 12);
+}
