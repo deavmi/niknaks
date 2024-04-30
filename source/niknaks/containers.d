@@ -688,6 +688,32 @@ if(isSector!(SectorType)())
         return buff;
     }
 
+    private static bool isArrayAppend(P)()
+    {
+        return __traits(isSame, P, T[]);
+    }
+
+    private static bool isElementAppend(P)()
+    {
+        return __traits(isSame, P, T);
+    }
+
+    // Append
+    public void opOpAssign(string op, E)(E value)
+    if(op == "~" && (isArrayAppend!(E) || isElementAppend!(E)))
+    {
+        static if(isArrayAppend!(E))
+        {
+            add(value);
+        }
+        else
+        {
+            add([value]);
+        }
+    }
+
+    // public opIn
+
     // Takes the data, constructs a kind-of SectorType
     // and adds it
     public void add(T[] data)
@@ -712,10 +738,10 @@ unittest
         assert(e.length == 0);
     }
 
-    view.add([1,3,45]);
+    view ~= [1,3,45];
     assert(view.opDollar() == 3);
 
-    view.add([2]);
+    view ~= 2;
     assert(view.opDollar() == 4);
 
     assert(view[0] == 1);
