@@ -613,6 +613,11 @@ private struct Sector(T)
         return this.data[idx];
     }
 
+    public void opIndexAssign(T value, size_t index)
+    {
+        this.data[index] = value;
+    }
+
     public size_t opDollar()
     {
         return this.data.length;
@@ -667,6 +672,24 @@ if(isSector!(SectorType)())
             if(idx-thunk < sector.opDollar())
             {
                 return sector[idx-thunk];
+            }
+            else
+            {
+                thunk += sector.opDollar();
+            }
+        }
+
+        throw new ArrayIndexError(idx, opDollar());
+    }
+
+    public void opIndexAssign(T value, size_t idx)
+    {
+        size_t thunk;
+        foreach(SectorType sector; this.sectors)
+        {
+            if(idx-thunk < sector.opDollar())
+            {
+                sector[idx-thunk] = value;
             }
             else
             {
@@ -749,6 +772,8 @@ unittest
     assert(view[2] == 45);
     assert(view[3] == 2);
 
+    view[0] = 71;
+
     int[] all = view[];
-    assert(all == [1,3,45,2]);
+    assert(all == [71,3,45,2]);
 }
