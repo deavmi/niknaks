@@ -636,6 +636,8 @@ private bool isSector(S)()
     return __traits(hasMember, S, "opIndex");
 }
 
+import core.exception : ArrayIndexError;
+
 public struct View(T, SectorType = Sector!(T))
 if(isSector!(SectorType)())
 {
@@ -672,7 +674,6 @@ if(isSector!(SectorType)())
             }
         }
 
-        import core.exception : ArrayIndexError;
         throw new ArrayIndexError(idx, opDollar());
     }
 
@@ -699,6 +700,17 @@ unittest
 {
     View!(int) view;
     assert(view.opDollar() == 0);
+
+    try
+    {
+        view[1];
+        assert(false);
+    }
+    catch(ArrayIndexError e)
+    {
+        assert(e.index == 1);
+        assert(e.length == 0);
+    }
 
     view.add([1,3,45]);
     assert(view.opDollar() == 3);
