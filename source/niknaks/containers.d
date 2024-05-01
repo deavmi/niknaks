@@ -618,9 +618,17 @@ private struct Sector(T)
         this.data[index] = value;
     }
 
+    // Contract: Obtaining the length must be present
     public size_t opDollar()
     {
         return this.data.length;
+    }
+
+    // Contract: Obtaining the length must be present
+    @property
+    public size_t length()
+    {
+        return opDollar();
     }
 
     public T[] opSlice(size_t start, size_t end)
@@ -632,6 +640,12 @@ private struct Sector(T)
     {
         return opSlice(0, opDollar);
     }
+
+    // Contract: Rezising must be implemented
+    // TODO: This would then be the very reason for
+    // using ref actually, as resizing may only
+    // change a local copy when extding on
+    // the tail-end "extent" (SectorType)
 
 }
 
@@ -685,11 +699,17 @@ if(isSector!(SectorType)())
     public void opIndexAssign(T value, size_t idx)
     {
         size_t thunk;
+        // TODO: Should be ref, else it is just a local struct copy
+        // could cheat if sector is never replaced, hence why it works
         foreach(SectorType sector; this.sectors)
         {
+            writeln(sector);
+            writeln("idx: ", idx);
+            writeln("thunk: ", thunk);
             if(idx-thunk < sector.opDollar())
             {
                 sector[idx-thunk] = value;
+                return;
             }
             else
             {
@@ -743,6 +763,19 @@ if(isSector!(SectorType)())
     {
         this.sectors ~= SectorType(data);
     }
+
+    @property
+    public size_t length()
+    {
+        return computeTotalLen();
+    }
+
+    @property
+    public void length(size_t size)
+    {
+        // TODO: Add support for sizing down
+        // TODO: Add support for sizing up
+    }
 }
 
 unittest
@@ -776,4 +809,9 @@ unittest
 
     int[] all = view[];
     assert(all == [71,3,45,2]);
+
+    // Truncate by 1 element
+    view.length = view.length-1;
+    all = view[];
+    assert(all == [71,3,45]);
 }
