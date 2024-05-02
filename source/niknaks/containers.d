@@ -742,16 +742,7 @@ if(isSector!(SectorType)())
 
     public T[] opSlice()
     {
-        T[] buff;
-        foreach(SectorType sector; this.sectors)
-        {
-            buff ~= sector[];
-        }
-
-        // Trim to "fake" size
-        buff.length = this.curSize;
-
-        return buff;
+        return this[0..this.length];
     }
 
     public T[] opSlice(size_t start, size_t end)
