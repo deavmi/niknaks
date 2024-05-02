@@ -668,26 +668,67 @@ public class Tree(T)
     private T value;
     private Tree!(T)[] children;
 
+    /** 
+     * Constructs a new tree with
+     * the given value to set
+     *
+     * Params:
+     *   value = the value of
+     * this tree node
+     */
     this(T value)
     {
         this.value = value;
     }
 
+    /** 
+     * Creates a new tree without
+     * associating any value with
+     * itself
+     */
     this()
     {
 
     }
 
+    /** 
+     * Sets the tree node's
+     * associated value
+     *
+     * Params:
+     *   value = the valye
+     */
     public void setValue(T value)
     {
         this.value = value;
     }
 
+    /** 
+     * Appends another tree node
+     * to the array of children
+     * of this node's
+     *
+     * Params:
+     *   node = the tree node
+     * to append
+     */
     public void appendNode(Tree!(T) node)
     {
         this.children ~= node;
     }
 
+    /** 
+     * Removes a given tree node
+     * from th array of children
+     * of thie node's
+     *
+     * Params:
+     *   node = the tree node to
+     * remove
+     * Returns: `true` if the node
+     * was found and then removed,
+     * otherwise `false`
+     */
     public bool removeNode(Tree!(T) node)
     {
         bool found = false;
