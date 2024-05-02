@@ -731,7 +731,21 @@ private bool isSector(S)()
 
 
 
-
+/** 
+ * A view represents a collection of
+ * `SectorType`(s) which can be accessed
+ * in an array like manner and have their
+ * elements changed too. Therefore this
+ * provides access to these originally
+ * non-contiguous data sets as if they
+ * were one contiguous array.
+ *
+ * Updating of elements is allowed,
+ * fetching of elements (and slices)
+ * and lastly sizing down but NOT
+ * updwards. This last constraint
+ * is why this is considered a "view".
+ */
 public struct View(T, SectorType = Sector!(T))
 if(isSector!(SectorType)())
 {
