@@ -778,11 +778,9 @@ if(isSector!(SectorType)())
         }
     }
 
-    // public opIn
-
     // Takes the data, constructs a kind-of SectorType
     // and adds it
-    public void add(T[] data)
+    private void add(T[] data)
     {
         // Create a new sector
         SectorType sec = SectorType(data);
