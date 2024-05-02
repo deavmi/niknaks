@@ -796,15 +796,6 @@ if(isSector!(SectorType)())
             thunk += sector.opDollar();
         }
 
-
-
-        // FIXME: This is lazy, do a check for up to where
-        // and actually make THIS the real implementation
-
-        writeln(collected);
-
-        // TODO: Also if the range matches the bounds
-        // of a given range exactly then extract directly
         return collected;
     }
 
