@@ -835,6 +835,15 @@ public class Tree(T)
         }
     }
 
+    /** 
+     * Returns the value of
+     * the child node at
+     * the provided index
+     *
+     * Params:
+     *   idx = the index
+     * Returns: the value
+     */
     public T opIndex(size_t idx)
     {
         return opIndex!(T)(idx);
