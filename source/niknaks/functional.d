@@ -5,7 +5,8 @@
  */
 module niknaks.functional;
 
-import std.traits : isAssignable;
+import std.traits : isAssignable, isFunction, isDelegate, ParameterTypeTuple, ReturnType;
+import std.functional : toDelegate;
 
 /** 
  * Predicate for testing an input type
@@ -24,9 +25,6 @@ template Predicate(T)
 	 */
 	alias Predicate = bool delegate(T);
 }
-
-import std.traits : isFunction, isDelegate, ParameterTypeTuple, isFunction, ReturnType;
-import std.functional : toDelegate;
 
 /** 
  * Given the symbol of a function or
