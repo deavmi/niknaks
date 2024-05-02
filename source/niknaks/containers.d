@@ -706,8 +706,6 @@ if(isSector!(SectorType)())
                 thunk += sector.opDollar();
             }
         }
-
-        throw new ArrayIndexError(idx, this.length);
     }
 
     public void opIndexAssign(T value, size_t idx)
