@@ -796,7 +796,7 @@ if(isSector!(SectorType)())
             {
                 collected ~= sector[0..end-thunk];
             }
-            // if the current secto's entirety
+            // if the current sector's entirety
             // is to be included
             else
             {
