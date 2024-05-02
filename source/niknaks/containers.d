@@ -751,12 +751,7 @@ public class Tree(T)
 
         return false;
     }
-
-    // public T opIndex(size_t idx)
-    // {
-    //     return idx < this.children.length ? this.children[idx].getValue() : T.init;
-    // }
-
+    
     private static bool isTreeNodeType(E)()
     {
         return __traits(isSame, E, Tree!(T));
