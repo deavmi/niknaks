@@ -654,15 +654,51 @@ private struct Sector(T)
 }
 
 // TODO: Make a bit better
-import std.traits : hasMember, hasStaticMember, Parameters;
-import std.meta : AliasSeq;
+import std.traits : hasMember, hasStaticMember, Parameters, arity, ReturnType, TemplateArgsOf;
+import std.meta : AliasSeq, staticIndexOf;
 private bool isSector(S)()
 {
     bool s = true;
 
-    s = hasMember!(S, "opSlice") && __traits(isSame, Parameters!(S.opSlice), AliasSeq!(size_t, size_t));
+    // if()
+    alias args = TemplateArgsOf!(S);
+    pragma(msg, args);
+    static if(!args.length)
+    {
+        return false;
+    }
+    
+    alias T = args[0];
 
+    // Has opSlice(size_t, size_t) with T[] return
+    s &= hasMember!(S, "opSlice") &&
+        __traits(isSame, Parameters!(S.opSlice), AliasSeq!(size_t, size_t)) &&
+        __traits(isSame, ReturnType!(S.opSlice), T[]);
 
+    // Has opSlice() with T[] return
+    bool foundNonParamOpSlice = false;
+    foreach(func; __traits(getOverloads, S, "opSlice"))
+    {
+        if(arity!(func) == 0)
+        {
+            static if(__traits(isSame, ReturnType!(S.opSlice), T[]))
+            {
+                foundNonParamOpSlice = true;
+            }
+        }
+    }
+    s &= foundNonParamOpSlice;
+    // s &= hasMember!(S, "opSlice") && arity!(S.) == 0;
+
+    pragma(msg, __traits(getFunctionAttributes, S.length));
+    pragma(msg, 3LU > -1);
+    // pragma(msg,   staticIndexOf!("@property", __traits(getFunctionAttributes, S.length)) == -1);
+  
+
+    // Has length method (TODO: Add @property check)
+    s &= hasMember!(S, "length") && 
+         __traits(isSame, ReturnType!(S.length), size_t) &&
+         staticIndexOf!("@property", __traits(getFunctionAttributes, S.length)) != -1;
 
 
     return s;
