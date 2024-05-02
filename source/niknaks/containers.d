@@ -751,7 +751,7 @@ public class Tree(T)
 
         return false;
     }
-    
+
     private static bool isTreeNodeType(E)()
     {
         return __traits(isSame, E, Tree!(T));
@@ -762,6 +762,15 @@ public class Tree(T)
         return __traits(isSame, E, T);
     }
 
+    /** 
+     * Returns a slice of the requested
+     * type. This is either `Tree!(T)`
+     * or `T` itself, therefore returning
+     * an array of either
+     *
+     * Returns: an array of the requested
+     * type of children
+     */
     public E[] opSlice(E)()
     if(isTreeNodeType!(E) || isTreeValueType!(E))
     {
@@ -784,11 +793,33 @@ public class Tree(T)
         }
     }
 
+    /** 
+     * Returns an array of all the childrens'
+     * associated values
+     *
+     * Returns: a `T[]`
+     */
     public T[] opSlice()
     {
         return opSlice!(T)();
     }
 
+    /** 
+     * Returns the element of the child
+     * at the given index.
+     *
+     * The type `E` can be specified
+     * as either `Tree!(T)` or `T`
+     * which will hence return a node
+     * from the children array at the 
+     * given index of that tyope (either
+     * the child node or the child node's
+     * value).
+     *
+     * Params:
+     *   idx = the index 
+     * Returns: the type `E`
+     */
     public E opIndex(E)(size_t idx)
     if(isTreeNodeType!(E) || isTreeValueType!(E))
     {
