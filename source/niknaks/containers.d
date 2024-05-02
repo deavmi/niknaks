@@ -624,12 +624,20 @@ public template Always(T)
     }
 }
 
+/** 
+ * A touching stratergy
+ * that does nothing
+ */
 public template Nothing(T)
 {
-    public void Nothing(Tree!(T) treeNode)
-    {
-
-    }
+    /** 
+     * Consumes a tree node
+     * and does zilch with it
+     *
+     * Params:
+     *   treeNode = the node
+     */
+    public void Nothing(Tree!(T));
 }
 
 /** 
@@ -659,8 +667,6 @@ public template TouchStratergy(T)
 {
     public alias TouchStratergy = void delegate(Tree!(T) item);
 }
-
-
 
 // TODO: Technically this is a graph
 public class Tree(T)
