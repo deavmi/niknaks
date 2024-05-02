@@ -740,8 +740,6 @@ if(isSector!(SectorType)())
                 thunk += sector.opDollar();
             }
         }
-
-        throw new ArrayIndexError(idx, this.length);
     }
 
     public T[] opSlice()
