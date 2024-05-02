@@ -695,11 +695,25 @@ private bool isSector(S)()
     // pragma(msg,   staticIndexOf!("@property", __traits(getFunctionAttributes, S.length)) == -1);
   
 
-    // Has length method (TODO: Add @property check)
+    // Has length method
     s &= hasMember!(S, "length") && 
          __traits(isSame, ReturnType!(S.length), size_t) &&
          staticIndexOf!("@property", __traits(getFunctionAttributes, S.length)) != -1;
 
+    // Has opDollar with size_t return
+    s &= hasMember!(S, "opDollar") &&
+        __traits(isSame, Parameters!(S.opDollar), AliasSeq!()) &&
+        __traits(isSame, ReturnType!(S.opDollar), size_t);
+
+    // Has opIndex(size_t) with T return
+    s &= hasMember!(S, "opIndex") &&
+        __traits(isSame, Parameters!(S.opIndex), AliasSeq!(size_t)) &&
+        __traits(isSame, ReturnType!(S.opIndex), T);
+
+    // Has opIndexAssign(size_t) with T return
+    s &= hasMember!(S, "opIndexAssign") &&
+        __traits(isSame, Parameters!(S.opIndexAssign), AliasSeq!(T, size_t)) &&
+        __traits(isSame, ReturnType!(S.opIndexAssign), void);
 
     return s;
 }
