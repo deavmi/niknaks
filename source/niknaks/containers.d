@@ -756,9 +756,66 @@ if(isSector!(SectorType)())
 
     public T[] opSlice(size_t start, size_t end)
     {
+        // Invariant of start < end
+        if(!(start <= end))
+        {
+            // TODO: Check
+            throw new RangeError("Starting index must be smaller than or equal to ending index");
+        }
+        // Within range of "fake" size
+        else if(!((start < this.length) && (end <= this.length)))
+        {
+            throw new RangeError("start index or end index not under range");
+            // throw new ArrayIndexError(idx, this.length);
+        }
+
+        // TODO: is this the best way to go about
+        // implementing this?
+
+        T[] collected;
+
+        size_t thunk;
+        foreach(SectorType sector; this.sectors)
+        {
+            // If the current sector contains
+            // both the starting AND ending
+            // indices
+            if(start-thunk < sector.opDollar() && end-thunk <= sector.opDollar())
+            {
+                return sector[start-thunk..end-thunk];
+            }
+            // If the current sector's starting
+            // index (only) is included
+            else if(start-thunk < sector.opDollar() && !(end-thunk <= sector.opDollar()))
+            {
+                collected ~= sector[start-thunk..$];
+            }
+            // If the current sector's ending
+            // index (only) is included
+            else if(!(start-thunk < sector.opDollar()) && end-thunk <= sector.opDollar())
+            {
+                collected ~= sector[0..end-thunk];
+            }
+            // if the current secto's entirety
+            // is to be included
+            else
+            {
+                collected ~= sector[];
+            }
+
+            thunk += sector.opDollar();
+        }
+
+
+
         // FIXME: This is lazy, do a check for up to where
         // and actually make THIS the real implementation
-        return this.opSlice()[start..end];
+
+        writeln(collected);
+
+        // TODO: Also if the range matches the bounds
+        // of a given range exactly then extract directly
+        return collected;
     }
 
     private static bool isArrayAppend(P)()
@@ -895,6 +952,7 @@ unittest
     assert(view[2] == 45);
     assert(view[3] == 2);
     assert(view[0..2] == [1,3]);
+    assert(view[0..4] == [1,3,45,2]);
 
     // Update elements
     view[0] = 71;
