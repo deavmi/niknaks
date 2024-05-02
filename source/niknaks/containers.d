@@ -924,7 +924,7 @@ if(isSector!(SectorType)())
         this.curSize += sec.length;
 
         // Concatenate it to the view
-        this.sectors ~= SectorType(data);
+        this.sectors ~= sec;
     }
 
     @property
