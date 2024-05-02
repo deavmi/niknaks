@@ -754,6 +754,13 @@ if(isSector!(SectorType)())
         return buff;
     }
 
+    public T[] opSlice(size_t start, size_t end)
+    {
+        // FIXME: This is lazy, do a check for up to where
+        // and actually make THIS the real implementation
+        return this.opSlice()[start, end];
+    }
+
     private static bool isArrayAppend(P)()
     {
         return __traits(isSame, P, T[]);
