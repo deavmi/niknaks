@@ -751,17 +751,15 @@ if(isSector!(SectorType)())
 
     public T[] opSlice(size_t start, size_t end)
     {
-        // Invariant of start < end
+        // Invariant of start <= end
         if(!(start <= end))
         {
-            // TODO: Check
             throw new RangeError("Starting index must be smaller than or equal to ending index");
         }
         // Within range of "fake" size
         else if(!((start < this.length) && (end <= this.length)))
         {
             throw new RangeError("start index or end index not under range");
-            // throw new ArrayIndexError(idx, this.length);
         }
 
         T[] collected;
