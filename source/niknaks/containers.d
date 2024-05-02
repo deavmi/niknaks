@@ -1012,4 +1012,35 @@ unittest
     view ~= 5;
 
     assert(view[0..5] == [1,2,3,4,5]);
+
+    // test: start <= end invariant broken
+    try
+    {
+        auto j = view[1..0];
+        assert(false);
+    }
+    catch(RangeError e)
+    {
+
+    }
+
+    // test: end out of bounds
+    try
+    {
+        auto j = view[1..view.length+1];
+        assert(false);
+    }
+    catch(RangeError e)
+    {
+
+    }
+
+    int[] d = [1,2,3];
+    writeln("according to dlang: ", d[1..2]);
+
+    writeln("test lekker: ", view[1..2]);
+    assert(view[1..2] == [2]);
+
+    writeln("test lekker: ", view[1..1]);
+    assert(view[1..1] == []);
 }
