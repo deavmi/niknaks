@@ -610,6 +610,11 @@ private struct Sector(T)
         this.data = data;
     }
 
+    public static Sector!(T) make(T[] data)
+    {
+        return Sector!(T)(data);
+    }
+
     public T opIndex(size_t idx)
     {
         return this.data[idx];
@@ -714,6 +719,12 @@ private bool isSector(S)()
     s &= hasMember!(S, "opIndexAssign") &&
         __traits(isSame, Parameters!(S.opIndexAssign), AliasSeq!(T, size_t)) &&
         __traits(isSame, ReturnType!(S.opIndexAssign), void);
+
+
+    // Has make(T[] data) returning S!(T)
+    s &= hasStaticMember!(S, "make") &&
+         __traits(isSame, Parameters!(S.make), AliasSeq!(T[])) &&
+         __traits(isSame, ReturnType!(S.make), S);
 
     return s;
 }
