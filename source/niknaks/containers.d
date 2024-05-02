@@ -758,7 +758,7 @@ if(isSector!(SectorType)())
     {
         // FIXME: This is lazy, do a check for up to where
         // and actually make THIS the real implementation
-        return this.opSlice()[start, end];
+        return this.opSlice()[start..end];
     }
 
     private static bool isArrayAppend(P)()
@@ -894,6 +894,7 @@ unittest
     assert(view[1] == 3);
     assert(view[2] == 45);
     assert(view[3] == 2);
+    assert(view[0..2] == [1,3]);
 
     // Update elements
     view[0] = 71;
