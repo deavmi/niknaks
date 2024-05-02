@@ -733,7 +733,7 @@ private bool isSector(S)()
 
 /** 
  * A view represents a collection of
- * `SectorType`(s) which can be accessed
+ * arrays which can be accessed
  * in an array like manner and have their
  * elements changed too. Therefore this
  * provides access to these originally
@@ -750,7 +750,6 @@ public struct View(T, SectorType = Sector!(T))
 if(isSector!(SectorType)())
 {
     private SectorType[] sectors;
-    // private 
 
     // Maybe current size should be here as we
     // are a view, we should allow modofication
@@ -919,7 +918,7 @@ if(isSector!(SectorType)())
     private void add(T[] data)
     {
         // Create a new sector
-        SectorType sec = SectorType(data);
+        SectorType sec = SectorType.make(data);
 
         // Update the tracking size
         this.curSize += sec.length;
@@ -940,6 +939,8 @@ if(isSector!(SectorType)())
         // TODO: Need we continuously compute this?
         // ... we should have a tracking field for
         // ... this
+        // Would only need to be called in length(size_t)
+        // and add(T[])
         size_t actualSize = computeTotalLen();
 
         // On successful exit, update the "fake" size
