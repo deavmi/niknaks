@@ -769,9 +769,6 @@ if(isSector!(SectorType)())
             // throw new ArrayIndexError(idx, this.length);
         }
 
-        // TODO: is this the best way to go about
-        // implementing this?
-
         T[] collected;
 
         size_t thunk;
@@ -796,7 +793,7 @@ if(isSector!(SectorType)())
             {
                 collected ~= sector[0..end-thunk];
             }
-            // if the current sector's entirety
+            // If the current sector's entirety
             // is to be included
             else
             {
@@ -1005,4 +1002,14 @@ unittest
     view.length = 0;
     assert(view.length == 0);
     assert(view[] == []);
+}
+
+unittest
+{
+    View!(int) view;
+    view ~= 1;
+    view ~= [2,3,4];
+    view ~= 5;
+
+    assert(view[0..5] == [1,2,3,4,5]);
 }
