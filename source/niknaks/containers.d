@@ -647,6 +647,8 @@ private struct Sector(T)
     // change a local copy when extding on
     // the tail-end "extent" (SectorType)
 
+    // Actually should resizing even be done here?
+
 }
 
 // TODO: Make a bit better
@@ -656,12 +658,18 @@ private bool isSector(S)()
 }
 
 import core.exception : ArrayIndexError;
+import core.exception : RangeError;
 
 public struct View(T, SectorType = Sector!(T))
 if(isSector!(SectorType)())
 {
     private SectorType[] sectors;
     // private 
+
+    // Maybe current size should be here as we
+    // are a view, we should allow modofication
+    // but not make any NEW arrays
+    private size_t curSize;
 
     private size_t computeTotalLen()
     {
@@ -675,11 +683,17 @@ if(isSector!(SectorType)())
 
     public size_t opDollar()
     {
-        return this.computeTotalLen();
+        return this.length;
     }
 
     public T opIndex(size_t idx)
     {
+        // Within range of "fake" size
+        if(!(idx < this.length))
+        {
+            throw new ArrayIndexError(idx, this.length);
+        }
+
         size_t thunk;
         foreach(SectorType sector; this.sectors)
         {
@@ -693,11 +707,17 @@ if(isSector!(SectorType)())
             }
         }
 
-        throw new ArrayIndexError(idx, opDollar());
+        throw new ArrayIndexError(idx, this.length);
     }
 
     public void opIndexAssign(T value, size_t idx)
     {
+        // Within range of "fake" size
+        if(!(idx < this.length))
+        {
+            throw new ArrayIndexError(idx, this.length);
+        }
+
         size_t thunk;
         // TODO: Should be ref, else it is just a local struct copy
         // could cheat if sector is never replaced, hence why it works
@@ -717,7 +737,7 @@ if(isSector!(SectorType)())
             }
         }
 
-        throw new ArrayIndexError(idx, opDollar());
+        throw new ArrayIndexError(idx, this.length);
     }
 
     public T[] opSlice()
@@ -727,6 +747,9 @@ if(isSector!(SectorType)())
         {
             buff ~= sector[];
         }
+
+        // Trim to "fake" size
+        buff.length = this.curSize;
 
         return buff;
     }
@@ -761,13 +784,20 @@ if(isSector!(SectorType)())
     // and adds it
     public void add(T[] data)
     {
+        // Create a new sector
+        SectorType sec = SectorType(data);
+
+        // Update the tracking size
+        this.curSize += sec.length;
+
+        // Concatenate it to the view
         this.sectors ~= SectorType(data);
     }
 
     @property
     public size_t length()
     {
-        return computeTotalLen();
+        return this.curSize;
     }
 
     @property
@@ -775,6 +805,59 @@ if(isSector!(SectorType)())
     {
         // TODO: Add support for sizing down
         // TODO: Add support for sizing up
+
+        // TODO: Need we continuously compute this?
+        // ... we should have a tracking field for
+        // ... this
+        size_t actualSize = computeTotalLen();
+
+        // On successful exit, update the "fake" size
+        scope(success)
+        {
+            this.curSize = size;
+        }
+
+
+        // Don't allow sizing up (doesn't make sense for a view)
+        if(size > actualSize)
+        {
+            auto r = new RangeError();
+            r.msg = "Cannot extend the size of a view past its total size (of all attached sectors)";
+            throw r;
+        }
+        // If nothing changes
+        else if(size == actualSize)
+        {
+            // Nothing
+        }
+        // If shrinking to zero
+        else if(size == 0)
+        {
+            // Just drop everything
+            this.sectors.length = 0;
+        }
+        // If shrinking (arbitrary)
+        else
+        {
+            // Sectors from left-to-right to keep
+            size_t sectorCnt;
+
+            // Accumulator
+            size_t accumulator;
+
+            foreach(SectorType sector; this.sectors)
+            {
+                accumulator += sector.length;
+                sectorCnt++;
+                if(size <= accumulator)
+                {
+                    break;
+                }
+            }
+
+            this.sectors.length = sectorCnt;
+        }
+        
     }
 }
 
@@ -796,22 +879,66 @@ unittest
 
     view ~= [1,3,45];
     assert(view.opDollar() == 3);
+    assert(view.length == 3);
 
     view ~= 2;
     assert(view.opDollar() == 4);
+    assert(view.length == 4);
 
     assert(view[0] == 1);
     assert(view[1] == 3);
     assert(view[2] == 45);
     assert(view[3] == 2);
 
+    // Update elements
     view[0] = 71;
+    view[3] = 50;
 
+    // Set size to same size
+    view.length = view.length;
+
+    // Check that update is present
+    // and size unchanged
     int[] all = view[];
-    assert(all == [71,3,45,2]);
+    assert(all == [71,3,45,50]);
 
     // Truncate by 1 element
     view.length = view.length-1;
     all = view[];
     assert(all == [71,3,45]);
+
+    // This should fail
+    try
+    {
+        view[3] = 3;
+        assert(false);
+    }
+    catch(RangeError e)
+    {
+    }
+
+    // This should fail
+    try
+    {
+        int j = view[3];
+        assert(false);
+    }
+    catch(RangeError e)
+    {
+    }
+
+    // Up-sizing past real size should not be allowed
+    try
+    {
+        view.length =  view.length+1;
+        assert(false);
+    }
+    catch(RangeError e)
+    {
+    }
+
+    // Size to zero
+    view.length = 0;
+    assert(view.length == 0);
+    assert(view[] == []);
 }
