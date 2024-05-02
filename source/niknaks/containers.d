@@ -723,9 +723,13 @@ if(isSector!(SectorType)())
         // could cheat if sector is never replaced, hence why it works
         foreach(SectorType sector; this.sectors)
         {
-            writeln(sector);
-            writeln("idx: ", idx);
-            writeln("thunk: ", thunk);
+            version(unittest)
+            {
+                writeln(sector);
+                writeln("idx: ", idx);
+                writeln("thunk: ", thunk);
+            }
+            
             if(idx-thunk < sector.opDollar())
             {
                 sector[idx-thunk] = value;
