@@ -851,9 +851,6 @@ if(isSector!(SectorType)())
     @property
     public void length(size_t size)
     {
-        // TODO: Add support for sizing down
-        // TODO: Add support for sizing up
-
         // TODO: Need we continuously compute this?
         // ... we should have a tracking field for
         // ... this
@@ -905,7 +902,6 @@ if(isSector!(SectorType)())
 
             this.sectors.length = sectorCnt;
         }
-        
     }
 }
 
