@@ -654,10 +654,20 @@ private struct Sector(T)
 }
 
 // TODO: Make a bit better
+import std.traits : hasMember, hasStaticMember, Parameters;
+import std.meta : AliasSeq;
 private bool isSector(S)()
 {
-    return __traits(hasMember, S, "opIndex");
+    bool s = true;
+
+    s = hasMember!(S, "opSlice") && __traits(isSame, Parameters!(S.opSlice), AliasSeq!(size_t, size_t));
+
+
+
+
+    return s;
 }
+
 
 
 
