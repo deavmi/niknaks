@@ -11,6 +11,8 @@ import std.datetime.stopwatch : StopWatch, AutoStart;
 import core.thread : Thread;
 import core.sync.condition : Condition;
 import std.functional : toDelegate;
+import core.exception : ArrayIndexError;
+import core.exception : RangeError;
 
 version(unittest)
 {
@@ -657,8 +659,7 @@ private bool isSector(S)()
     return __traits(hasMember, S, "opIndex");
 }
 
-import core.exception : ArrayIndexError;
-import core.exception : RangeError;
+
 
 public struct View(T, SectorType = Sector!(T))
 if(isSector!(SectorType)())
