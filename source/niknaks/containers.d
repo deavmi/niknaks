@@ -721,7 +721,7 @@ private bool isSector(S)()
         __traits(isSame, ReturnType!(S.opIndexAssign), void);
 
 
-    // Has make(T[] data) returning S!(T)
+    // Has make(T[] data) returning S (implied S!(T) due to template arg check earlier)
     s &= hasStaticMember!(S, "make") &&
          __traits(isSame, Parameters!(S.make), AliasSeq!(T[])) &&
          __traits(isSame, ReturnType!(S.make), S);
