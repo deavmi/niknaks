@@ -756,6 +756,11 @@ if(isSector!(SectorType)())
         {
             throw new RangeError("Starting index must be smaller than or equal to ending index");
         }
+        // If the indices are equal, then it is empty
+        else if(start == end)
+        {
+            return [];
+        }
         // Within range of "fake" size
         else if(!((start < this.length) && (end <= this.length)))
         {
