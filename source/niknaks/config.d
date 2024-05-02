@@ -345,7 +345,6 @@ public struct ConfigEntry
         {
             return numeric();
         }
-        
         else static if(__traits(isSame, T, string[]))
         {
             return array();
