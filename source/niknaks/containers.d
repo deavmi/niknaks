@@ -611,8 +611,22 @@ unittest
     destroy(map);
 }
 
+/** 
+ * A visitation stratergy
+ * which always returns
+ * `true`
+ */
 public template Always(T)
 {
+    /** 
+     * Whatever tree node is
+     * provided always accept
+     * a visitation to it
+     *
+     * Params:
+     *   treeNode = the node
+     * Returns: `true` always
+     */
     public bool Always(Tree!(T) treeNode)
     {
         version(unittest)
