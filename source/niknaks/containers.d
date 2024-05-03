@@ -869,6 +869,31 @@ public class Tree(T)
         return opIndex!(T)(idx);
     }
 
+    /** 
+     * Returns the number
+     * of children attached
+     * to this node
+     *
+     * Returns: the count
+     */
+    @property
+    public size_t length()
+    {
+        return this.children.length;
+    }
+
+    /** 
+     * Returns the number
+     * of children attached
+     * to this node
+     *
+     * Returns: the count
+     */
+    public size_t opDollar()
+    {
+        return this.length;
+    }
+
     public T[] dfs
     (
         InclusionStratergy!(T) strat = toDelegate(&Always!(T)),
