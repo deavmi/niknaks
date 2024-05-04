@@ -683,6 +683,49 @@ public template TouchStratergy(T)
 }
 
 // TODO: Technically this is a graph
+
+/** 
+ * A graph of nodes.
+ *
+ * These nodes are comprised of
+ * two components. The first of
+ * which is their associated value
+ * of type `T`, then the second
+ * are their children nodes
+ * (if any). The latter are of
+ * type `Graph!(T)` and therefore
+ * when constructing one such node
+ * it can also be added as a child
+ * of another node, therefore
+ * allowing you to build your
+ * graph as you see fit.
+ *
+ * Some notable functionality,
+ * other than the obvious,
+ * is the pluggable dfs method
+ * which let's you perform 
+ * a recursive search on
+ * the graph, parameterized
+ * by two stratergies. The first
+ * is the so-called `TouchStratergy`
+ * which specifies the function
+ * to be called on the current node
+ * when `dfs` is called on it -
+ * this is the first thing that
+ * is done. The other parameter
+ * is the `VisitationStratergy`
+ * which is a predicate that
+ * will be called BEFORE
+ * entering the dfs (recursing)
+ * of a candidate child node.
+ * With this things like trees
+ * can be built or rather
+ * _derived_ from a graph.
+ * This is infact what the visitation
+ * tree type does.
+ *
+ * See_Also: `VisitationTree`
+ */
 public class Tree(T)
 {
     private T value;
