@@ -813,12 +813,12 @@ public class Graph(T)
         return false;
     }
 
-    private static bool isTreeNodeType(E)()
+    private static bool isGraphNodeType(E)()
     {
         return __traits(isSame, E, Graph!(T));
     }
 
-    private static bool isTreeValueType(E)()
+    private static bool isGraphValueType(E)()
     {
         return __traits(isSame, E, T);
     }
@@ -833,15 +833,15 @@ public class Graph(T)
      * type of children
      */
     public E[] opSlice(E)()
-    if(isTreeNodeType!(E) || isTreeValueType!(E))
+    if(isGraphNodeType!(E) || isGraphValueType!(E))
     {
         // If the children as tree nodes is requested
-        static if(isTreeNodeType!(E))
+        static if(isGraphNodeType!(E))
         {
             return this.children;
         }
         // If the children as values themselves is requested
-        else static if(isTreeValueType!(E))
+        else static if(isGraphValueType!(E))
         {
             T[] slice;
             foreach(Graph!(T) tnode; this.children)
@@ -880,15 +880,15 @@ public class Graph(T)
      * Returns: the type `E`
      */
     public E opIndex(E)(size_t idx)
-    if(isTreeNodeType!(E) || isTreeValueType!(E))
+    if(isGraphNodeType!(E) || isGraphValueType!(E))
     {
         // If the child as a tree node is requested
-        static if(isTreeNodeType!(E))
+        static if(isGraphNodeType!(E))
         {
             return this.children[idx];
         }
         // If the child as a value itself is requested
-        else static if(isTreeValueType!(E))
+        else static if(isGraphValueType!(E))
         {
             return this.children[idx].value;
         }
