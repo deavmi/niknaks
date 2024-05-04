@@ -1023,6 +1023,12 @@ public class Graph(T)
         return collected;
     }
 
+    /** 
+     * Returns a string representation
+     * of this node and its value
+     *
+     * Returns: a `string`
+     */
     public override string toString()
     {
         return format("GraphNode [val: %s]", this.value);
