@@ -1050,6 +1050,9 @@ unittest
     treeOfStrings.appendNode(subtree_2);
     treeOfStrings.appendNode(subtree_3);
 
+    assert(treeOfStrings.opIndex!(Graph!(string))(0) == subtree_1);
+    assert(treeOfStrings.opIndex!(Graph!(string))(1) == subtree_2);
+    assert(treeOfStrings.opIndex!(Graph!(string))(2) == subtree_3);
 
     InclusionStratergy!(string) strat = toDelegate(&Always!(string));
     TouchStratergy!(string) touch = toDelegate(&DebugTouch!(string));
