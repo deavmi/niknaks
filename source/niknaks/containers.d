@@ -1069,6 +1069,8 @@ unittest
     assert(treeOfStrings[1] == subtree_2.getValue());
     assert(treeOfStrings[2] == subtree_3.getValue());
 
+    assert(treeOfStrings.opDollar() == 3);
+
     InclusionStratergy!(string) strat = toDelegate(&Always!(string));
     TouchStratergy!(string) touch = toDelegate(&DebugTouch!(string));
 
