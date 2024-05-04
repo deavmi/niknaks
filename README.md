@@ -39,7 +39,7 @@ is expected to grow over time.
     * Some textual manipulation routines as well
 * `niknaks.containers`
     * Some useful container types
-    * Things such as `CacheMap`
+    * Things such as `CacheMap`, `Graph` and `VisitationTree`
 * `niknaks.mechanisms`
     * User-defined input prompter, retry mechanisms
 * `niknaks.config`
