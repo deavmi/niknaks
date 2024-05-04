@@ -849,8 +849,6 @@ public class Graph(T)
                 slice ~= tnode.value;
             }
             return slice;
-            // import std.algorithm.iteration : map;
-            // return map!(getValue)(this.children)[];
         }
     }
 
