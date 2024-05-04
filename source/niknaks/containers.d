@@ -765,6 +765,17 @@ public class Graph(T)
     }
 
     /** 
+     * Obtains the value associated with
+     * this graph node
+     *
+     * Returns: the value `T`
+     */
+    public T getValue()
+    {
+        return this.value;
+    }
+
+    /** 
      * Appends another graph node
      * to the array of children
      * of this node's
@@ -1053,6 +1064,10 @@ unittest
     assert(treeOfStrings.opIndex!(Graph!(string))(0) == subtree_1);
     assert(treeOfStrings.opIndex!(Graph!(string))(1) == subtree_2);
     assert(treeOfStrings.opIndex!(Graph!(string))(2) == subtree_3);
+
+    assert(treeOfStrings[0] == subtree_1.getValue());
+    assert(treeOfStrings[1] == subtree_2.getValue());
+    assert(treeOfStrings[2] == subtree_3.getValue());
 
     InclusionStratergy!(string) strat = toDelegate(&Always!(string));
     TouchStratergy!(string) touch = toDelegate(&DebugTouch!(string));
