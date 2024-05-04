@@ -23,9 +23,9 @@ version(unittest)
 {
     import std.functional : toDelegate;
 
-    private void DebugTouch(T)(Tree!(T) node)
+    private void DebugTouch(T)(Graph!(T) node)
     {
-        writeln("Touching tree node ", node);
+        writeln("Touching graph node ", node);
     }
 }
 
@@ -619,7 +619,7 @@ unittest
 public template Always(T)
 {
     /** 
-     * Whatever tree node is
+     * Whatever graph node is
      * provided always accept
      * a visitation to it
      *
@@ -627,7 +627,7 @@ public template Always(T)
      *   treeNode = the node
      * Returns: `true` always
      */
-    public bool Always(Tree!(T) treeNode)
+    public bool Always(Graph!(T) treeNode)
     {
         version(unittest)
         {
@@ -645,33 +645,33 @@ public template Always(T)
 public template Nothing(T)
 {
     /** 
-     * Consumes a tree node
+     * Consumes a graph node
      * and does zilch with it
      *
      * Params:
      *   treeNode = the node
      */
-    public void Nothing(Tree!(T));
+    public void Nothing(Graph!(T));
 }
 
 /** 
  * The inclusion stratergy which
- * will be called upon the tree
+ * will be called upon the graph
  * node prior to it being visited
  * during a dfs operation.
  *
  * It is a predicate to determine
- * whether or not the tree node
+ * whether or not the graph node
  * in concern should be recursed
  * upon.
  */
 public template InclusionStratergy(T)
 {
-    public alias InclusionStratergy = bool delegate(Tree!(T) item);
+    public alias InclusionStratergy = bool delegate(Graph!(T) item);
 }
 
 /** 
- * This is called on a tree node
+ * This is called on a graph node
  * as part of the first action
  * that takes place during the
  * visitation of said node during
@@ -679,10 +679,8 @@ public template InclusionStratergy(T)
  */
 public template TouchStratergy(T)
 {
-    public alias TouchStratergy = void delegate(Tree!(T) item);
+    public alias TouchStratergy = void delegate(Graph!(T) item);
 }
-
-// TODO: Technically this is a graph
 
 /** 
  * A graph of nodes.
@@ -726,18 +724,18 @@ public template TouchStratergy(T)
  *
  * See_Also: `VisitationTree`
  */
-public class Tree(T)
+public class Graph(T)
 {
     private T value;
-    private Tree!(T)[] children;
+    private Graph!(T)[] children;
 
     /** 
-     * Constructs a new tree with
+     * Constructs a new graph with
      * the given value to set
      *
      * Params:
      *   value = the value of
-     * this tree node
+     * this graph node
      */
     this(T value)
     {
@@ -745,7 +743,7 @@ public class Tree(T)
     }
 
     /** 
-     * Creates a new tree without
+     * Creates a new graph without
      * associating any value with
      * itself
      */
@@ -755,7 +753,7 @@ public class Tree(T)
     }
 
     /** 
-     * Sets the tree node's
+     * Sets the graph node's
      * associated value
      *
      * Params:
@@ -767,7 +765,7 @@ public class Tree(T)
     }
 
     /** 
-     * Appends another tree node
+     * Appends another graph node
      * to the array of children
      * of this node's
      *
@@ -775,24 +773,24 @@ public class Tree(T)
      *   node = the tree node
      * to append
      */
-    public void appendNode(Tree!(T) node)
+    public void appendNode(Graph!(T) node)
     {
         this.children ~= node;
     }
 
     /** 
-     * Removes a given tree node
+     * Removes a given graph node
      * from th array of children
      * of thie node's
      *
      * Params:
-     *   node = the tree node to
+     *   node = the graph node to
      * remove
      * Returns: `true` if the node
      * was found and then removed,
      * otherwise `false`
      */
-    public bool removeNode(Tree!(T) node)
+    public bool removeNode(Graph!(T) node)
     {
         bool found = false;
         size_t idx;
@@ -817,7 +815,7 @@ public class Tree(T)
 
     private static bool isTreeNodeType(E)()
     {
-        return __traits(isSame, E, Tree!(T));
+        return __traits(isSame, E, Graph!(T));
     }
 
     private static bool isTreeValueType(E)()
@@ -827,7 +825,7 @@ public class Tree(T)
 
     /** 
      * Returns a slice of the requested
-     * type. This is either `Tree!(T)`
+     * type. This is either `Graph!(T)`
      * or `T` itself, therefore returning
      * an array of either
      *
@@ -846,7 +844,7 @@ public class Tree(T)
         else static if(isTreeValueType!(E))
         {
             T[] slice;
-            foreach(Tree!(T) tnode; this.children)
+            foreach(Graph!(T) tnode; this.children)
             {
                 slice ~= tnode.value;
             }
@@ -872,10 +870,10 @@ public class Tree(T)
      * at the given index.
      *
      * The type `E` can be specified
-     * as either `Tree!(T)` or `T`
+     * as either `Graph!(T)` or `T`
      * which will hence return a node
      * from the children array at the 
-     * given index of that tyope (either
+     * given index of that type (either
      * the child node or the child node's
      * value).
      *
@@ -960,7 +958,7 @@ public class Tree(T)
         // Touch
         touch(this); // root[x]
 
-        foreach(Tree!(T) child; this.children) // subtree[x], 
+        foreach(Graph!(T) child; this.children) // subtree[x], 
         {
             if(strat(child))
             {
@@ -990,20 +988,20 @@ public class Tree(T)
 
     public override string toString()
     {
-        return format("TreeNode [val: %s]", this.value);
+        return format("GraphNode [val: %s]", this.value);
     }
 }
 
 /**
- * Test out usage of the tree
+ * Test out usage of the `Graph!(T)`
  */
 unittest
 {
-    Tree!(string) treeOfStrings = new Tree!(string)("Top");
+    Graph!(string) treeOfStrings = new Graph!(string)("Top");
 
-    Tree!(string) subtree_1 = new Tree!(string)("1");
-    Tree!(string) subtree_2 = new Tree!(string)("2");
-    Tree!(string) subtree_3 = new Tree!(string)("3");
+    Graph!(string) subtree_1 = new Graph!(string)("1");
+    Graph!(string) subtree_2 = new Graph!(string)("2");
+    Graph!(string) subtree_3 = new Graph!(string)("3");
 
     treeOfStrings.appendNode(subtree_1);
     treeOfStrings.appendNode(subtree_2);
@@ -1022,7 +1020,7 @@ unittest
     assert(result[3] == "Top");
 
 
-    auto i = treeOfStrings.opSlice!(Tree!(string))();
+    auto i = treeOfStrings.opSlice!(Graph!(string))();
     writeln("Siblings: ", i);
     assert(i[0] == subtree_1);
     assert(i[1] == subtree_2);
@@ -1038,7 +1036,7 @@ unittest
 }
 
 /** 
- * A kind-of a tree which has the ability
+ * A kind-of a graph which has the ability
  * to linearize all of its nodes which
  * results in performing a depth first
  * search resulting in the collection of
@@ -1058,7 +1056,7 @@ unittest
  * relations can be flattened into an
  * array.
  */
-public class VisitationTree(T) : Tree!(T)
+public class VisitationTree(T) : Graph!(T)
 {
     private bool visisted;    
 
@@ -1087,12 +1085,12 @@ public class VisitationTree(T) : Tree!(T)
      * The inclusion startergy
      *
      * Params:
-     *   tnode = the tree node
+     *   tnode = the graph node
      * Returns: `true` if not
      * yet visited or incompatible
      * node type
      */
-    private static bool _shouldVisit(Tree!(T) tnode)
+    private static bool _shouldVisit(Graph!(T) tnode)
     {
         VisitationTree!(T) vnode = cast(VisitationTree!(T))tnode;
         return vnode && !vnode.isVisited();
@@ -1102,12 +1100,12 @@ public class VisitationTree(T) : Tree!(T)
      * The touching stratergy
      *
      * Only works on compatible
-     * tree nodes
+     * graph nodes
      *
      * Params:
      *   tnode = the tree node
      */
-    private static void _touch(Tree!(T) tnode)
+    private static void _touch(Graph!(T) tnode)
     {
         VisitationTree!(T) vnode = cast(VisitationTree!(T))tnode;
         if(vnode)
