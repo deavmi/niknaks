@@ -948,6 +948,30 @@ public class Graph(T)
         return this.length;
     }
 
+    /** 
+     * Performs a depth first search
+     * on the graph by firstly calling
+     * the `TouchStratergy` on the current
+     * node and then iterating over all
+     * of its children and only recursing
+     * on each of them if the `InclusionStratergy`
+     * allows it.
+     *
+     * The touch stratergy is called
+     * as part of the first line of code
+     * in the call to the dfs on a
+     * given graph node.
+     *
+     * Note that is you don't have a good
+     * inclusion stratergy and touch startergy
+     * then you may have a stack overflow
+     * occur if your graph has cycles
+     *
+     * Params: 
+     *   strat = the `InclusionStratergy` 
+     *   touch = the `TouchStratergy`
+     * Returns: a `T[]`
+     */
     public T[] dfs
     (
         InclusionStratergy!(T) strat = toDelegate(&Always!(T)),
