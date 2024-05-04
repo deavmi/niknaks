@@ -813,11 +813,26 @@ public class Graph(T)
         return false;
     }
 
+    /** 
+     * Checks if the given type is
+     * that of a graph node
+     *
+     * Returns: `true` if so, `false`
+     * otherwise
+     */
     private static bool isGraphNodeType(E)()
     {
         return __traits(isSame, E, Graph!(T));
     }
 
+    /** 
+     * Checks if the given type is
+     * that of a graph node's value
+     * type
+     *
+     * Returns: `true` if so, `false`
+     * otherwise
+     */
     private static bool isGraphValueType(E)()
     {
         return __traits(isSame, E, T);
