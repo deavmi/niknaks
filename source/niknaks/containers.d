@@ -850,7 +850,7 @@ public class Graph(T)
     public E[] opSlice(E)()
     if(isGraphNodeType!(E) || isGraphValueType!(E))
     {
-        // If the children as tree nodes is requested
+        // If the children as graph nodes is requested
         static if(isGraphNodeType!(E))
         {
             return this.children;
@@ -897,7 +897,7 @@ public class Graph(T)
     public E opIndex(E)(size_t idx)
     if(isGraphNodeType!(E) || isGraphValueType!(E))
     {
-        // If the child as a tree node is requested
+        // If the child as a graph node is requested
         static if(isGraphNodeType!(E))
         {
             return this.children[idx];
