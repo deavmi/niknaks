@@ -884,7 +884,7 @@ public class Graph(T)
     public E opIndex(E)(size_t idx)
     if(isTreeNodeType!(E) || isTreeValueType!(E))
     {
-        // If the cjild as a tree node is requested
+        // If the child as a tree node is requested
         static if(isTreeNodeType!(E))
         {
             return this.children[idx];
