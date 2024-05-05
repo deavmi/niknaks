@@ -13,10 +13,22 @@ import core.sync.condition : Condition;
 import std.functional : toDelegate;
 import core.exception : ArrayIndexError;
 import core.exception : RangeError;
+import std.string : format;
+import niknaks.arrays : removeResize;
 
 version(unittest)
 {
     import std.stdio : writeln;
+}
+
+version(unittest)
+{
+    import std.functional : toDelegate;
+
+    private void DebugTouch(T)(Graph!(T) node)
+    {
+        writeln("Touching graph node ", node);
+    }
 }
 
 /** 
