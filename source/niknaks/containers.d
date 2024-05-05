@@ -613,6 +613,612 @@ unittest
     destroy(map);
 }
 
+/** 
+ * A visitation stratergy
+ * which always returns
+ * `true`
+ */
+public template Always(T)
+{
+    /** 
+     * Whatever graph node is
+     * provided always accept
+     * a visitation to it
+     *
+     * Params:
+     *   treeNode = the node
+     * Returns: `true` always
+     */
+    public bool Always(Graph!(T) treeNode)
+    {
+        version(unittest)
+        {
+            import std.stdio : writeln;
+            writeln("Strat for: ", treeNode);
+        }
+        return true;
+    }
+}
+
+/** 
+ * A touching stratergy
+ * that does nothing
+ */
+public template Nothing(T)
+{
+    /** 
+     * Consumes a graph node
+     * and does zilch with it
+     *
+     * Params:
+     *   treeNode = the node
+     */
+    public void Nothing(Graph!(T));
+}
+
+/** 
+ * The inclusion stratergy which
+ * will be called upon the graph
+ * node prior to it being visited
+ * during a dfs operation.
+ *
+ * It is a predicate to determine
+ * whether or not the graph node
+ * in concern should be recursed
+ * upon.
+ */
+public template InclusionStratergy(T)
+{
+    public alias InclusionStratergy = bool delegate(Graph!(T) item);
+}
+
+/** 
+ * This is called on a graph node
+ * as part of the first action
+ * that takes place during the
+ * visitation of said node during
+ * a dfs operation.
+ */
+public template TouchStratergy(T)
+{
+    public alias TouchStratergy = void delegate(Graph!(T) item);
+}
+
+/** 
+ * A graph of nodes.
+ *
+ * These nodes are comprised of
+ * two components. The first of
+ * which is their associated value
+ * of type `T`, then the second
+ * are their children nodes
+ * (if any). The latter are of
+ * type `Graph!(T)` and therefore
+ * when constructing one such node
+ * it can also be added as a child
+ * of another node, therefore
+ * allowing you to build your
+ * graph as you see fit.
+ *
+ * Some notable functionality,
+ * other than the obvious,
+ * is the pluggable dfs method
+ * which let's you perform 
+ * a recursive search on
+ * the graph, parameterized
+ * by two stratergies. The first
+ * is the so-called `TouchStratergy`
+ * which specifies the function
+ * to be called on the current node
+ * when `dfs` is called on it -
+ * this is the first thing that
+ * is done. The other parameter
+ * is the `VisitationStratergy`
+ * which is a predicate that
+ * will be called BEFORE
+ * entering the dfs (recursing)
+ * of a candidate child node.
+ * With this things like trees
+ * can be built or rather
+ * _derived_ from a graph.
+ * This is infact what the visitation
+ * tree type does.
+ *
+ * See_Also: `VisitationTree`
+ */
+public class Graph(T)
+{
+    private T value;
+    private Graph!(T)[] children;
+
+    /** 
+     * Constructs a new graph with
+     * the given value to set
+     *
+     * Params:
+     *   value = the value of
+     * this graph node
+     */
+    this(T value)
+    {
+        this.value = value;
+    }
+
+    /** 
+     * Creates a new graph without
+     * associating any value with
+     * itself
+     */
+    this()
+    {
+
+    }
+
+    /** 
+     * Sets the graph node's
+     * associated value
+     *
+     * Params:
+     *   value = the valye
+     */
+    public void setValue(T value)
+    {
+        this.value = value;
+    }
+
+    /** 
+     * Obtains the value associated with
+     * this graph node
+     *
+     * Returns: the value `T`
+     */
+    public T getValue()
+    {
+        return this.value;
+    }
+
+    /** 
+     * Appends another graph node
+     * to the array of children
+     * of this node's
+     *
+     * Params:
+     *   node = the tree node
+     * to append
+     */
+    public void appendNode(Graph!(T) node)
+    {
+        this.children ~= node;
+    }
+
+    /** 
+     * Removes a given graph node
+     * from th array of children
+     * of thie node's
+     *
+     * Params:
+     *   node = the graph node to
+     * remove
+     * Returns: `true` if the node
+     * was found and then removed,
+     * otherwise `false`
+     */
+    public bool removeNode(Graph!(T) node)
+    {
+        bool found = false;
+        size_t idx;
+        for(size_t i = 0; i < this.children.length; i++)
+        {
+            found = this.children[i] == node;
+            if(found)
+            {
+                idx = i;
+                break;
+            }
+        }
+
+        if(found)
+        {
+            this.children = this.children.removeResize(idx);
+            return true;
+        }
+
+        return false;
+    }
+
+    /** 
+     * Checks if the given type is
+     * that of a graph node
+     *
+     * Returns: `true` if so, `false`
+     * otherwise
+     */
+    private static bool isGraphNodeType(E)()
+    {
+        return __traits(isSame, E, Graph!(T));
+    }
+
+    /** 
+     * Checks if the given type is
+     * that of a graph node's value
+     * type
+     *
+     * Returns: `true` if so, `false`
+     * otherwise
+     */
+    private static bool isGraphValueType(E)()
+    {
+        return __traits(isSame, E, T);
+    }
+
+    /** 
+     * Returns a slice of the requested
+     * type. This is either `Graph!(T)`
+     * or `T` itself, therefore returning
+     * an array of either
+     *
+     * Returns: an array of the requested
+     * type of children
+     */
+    public E[] opSlice(E)()
+    if(isGraphNodeType!(E) || isGraphValueType!(E))
+    {
+        // If the children as graph nodes is requested
+        static if(isGraphNodeType!(E))
+        {
+            return this.children;
+        }
+        // If the children as values themselves is requested
+        else static if(isGraphValueType!(E))
+        {
+            T[] slice;
+            foreach(Graph!(T) tnode; this.children)
+            {
+                slice ~= tnode.value;
+            }
+            return slice;
+        }
+    }
+
+    /** 
+     * Returns an array of all the childrens'
+     * associated values
+     *
+     * Returns: a `T[]`
+     */
+    public T[] opSlice()
+    {
+        return opSlice!(T)();
+    }
+
+    /** 
+     * Returns the element of the child
+     * at the given index.
+     *
+     * The type `E` can be specified
+     * as either `Graph!(T)` or `T`
+     * which will hence return a node
+     * from the children array at the 
+     * given index of that type (either
+     * the child node or the child node's
+     * value).
+     *
+     * Params:
+     *   idx = the index 
+     * Returns: the type `E`
+     */
+    public E opIndex(E)(size_t idx)
+    if(isGraphNodeType!(E) || isGraphValueType!(E))
+    {
+        // If the child as a graph node is requested
+        static if(isGraphNodeType!(E))
+        {
+            return this.children[idx];
+        }
+        // If the child as a value itself is requested
+        else static if(isGraphValueType!(E))
+        {
+            return this.children[idx].value;
+        }
+    }
+
+    /** 
+     * Returns the value of
+     * the child node at
+     * the provided index
+     *
+     * Params:
+     *   idx = the index
+     * Returns: the value
+     */
+    public T opIndex(size_t idx)
+    {
+        return opIndex!(T)(idx);
+    }
+
+    /** 
+     * Returns the number
+     * of children attached
+     * to this node
+     *
+     * Returns: the count
+     */
+    @property
+    public size_t length()
+    {
+        return this.children.length;
+    }
+
+    /** 
+     * Returns the number
+     * of children attached
+     * to this node
+     *
+     * Returns: the count
+     */
+    public size_t opDollar()
+    {
+        return this.length;
+    }
+
+    /** 
+     * Performs a depth first search
+     * on the graph by firstly calling
+     * the `TouchStratergy` on the current
+     * node and then iterating over all
+     * of its children and only recursing
+     * on each of them if the `InclusionStratergy`
+     * allows it.
+     *
+     * The touch stratergy is called
+     * as part of the first line of code
+     * in the call to the dfs on a
+     * given graph node.
+     *
+     * Note that is you don't have a good
+     * inclusion stratergy and touch startergy
+     * then you may have a stack overflow
+     * occur if your graph has cycles
+     *
+     * Params: 
+     *   strat = the `InclusionStratergy` 
+     *   touch = the `TouchStratergy`
+     * Returns: a `T[]`
+     */
+    public T[] dfs
+    (
+        InclusionStratergy!(T) strat = toDelegate(&Always!(T)),
+        TouchStratergy!(T) touch = toDelegate(&Nothing!(T))
+    )
+    {
+        version(unittest)
+        {
+            writeln("dfs entry: ", this);
+        }
+        
+        T[] collected;
+        scope(exit)
+        {
+            version(unittest)
+            {
+                writeln("leaving node ", this, " with collected ", collected);
+            }
+        }
+
+        // Touch
+        touch(this); // root[x]
+
+        foreach(Graph!(T) child; this.children) // subtree[x], 
+        {
+            if(strat(child))
+            {
+                version(unittest)
+                {
+                    writeln("dfs, strat good for child: ", child);
+                }
+
+                // Visit
+                collected ~= child.dfs(strat, touch);
+            }
+            else
+            {
+                version(unittest)
+                {
+                    writeln("dfs, strat ignored for child: ", child);
+                }
+            }
+        }
+
+        // "Visit"
+        collected ~= this.value;
+        
+        
+        return collected;
+    }
+
+    /** 
+     * Returns a string representation
+     * of this node and its value
+     *
+     * Returns: a `string`
+     */
+    public override string toString()
+    {
+        return format("GraphNode [val: %s]", this.value);
+    }
+}
+
+/**
+ * Test out usage of the `Graph!(T)`
+ */
+unittest
+{
+    Graph!(string) treeOfStrings = new Graph!(string)("Top");
+
+    Graph!(string) subtree_1 = new Graph!(string)("1");
+    Graph!(string) subtree_2 = new Graph!(string)("2");
+    Graph!(string) subtree_3 = new Graph!(string)("3");
+
+    treeOfStrings.appendNode(subtree_1);
+    treeOfStrings.appendNode(subtree_2);
+    treeOfStrings.appendNode(subtree_3);
+
+    assert(treeOfStrings.opIndex!(Graph!(string))(0) == subtree_1);
+    assert(treeOfStrings.opIndex!(Graph!(string))(1) == subtree_2);
+    assert(treeOfStrings.opIndex!(Graph!(string))(2) == subtree_3);
+
+    assert(treeOfStrings[0] == subtree_1.getValue());
+    assert(treeOfStrings[1] == subtree_2.getValue());
+    assert(treeOfStrings[2] == subtree_3.getValue());
+
+    assert(treeOfStrings.opDollar() == 3);
+
+    InclusionStratergy!(string) strat = toDelegate(&Always!(string));
+    TouchStratergy!(string) touch = toDelegate(&DebugTouch!(string));
+
+    string[] result = treeOfStrings.dfs(strat, touch);
+    writeln("dfs: ", result);
+
+    assert(result[0] == "1");
+    assert(result[1] == "2");
+    assert(result[2] == "3");
+    assert(result[3] == "Top");
+
+
+    auto i = treeOfStrings.opSlice!(Graph!(string))();
+    writeln("Siblings: ", i);
+    assert(i[0] == subtree_1);
+    assert(i[1] == subtree_2);
+    assert(i[2] == subtree_3);
+
+    auto p = treeOfStrings.opSlice!(string)();
+    writeln("Siblings (vals): ", p);
+    assert(p == treeOfStrings[]);
+
+
+    assert(treeOfStrings.removeNode(subtree_1));
+    assert(!treeOfStrings.removeNode(subtree_1));
+}
+
+/** 
+ * A kind-of a graph which has the ability
+ * to linearize all of its nodes which
+ * results in performing a depth first
+ * search resulting in the collection of
+ * all nodes into a single array with
+ * elements on the left hand side being
+ * the most leafiest (and left-to-right
+ * on the same depth are in said order).
+ *
+ * It also marks a node as visited on
+ * entry to it via the dfs call to it.
+ *
+ * When dfs is performed, a child node
+ * is only recursed upon if it has not
+ * yet been visited.
+ *
+ * With all this, it means a graph of
+ * relations can be flattened into an
+ * array.
+ */
+public class VisitationTree(T) : Graph!(T)
+{
+    private bool visisted;    
+
+    /** 
+     * Constructs a new node
+     *
+     * Params:
+     *   value = the value
+     */
+    this(T value)
+    {
+        super(value);
+    }
+
+    /** 
+     * Performs the linearization
+     *
+     * Returns: the linearized list
+     */
+    public T[] linearize()
+    {
+        return dfs(toDelegate(&_shouldVisit), toDelegate(&_touch));
+    }
+
+    /** 
+     * The inclusion startergy
+     *
+     * Params:
+     *   tnode = the graph node
+     * Returns: `true` if not
+     * yet visited or incompatible
+     * node type
+     */
+    private static bool _shouldVisit(Graph!(T) tnode)
+    {
+        VisitationTree!(T) vnode = cast(VisitationTree!(T))tnode;
+        return vnode && !vnode.isVisited();
+    }
+
+    /** 
+     * The touching stratergy
+     *
+     * Only works on compatible
+     * graph nodes
+     *
+     * Params:
+     *   tnode = the tree node
+     */
+    private static void _touch(Graph!(T) tnode)
+    {
+        VisitationTree!(T) vnode = cast(VisitationTree!(T))tnode;
+        if(vnode)
+        {
+            vnode.mark();
+        }
+    }
+
+    /** 
+     * Marks this node as
+     * visited
+     */
+    private void mark()
+    {
+        this.visisted = true;
+    }
+    
+    /** 
+     * Checks this node has been
+     * visited
+     *
+     * Returns: `true` if visited,
+     * otherwise `false`
+     */
+    private bool isVisited()
+    {
+        return this.visisted;
+    }
+}
+
+/**
+ * Tests out using the visitation tree
+ */
+unittest
+{
+    VisitationTree!(string) root = new VisitationTree!(string)("root");
+
+    VisitationTree!(string) thing = new VisitationTree!(string)("subtree");
+    root.appendNode(thing);
+    thing.appendNode(root);
+
+    string[] linearized = root.linearize();
+    writeln(linearized);
+
+    assert(linearized[0] == "subtree");
+    assert(linearized[1] == "root");
+}
+
 private struct Sector(T)
 {
     private T[] data;
