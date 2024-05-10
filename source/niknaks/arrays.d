@@ -528,6 +528,9 @@ unittest
 
     vals = vals.insertAt(1, 68);
     assert(vals == [69, 68, 1]);
+
+    vals = vals.insertAt(3, 420);
+    assert(vals == [69, 68, 1, 420]);
 }
 
 /** 
