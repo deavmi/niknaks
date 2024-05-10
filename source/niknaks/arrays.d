@@ -485,6 +485,73 @@ unittest
 }
 
 /** 
+ * Inserts the given value into
+ * the array at the provided index
+ *
+ * Params:
+ *   array = the array to insert
+ * into
+ *   position = the position to
+ * insert at
+ *   value = the value to insert
+ * Returns: the updated array
+ */
+public T[] insertAt(T)(T[] array, size_t position, T value)
+{
+    if(position > array.length)
+    {
+        return array;
+    }
+
+    // Case: Right at end
+    if(position == array.length)
+    {
+        array ~= value;
+        return array;
+    }
+    // Anywhere else
+    else
+    {
+        // Make space for a single new element
+        array.length++;
+
+        // Cha-cha to the right
+        for(size_t i = array.length-1; i > position; i--)
+        {
+            array[i] = array[i-1];
+        }
+
+        // Overwrite
+        array[position] = value;
+        return array;
+    }
+}
+
+/** 
+ * Tests inserting into an array
+ * at the given index
+ */
+unittest
+{
+    int[] vals = [];
+    vals = vals.insertAt(0, 1);
+    assert(vals == [1]);
+
+    vals = vals.insertAt(0, 69);
+    assert(vals == [69, 1]);
+
+    vals = vals.insertAt(1, 68);
+    assert(vals == [69, 68, 1]);
+
+    vals = vals.insertAt(3, 420);
+    assert(vals == [69, 68, 1, 420]);
+
+    // Failure to insert (array stays the same)
+    vals = vals.insertAt(5, 421);
+    assert(vals == [69, 68, 1, 420]);
+}
+
+/** 
  * Returns a version of
  * the input array with
  * only unique elements.
