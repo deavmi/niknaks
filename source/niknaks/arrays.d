@@ -484,6 +484,52 @@ unittest
     assert(numbas == [1, 2]);
 }
 
+
+
+public T[] insertAt(T)(T[] array, size_t position, T value)
+{
+    if(position > array.length)
+    {
+        return array;
+    }
+
+    // Case: Right at end
+    if(position == array.length)
+    {
+        array ~= value;
+        return array;
+    }
+    // Anywhere else
+    else
+    {
+        // Make space for a single new element
+        array.length++;
+
+        // Cha-cha to the right
+        for(size_t i = array.length-1; i > position; i--)
+        {
+            array[i] = array[i-1];
+        }
+
+        // Overwrite
+        array[position] = value;
+        return array;
+    }
+}
+
+unittest
+{
+    int[] vals = [];
+    vals = vals.insertAt(0, 1);
+    assert(vals == [1]);
+
+    vals = vals.insertAt(0, 69);
+    assert(vals == [69, 1]);
+
+    vals = vals.insertAt(1, 68);
+    assert(vals == [69, 68, 1]);
+}
+
 /** 
  * Returns a version of
  * the input array with
