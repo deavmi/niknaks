@@ -531,6 +531,10 @@ unittest
 
     vals = vals.insertAt(3, 420);
     assert(vals == [69, 68, 1, 420]);
+
+    // Failure to insert (array stays the same)
+    vals = vals.insertAt(5, 421);
+    assert(vals == [69, 68, 1, 420]);
 }
 
 /** 
