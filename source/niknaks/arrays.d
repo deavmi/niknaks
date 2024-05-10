@@ -484,8 +484,18 @@ unittest
     assert(numbas == [1, 2]);
 }
 
-
-
+/** 
+ * Inserts the given value into
+ * the array at the provided index
+ *
+ * Params:
+ *   array = the array to insert
+ * into
+ *   position = the position to
+ * insert at
+ *   value = the value to insert
+ * Returns: the updated array
+ */
 public T[] insertAt(T)(T[] array, size_t position, T value)
 {
     if(position > array.length)
@@ -517,6 +527,10 @@ public T[] insertAt(T)(T[] array, size_t position, T value)
     }
 }
 
+/** 
+ * Tests inserting into an array
+ * at the given index
+ */
 unittest
 {
     int[] vals = [];
