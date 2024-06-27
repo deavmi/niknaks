@@ -280,6 +280,7 @@ unittest
 	}
 }
 
+@safe @nogc
 public struct Result(Okay, Error)
 {
 	private Okay okay_val;
@@ -323,7 +324,7 @@ public struct Result(Okay, Error)
 }
 
 
-
+@safe @nogc
 public static Result!(OkayType, ErrorType) ok(OkayType, ErrorType = OkayType)(OkayType okayVal)
 {
 	Result!(OkayType, ErrorType) result = Result!(OkayType, ErrorType)(true);
@@ -332,6 +333,7 @@ public static Result!(OkayType, ErrorType) ok(OkayType, ErrorType = OkayType)(Ok
 	return result;
 }
 
+@safe @nogc
 public static Result!(OkayType, ErrorType) error(ErrorType, OkayType = ErrorType)(ErrorType errorVal)
 {
 	Result!(OkayType, ErrorType) result = Result!(OkayType, ErrorType)(false);
