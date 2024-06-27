@@ -342,11 +342,10 @@ public static Result!(OkayType, ErrorType) error(ErrorType, OkayType = ErrorType
 	return result;
 }
 
-version(unittest)
-{
-	import std.traits;
-}
-
+/**
+ * Tests the usage of okay
+ * result types
+ */
 unittest
 {
 	auto a = ok("A successful result");
@@ -373,6 +372,10 @@ unittest
 	static assert(__traits(isSame, typeof(b.error_val), Exception));
 }
 
+/**
+ * Tests the usage of error
+ * result types
+ */
 unittest
 {
 	auto a = error(new Exception("A failed result"));
