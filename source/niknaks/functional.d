@@ -326,7 +326,6 @@ public struct Result(Okay, Error)
 	}
 }
 
-
 /** 
  * Constructs a new `Result` with the
  * status set to okay and with the
