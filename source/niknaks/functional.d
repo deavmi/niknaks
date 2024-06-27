@@ -299,27 +299,57 @@ public struct Result(Okay, Error)
 		this.isSucc = isSucc;
 	}
 
+	/** 
+	 * Retuns the okay value
+	 *
+	 * Returns: the value
+	 */
 	public Okay ok()
 	{
 		return this.okay_val;
 	}
 
+	/** 
+	 * Returns the error value
+	 *
+	 * Returns: the value
+	 */
 	public Error error()
 	{
 		return this.error_val;
 	}
 
+	/** 
+	 * Returns the okayness of
+	 * this result
+	 *
+	 * See_Also: `is_okay`
+	 * Returns: a boolean
+	 */
 	public bool opCast(T)()
 	if(__traits(isSame, T, bool))
 	{
 		return is_okay();
 	}
 
+	/** 
+	 * Check if is okay
+	 *
+	 * Returns: `true` if
+	 * okay, `false` otherwise
+	 */
 	public bool is_okay()
 	{
 		return this.isSucc == true;
 	}
 
+	/** 
+	 * Check if is erroneous
+	 *
+	 * Returns: `true` if
+	 * erroneous, `false`
+	 * otherwise
+	 */
 	public bool is_error()
 	{
 		return this.isSucc == false;
