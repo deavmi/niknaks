@@ -18,6 +18,7 @@ import niknaks.functional : Predicate;
  * Returns: `true` if present, `false`
  * otherwise
  */
+@safe @nogc
 public bool isPresent(T)(T[] array, T value)
 {
     if(array.length == 0)
@@ -78,7 +79,7 @@ unittest
  * Returns: `true` if a free value was found
  * otherwise `false`
  */
-@nogc
+@safe @nogc
 public bool findNextFree(T)(T[] used, ref T found) if(__traits(isIntegral, T))
 {
     // Temporary value used for searching
@@ -566,6 +567,7 @@ unittest
  * Returns: an array with
  * only unique elements
  */
+@safe
 public T[] unique(T)(T[] array)
 {
     // optimize
