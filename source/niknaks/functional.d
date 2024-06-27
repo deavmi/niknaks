@@ -280,6 +280,9 @@ unittest
 	}
 }
 
+/** 
+ * A result type
+ */
 @safe @nogc
 public struct Result(Okay, Error)
 {
@@ -324,6 +327,20 @@ public struct Result(Okay, Error)
 }
 
 
+/** 
+ * Constructs a new `Result` with the
+ * status set to okay and with the
+ * provided value.
+ *
+ * If you don't specify the type
+ * of the error value for this
+ * then it is assumed to be the
+ * same as the okay type.
+ *
+ * Params:
+ *   okayVal = the okay value
+ * Returns: a `Result`
+ */
 @safe @nogc
 public static Result!(OkayType, ErrorType) ok(OkayType, ErrorType = OkayType)(OkayType okayVal)
 {
@@ -333,6 +350,20 @@ public static Result!(OkayType, ErrorType) ok(OkayType, ErrorType = OkayType)(Ok
 	return result;
 }
 
+/** 
+ * Constructs a new `Result` with the
+ * status set to error and with the
+ * provided value.
+ *
+ * If you don't specify the type
+ * of the okay value for this
+ * then it is assumed to be the
+ * same as the error type.
+ *
+ * Params:
+ *   errorVal = the error value
+ * Returns: a `Result`
+ */
 @safe @nogc
 public static Result!(OkayType, ErrorType) error(ErrorType, OkayType = ErrorType)(ErrorType errorVal)
 {
