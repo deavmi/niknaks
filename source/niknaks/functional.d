@@ -279,3 +279,120 @@ unittest
 		assert(false);
 	}
 }
+
+public struct Result(Okay, Error)
+{
+	private Okay okay_val;
+	private Error error_val;
+
+	private bool isSucc;
+	
+	@disable
+	private this();
+
+	private this(bool isSucc)
+	{
+		this.isSucc = isSucc;
+	}
+
+	public Okay ok()
+	{
+		return this.okay_val;
+	}
+
+	public Error error()
+	{
+		return this.error_val;
+	}
+
+	public bool opCast(T)()
+	if(__traits(isSame, T, bool))
+	{
+		return is_okay();
+	}
+
+	public bool is_okay()
+	{
+		return this.isSucc == true;
+	}
+
+	public bool is_error()
+	{
+		return this.isSucc == false;
+	}
+}
+
+
+
+public static Result!(OkayType, ErrorType) ok(OkayType, ErrorType = OkayType)(OkayType okayVal)
+{
+	Result!(OkayType, ErrorType) result = Result!(OkayType, ErrorType)(true);
+	result.okay_val = okayVal;
+
+	return result;
+}
+
+public static Result!(OkayType, ErrorType) error(ErrorType, OkayType = ErrorType)(ErrorType errorVal)
+{
+	Result!(OkayType, ErrorType) result = Result!(OkayType, ErrorType)(false);
+	result.error_val = errorVal;
+
+	return result;
+}
+
+version(unittest)
+{
+	import std.traits;
+}
+
+unittest
+{
+	auto a = ok("A successful result");
+	assert(a.ok == "A successful result");
+	assert(a.error == null);
+
+	// Should be Result!(string, string)
+	static assert(__traits(isSame, typeof(a.okay_val), string));
+	static assert(__traits(isSame, typeof(a.error_val), string));
+
+	// opCast to bool
+	assert(cast(bool)a);
+
+	// Validity checking
+	assert(a.is_okay());
+	assert(!a.is_error());
+	
+	auto b = ok!(string, Exception)("A successful result");
+	assert(b.ok == "A successful result");
+	assert(b.error is null);
+
+	// Should be Result!(string, Exception)
+	static assert(__traits(isSame, typeof(b.okay_val), string));
+	static assert(__traits(isSame, typeof(b.error_val), Exception));
+}
+
+unittest
+{
+	auto a = error(new Exception("A failed result"));
+	assert(a.ok is null);
+	assert(cast(Exception)a.error && (cast(Exception)a.error).msg == "A failed result");
+
+	// Should be Result!(Exception, Exception)
+	static assert(__traits(isSame, typeof(a.okay_val), Exception));
+	static assert(__traits(isSame, typeof(a.error_val), Exception));
+
+	// opCast to bool
+	assert(!cast(bool)a);
+
+	// Validity checking
+	assert(!a.is_okay());
+	assert(a.is_error());
+	
+	auto b = error!(Exception, string)(new Exception("A failed result"));
+	assert(a.ok is null);
+	assert(cast(Exception)a.error && (cast(Exception)a.error).msg == "A failed result");
+
+	// Should be Result!(string, Exception)
+	static assert(__traits(isSame, typeof(b.okay_val), string));
+	static assert(__traits(isSame, typeof(b.error_val), Exception));
+}
