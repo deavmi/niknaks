@@ -1,5 +1,5 @@
 /**
- * Text manioulation
+ * Text manipulation
  *
  * Authors: Tristan Brice Velloza Kildaire
  */
