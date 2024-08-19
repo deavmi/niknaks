@@ -45,6 +45,8 @@ is expected to grow over time.
     * User-defined input prompter, retry mechanisms
 * `niknaks.config`
     * Configuration entries and management
+* `niknaks.text`
+    * Textual manipulation
 
 ## License
 

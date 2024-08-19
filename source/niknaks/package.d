@@ -51,3 +51,8 @@ public import niknaks.containers;
  * manage a set of them
  */
 public import niknaks.config;
+
+/**
+ * Text manipulation
+ */
+public import niknaks.text;
