@@ -7,6 +7,11 @@ module niknaks.text;
 
 import std.string : join, format, split;
 
+version(unittest)
+{
+    import std.stdio;
+}
+
 /** 
  * Pads the left-hand margin of a multi-line
  * string with the given text
@@ -28,11 +33,11 @@ public string padLeft(string bodyText, string withText)
     return join(lines_out, "\n");
 }
 
-version(unittest)
-{
-    import std.stdio;
-}
 
+/**
+ * Tests out the left-padding of text
+ * with a custom text segment
+ */
 unittest
 {
     string input = `Hello
