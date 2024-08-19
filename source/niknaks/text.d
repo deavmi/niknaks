@@ -46,4 +46,5 @@ World
     assert(output_segments[0] == "%Hello");
     assert(output_segments[1] == "%World");
     assert(output_segments[2] == "%");
+    assert(output_segments[3] == "");
 }
