@@ -9,67 +9,11 @@ import std.traits : isArray, ForeachType;
 import std.conv : to;
 import std.string : format;
 import std.stdio : writeln;
+import niknaks.text : genTabs, genX;
 
 version(unittest)
 {
     import std.stdio : write;
-}
-
-/** 
- * Generates a string containing
- * the provided pattern repeated
- * by the given number of times
- *
- * Params:
- *   count = the number of times
- * to repeat the pattern
- *   pattern = the pattern itself
- * Returns: the repeated pattern
- */
-public string genX(size_t count, string pattern)
-{
-    string strOut;
-    for(ubyte i = 0; i < count; i++)
-    {
-        strOut ~= pattern;
-    }
-    return strOut;
-}
-
-/**
- * Tests the generation of a pattern
- */
-unittest
-{
-    string pattern = "YOLO";
-    size_t count = 2;
-
-    string output = genX(count, pattern);
-    assert(output == "YOLOYOLO");
-}
-
-/** 
- * Generates a string containing
- * the number of tabs specified
- *
- * Params:
- *   count = the number of tabs
- * Returns: the tabbed string
- */
-public string genTabs(size_t count)
-{
-    return genX(count, "\t");
-}
-
-/**
- * Tests `genTabs(size_t)`
- */
-unittest
-{
-    size_t count = 2;
-
-    string output = genTabs(count);
-    assert(output == "\t\t");
 }
 
 /** 

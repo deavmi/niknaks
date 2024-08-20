@@ -37,7 +37,6 @@ is expected to grow over time.
     * **Automagic** dumping of arrays to textual representation
         * Supports arrays-of-arrays-of...
     * Enter-leave (with argument and name printing) for methods
-    * Some textual manipulation routines as well
 * `niknaks.containers`
     * Some useful container types
     * Things such as `CacheMap`, `Graph` and `VisitationTree`
@@ -46,7 +45,7 @@ is expected to grow over time.
 * `niknaks.config`
     * Configuration entries and management
 * `niknaks.text`
-    * Textual manipulation
+    * Textual manipulation routines
 
 ## License
 
