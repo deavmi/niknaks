@@ -1447,11 +1447,28 @@ if(isSector!(SectorType)())
         }
     }
 
+    /** 
+     * Returns a copy of the entire
+     * view
+     *
+     * Returns: a `T[]`
+     */
     public T[] opSlice()
     {
         return this[0..this.length];
     }
 
+    /** 
+     * Returns a copy of the view
+     * within the provided bounds
+     *
+     * Params:
+     *   start = the starting
+     * index
+     *   end = the ending index
+     * (exclusive)
+     * Returns: 
+     */
     public T[] opSlice(size_t start, size_t end)
     {
         // Invariant of start <= end
