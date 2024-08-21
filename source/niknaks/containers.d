@@ -1548,8 +1548,15 @@ if(isSector!(SectorType)())
         }
     }
 
-    // Takes the data, constructs a kind-of SectorType
-    // and adds it
+    /** 
+     * Takes the data with which we
+     * constructs a kind-of `SectorType`
+     * from. We then adjust the total
+     * size and append the new sector
+     *
+     * Params:
+     *   data = the data to append
+     */
     private void add(T[] data)
     {
         // Create a new sector
