@@ -279,3 +279,185 @@ unittest
 		assert(false);
 	}
 }
+
+/** 
+ * A result type
+ */
+@safe @nogc
+public struct Result(Okay, Error)
+{
+	private Okay okay_val;
+	private Error error_val;
+
+	private bool isSucc;
+	
+	@disable
+	private this();
+
+	private this(bool isSucc)
+	{
+		this.isSucc = isSucc;
+	}
+
+	/** 
+	 * Retuns the okay value
+	 *
+	 * Returns: the value
+	 */
+	public Okay ok()
+	{
+		return this.okay_val;
+	}
+
+	/** 
+	 * Returns the error value
+	 *
+	 * Returns: the value
+	 */
+	public Error error()
+	{
+		return this.error_val;
+	}
+
+	/** 
+	 * Returns the okayness of
+	 * this result
+	 *
+	 * See_Also: `is_okay`
+	 * Returns: a boolean
+	 */
+	public bool opCast(T)()
+	if(__traits(isSame, T, bool))
+	{
+		return is_okay();
+	}
+
+	/** 
+	 * Check if is okay
+	 *
+	 * Returns: `true` if
+	 * okay, `false` otherwise
+	 */
+	public bool is_okay()
+	{
+		return this.isSucc == true;
+	}
+
+	/** 
+	 * Check if is erroneous
+	 *
+	 * Returns: `true` if
+	 * erroneous, `false`
+	 * otherwise
+	 */
+	public bool is_error()
+	{
+		return this.isSucc == false;
+	}
+}
+
+/** 
+ * Constructs a new `Result` with the
+ * status set to okay and with the
+ * provided value.
+ *
+ * If you don't specify the type
+ * of the error value for this
+ * then it is assumed to be the
+ * same as the okay type.
+ *
+ * Params:
+ *   okayVal = the okay value
+ * Returns: a `Result`
+ */
+@safe @nogc
+public static Result!(OkayType, ErrorType) ok(OkayType, ErrorType = OkayType)(OkayType okayVal)
+{
+	Result!(OkayType, ErrorType) result = Result!(OkayType, ErrorType)(true);
+	result.okay_val = okayVal;
+
+	return result;
+}
+
+/** 
+ * Constructs a new `Result` with the
+ * status set to error and with the
+ * provided value.
+ *
+ * If you don't specify the type
+ * of the okay value for this
+ * then it is assumed to be the
+ * same as the error type.
+ *
+ * Params:
+ *   errorVal = the error value
+ * Returns: a `Result`
+ */
+@safe @nogc
+public static Result!(OkayType, ErrorType) error(ErrorType, OkayType = ErrorType)(ErrorType errorVal)
+{
+	Result!(OkayType, ErrorType) result = Result!(OkayType, ErrorType)(false);
+	result.error_val = errorVal;
+
+	return result;
+}
+
+/**
+ * Tests the usage of okay
+ * result types
+ */
+unittest
+{
+	auto a = ok("A successful result");
+	assert(a.ok == "A successful result");
+	assert(a.error == null);
+
+	// Should be Result!(string, string)
+	static assert(__traits(isSame, typeof(a.okay_val), string));
+	static assert(__traits(isSame, typeof(a.error_val), string));
+
+	// opCast to bool
+	assert(cast(bool)a);
+
+	// Validity checking
+	assert(a.is_okay());
+	assert(!a.is_error());
+	
+	auto b = ok!(string, Exception)("A successful result");
+	assert(b.ok == "A successful result");
+	assert(b.error is null);
+
+	// Should be Result!(string, Exception)
+	static assert(__traits(isSame, typeof(b.okay_val), string));
+	static assert(__traits(isSame, typeof(b.error_val), Exception));
+}
+
+/**
+ * Tests the usage of error
+ * result types
+ */
+unittest
+{
+	auto a = error(new Exception("A failed result"));
+	assert(a.ok is null);
+	assert(cast(Exception)a.error && (cast(Exception)a.error).msg == "A failed result");
+
+	// Should be Result!(Exception, Exception)
+	static assert(__traits(isSame, typeof(a.okay_val), Exception));
+	static assert(__traits(isSame, typeof(a.error_val), Exception));
+
+	// opCast to bool
+	assert(!cast(bool)a);
+
+	// Validity checking
+	assert(!a.is_okay());
+	assert(a.is_error());
+	
+	auto b = error!(Exception, string)(new Exception("A failed result"));
+	assert(a.ok is null);
+	assert(cast(Exception)a.error && (cast(Exception)a.error).msg == "A failed result");
+
+	// Should be Result!(string, Exception)
+	static assert(__traits(isSame, typeof(b.okay_val), string));
+	static assert(__traits(isSame, typeof(b.error_val), Exception));
+}

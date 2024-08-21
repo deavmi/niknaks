@@ -26,6 +26,7 @@ is expected to grow over time.
 * `niknaks.functional`
     * Predicates
     * Optionals
+    * Result types
 * `niknaks.arrays`
     * Unique element generation
     * Prescence checking
@@ -36,7 +37,6 @@ is expected to grow over time.
     * **Automagic** dumping of arrays to textual representation
         * Supports arrays-of-arrays-of...
     * Enter-leave (with argument and name printing) for methods
-    * Some textual manipulation routines as well
     * An implementation of a jump-buffer with `View`
 * `niknaks.containers`
     * Some useful container types
@@ -45,6 +45,8 @@ is expected to grow over time.
     * User-defined input prompter, retry mechanisms
 * `niknaks.config`
     * Configuration entries and management
+* `niknaks.text`
+    * Textual manipulation routines
 
 ## License
 
