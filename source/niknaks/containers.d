@@ -1389,6 +1389,16 @@ if(isSector!(SectorType)())
         return this.length;
     }
 
+    /** 
+     * Retrieves the value of
+     * the element at the
+     * given position
+     *
+     * Params:
+     *   idx = the position
+     * of the element
+     * Returns: the value
+     */
     public T opIndex(size_t idx)
     {
         // Within range of "fake" size
