@@ -1567,7 +1567,14 @@ if(isSector!(SectorType)())
         return __traits(isSame, P, T);
     }
 
-    // Append
+    /** 
+     * Appends a new value to
+     * the end of the view
+     *
+     * Params:
+     *   value = the value
+     * to append
+     */
     public void opOpAssign(string op, E)(E value)
     if(op == "~" && (isArrayAppend!(E) || isElementAppend!(E)))
     {
