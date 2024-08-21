@@ -1374,6 +1374,13 @@ if(isSector!(SectorType)())
     // but not make any NEW arrays
     private size_t curSize;
 
+    /** 
+     * Computes the sum of the
+     * length of all sectors
+     * attached to us
+     *
+     * Returns: the total
+     */
     private size_t computeTotalLen()
     {
         size_t l;
