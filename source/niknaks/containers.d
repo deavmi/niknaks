@@ -1384,6 +1384,12 @@ if(isSector!(SectorType)())
         return l;
     }
 
+    /** 
+     * Returns the total length
+     * of the data in the view
+     *
+     * Returns: the length
+     */
     public size_t opDollar()
     {
         return this.length;
