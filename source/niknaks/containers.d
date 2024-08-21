@@ -1415,6 +1415,16 @@ if(isSector!(SectorType)())
         assert(false);
     }
 
+    /** 
+     * Updates the element at
+     * the given index with
+     * a new value
+     *
+     * Params:
+     *   value = the new value
+     *   idx = the element
+     * to update's position
+     */
     public void opIndexAssign(T value, size_t idx)
     {
         // Within range of "fake" size
