@@ -37,6 +37,7 @@ is expected to grow over time.
         * Supports arrays-of-arrays-of...
     * Enter-leave (with argument and name printing) for methods
     * Some textual manipulation routines as well
+    * An implementation of a jump-buffer with `View`
 * `niknaks.containers`
     * Some useful container types
     * Things such as `CacheMap`, `Graph` and `VisitationTree`
