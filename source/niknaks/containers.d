@@ -1609,12 +1609,37 @@ if(isSector!(SectorType)())
         this.sectors ~= sec;
     }
 
+    /** 
+     * Returns the total length
+     * of the data in the view
+     *
+     * Returns: the length
+     */
     @property
     public size_t length()
     {
         return this.curSize;
     }
 
+    /** 
+     * Resizes the total
+     * length of the view.
+     *
+     * This allows the user
+     * to either keep the
+     * size the same or
+     * shrink the view,
+     * but never extend
+     * it.
+     *
+     * 
+     * Params:
+     *   size = the new size
+     * Throws:
+     *   RangeError if an
+     * attempt to extend
+     * the length is made
+     */
     @property
     public void length(size_t size)
     {
