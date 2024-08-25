@@ -1233,11 +1233,13 @@ private struct Sector(T)
         return Sector!(T)(data);
     }
 
+    // Contract: Obtain something at an index
     public T opIndex(size_t idx)
     {
         return this.data[idx];
     }
 
+    // Contract: Set something at an index
     public void opIndexAssign(T value, size_t index)
     {
         this.data[index] = value;
