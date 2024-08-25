@@ -1400,7 +1400,7 @@ if(isSector!(SectorType)())
     private SectorType[] sectors;
 
     // Maybe current size should be here as we
-    // are a view, we should allow modofication
+    // are a view, we should allow modification
     // but not make any NEW arrays
     private size_t curSize;
 
