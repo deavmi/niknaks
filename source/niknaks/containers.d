@@ -1455,12 +1455,7 @@ if(isSector!(SectorType)())
         }
 
         size_t thunk;
-        // TODO: Should be ref, else it is just a local struct copy
-        // could cheat if sector is never replaced, hence why it works
-        // as the current sector implementation has an array, we therefore
-        // get a local-struct copy of that same fat-pointer [data_ptr, len]
-        // - we also never extend it here so it works fine
-        foreach(SectorType sector; this.sectors)
+        foreach(ref SectorType sector; this.sectors)
         {
             version(unittest)
             {
