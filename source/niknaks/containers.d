@@ -1233,50 +1233,105 @@ public struct BasicSector(T)
         this.data = data;
     }
 
-    // Contract: Factory function
+    /** 
+     * Constructs a new `BasicSector`
+     *
+     * Params:
+     *   data = the data the sector
+     * should reference
+     * Returns: a new `BasicSector`
+     */
     public static BasicSector!(T) make(T[] data)
     {
         return BasicSector!(T)(data);
     }
 
-    // Contract: Obtain something at an index
+    /** 
+     * Ontains the element at the
+     * given index
+     *
+     * Params:
+     *   idx = the index
+     * Returns: the element
+     */
     public T opIndex(size_t idx)
     {
         return this.data[idx];
     }
 
-    // Contract: Set something at an index
+    /** 
+     * Set something at an index
+     *
+     * Params:
+     *   value = the value to set
+     *   index = the index to store
+     * the value at
+     */
     public void opIndexAssign(T value, size_t index)
     {
         this.data[index] = value;
     }
 
-    // Contract: Obtaining the length must be present
+    /** 
+     * Obtains this sector's length
+     *
+     * Returns: the length
+     */
     public size_t opDollar()
     {
         return this.data.length;
     }
 
-    // Contract: Obtaining the length must be present
+    /** 
+     * Obtains this sector's length
+     *
+     * Returns: the length
+     */
     @property
     public size_t length()
     {
         return opDollar();
     }
 
-    // Contract: Slicing subset
+    /** 
+     * Returns a slice of this sector
+     * between the given bounds
+     *
+     * Params:
+     *   start = the lower (inclusive)
+     * bound
+     *   end = the upper (exclusive)
+     * bound
+     * Returns: the slice
+     */
     public T[] opSlice(size_t start, size_t end)
     {
         return this.data[start..end];
     }
 
-    // Contract: Slice of entire buffer
+    /** 
+     * Ontains a slice of the
+     * entire sector
+     *
+     * Returns: the slice
+     */
     public T[] opSlice()
     {
         return opSlice(0, opDollar);
     }
 
-    // Contract: Allow downsizing
+    /** 
+     * Sets the new size of this
+     * sector's internal buffer
+     *
+     * Note that this should
+     * only be smaller or equal
+     * to the current internal
+     * buffer size
+     *
+     * Params:
+     *   newSize = the new size
+     */
     @property
     public void length(size_t newSize)
     {
