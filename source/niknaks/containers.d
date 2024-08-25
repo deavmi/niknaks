@@ -1283,7 +1283,18 @@ private struct Sector(T)
 // TODO: Make a bit better
 import std.traits : hasMember, hasStaticMember, Parameters, arity, ReturnType, TemplateArgsOf;
 import std.meta : AliasSeq, staticIndexOf;
-private bool isSector(S)()
+
+/** 
+ * Compile-time function to check if
+ * a given data type is a valid
+ * `SectorType`, meaning that it
+ * can be used for a `View`
+ * implementation
+ *
+ * Returns: `true` if so, `false`
+ * otherwise
+ */
+public bool isSector(S)()
 {
     bool s = true;
 
