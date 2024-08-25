@@ -1299,7 +1299,6 @@ public bool isSector(S)()
 {
     bool s = true;
 
-    // if()
     alias args = TemplateArgsOf!(S);
     pragma(msg, args);
     static if(!args.length)
