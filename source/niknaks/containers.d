@@ -1265,6 +1265,14 @@ private struct Sector(T)
     {
         return opSlice(0, opDollar);
     }
+
+    // Contract: Allow downsizing
+    @property
+    public void length(size_t newSize)
+    {
+        assert(newSize <= this.data.length);
+        this.data.length = newSize;
+    }
 }
 
 // TODO: Make a bit better
@@ -1313,6 +1321,22 @@ private bool isSector(S)()
     s &= hasMember!(S, "length") && 
          __traits(isSame, ReturnType!(S.length), size_t) &&
          staticIndexOf!("@property", __traits(getFunctionAttributes, S.length)) != -1;
+
+    // Has length (setter) method
+    bool found_len_setter = false;
+    static foreach(lenFunc; __traits(getOverloads, S, "length"))
+    {
+        static if
+        (
+            __traits(isSame, Parameters!(lenFunc), AliasSeq!(size_t)) &&
+            __traits(isSame, ReturnType!(lenFunc), void) &&
+            staticIndexOf!("@property", __traits(getFunctionAttributes, lenFunc)) != -1
+        )
+        {
+            found_len_setter = true;
+        }
+    }
+    s &= found_len_setter;
 
     // Has opDollar with size_t return
     s &= hasMember!(S, "opDollar") &&
@@ -1671,12 +1695,25 @@ if(isSector!(SectorType)())
             // Accumulator
             size_t accumulator;
 
-            foreach(SectorType sector; this.sectors)
+            foreach(ref SectorType sector; this.sectors)
             {
                 accumulator += sector.length;
                 sectorCnt++;
                 if(size <= accumulator)
                 {
+                    // TODO: Resize on the tail-end sector?
+
+                    // Bleed size (accumulation of previous sectors)
+                    // called "x". Then we do `size-x`, this gives
+                    // us the bleed size and we use this as the
+                    // tail-end sector's new size
+                    size_t tailEndTrimSize = size-(accumulator-sector.length);
+                    version(unittest)
+                    {
+                        writeln("tailEndTrimSize: ", tailEndTrimSize);
+                    }
+                    sector.length(tailEndTrimSize);
+
                     break;
                 }
             }
