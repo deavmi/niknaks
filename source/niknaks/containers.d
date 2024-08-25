@@ -11,8 +11,12 @@ import std.datetime.stopwatch : StopWatch, AutoStart;
 import core.thread : Thread;
 import core.sync.condition : Condition;
 import std.functional : toDelegate;
+import core.exception : ArrayIndexError;
+import core.exception : RangeError;
 import std.string : format;
 import niknaks.arrays : removeResize;
+import std.traits : hasMember, hasStaticMember, Parameters, arity, ReturnType, TemplateArgsOf;
+import std.meta : AliasSeq, staticIndexOf;
 
 version(unittest)
 {
@@ -1215,4 +1219,641 @@ unittest
 
     assert(linearized[0] == "subtree");
     assert(linearized[1] == "root");
+}
+
+/** 
+ * Basic implementation of a `SectorType`
+ */
+public struct BasicSector(T)
+{
+    private T[] data;
+
+    this(T[] data)
+    {
+        this.data = data;
+    }
+
+    // Contract: Factory function
+    public static BasicSector!(T) make(T[] data)
+    {
+        return BasicSector!(T)(data);
+    }
+
+    // Contract: Obtain something at an index
+    public T opIndex(size_t idx)
+    {
+        return this.data[idx];
+    }
+
+    // Contract: Set something at an index
+    public void opIndexAssign(T value, size_t index)
+    {
+        this.data[index] = value;
+    }
+
+    // Contract: Obtaining the length must be present
+    public size_t opDollar()
+    {
+        return this.data.length;
+    }
+
+    // Contract: Obtaining the length must be present
+    @property
+    public size_t length()
+    {
+        return opDollar();
+    }
+
+    // Contract: Slicing subset
+    public T[] opSlice(size_t start, size_t end)
+    {
+        return this.data[start..end];
+    }
+
+    // Contract: Slice of entire buffer
+    public T[] opSlice()
+    {
+        return opSlice(0, opDollar);
+    }
+
+    // Contract: Allow downsizing
+    @property
+    public void length(size_t newSize)
+    {
+        assert(newSize <= this.data.length);
+        this.data.length = newSize;
+    }
+}
+
+/** 
+ * Compile-time function to check if
+ * a given data type is a valid
+ * `SectorType`, meaning that it
+ * can be used for a `View`
+ * implementation
+ *
+ * Returns: `true` if so, `false`
+ * otherwise
+ */
+public bool isSector(S)()
+{
+    bool s = true;
+
+    alias args = TemplateArgsOf!(S);
+    pragma(msg, args);
+    static if(!args.length)
+    {
+        return false;
+    }
+    
+    alias T = args[0];
+
+    // Has opSlice(size_t, size_t) with T[] return
+    s &= hasMember!(S, "opSlice") &&
+        __traits(isSame, Parameters!(S.opSlice), AliasSeq!(size_t, size_t)) &&
+        __traits(isSame, ReturnType!(S.opSlice), T[]);
+
+    // Has opSlice() with T[] return
+    bool foundNonParamOpSlice = false;
+    foreach(func; __traits(getOverloads, S, "opSlice"))
+    {
+        if(arity!(func) == 0)
+        {
+            static if(__traits(isSame, ReturnType!(S.opSlice), T[]))
+            {
+                foundNonParamOpSlice = true;
+            }
+        }
+    }
+    s &= foundNonParamOpSlice;
+
+    // Has length method
+    s &= hasMember!(S, "length") && 
+         __traits(isSame, ReturnType!(S.length), size_t) &&
+         staticIndexOf!("@property", __traits(getFunctionAttributes, S.length)) != -1;
+
+    // Has length (setter) method
+    bool found_len_setter = false;
+    static foreach(lenFunc; __traits(getOverloads, S, "length"))
+    {
+        static if
+        (
+            __traits(isSame, Parameters!(lenFunc), AliasSeq!(size_t)) &&
+            __traits(isSame, ReturnType!(lenFunc), void) &&
+            staticIndexOf!("@property", __traits(getFunctionAttributes, lenFunc)) != -1
+        )
+        {
+            found_len_setter = true;
+        }
+    }
+    s &= found_len_setter;
+
+    // Has opDollar with size_t return
+    s &= hasMember!(S, "opDollar") &&
+        __traits(isSame, Parameters!(S.opDollar), AliasSeq!()) &&
+        __traits(isSame, ReturnType!(S.opDollar), size_t);
+
+    // Has opIndex(size_t) with T return
+    s &= hasMember!(S, "opIndex") &&
+        __traits(isSame, Parameters!(S.opIndex), AliasSeq!(size_t)) &&
+        __traits(isSame, ReturnType!(S.opIndex), T);
+
+    // Has opIndexAssign(size_t) with T return
+    s &= hasMember!(S, "opIndexAssign") &&
+        __traits(isSame, Parameters!(S.opIndexAssign), AliasSeq!(T, size_t)) &&
+        __traits(isSame, ReturnType!(S.opIndexAssign), void);
+
+
+    // Has make(T[] data) returning S (implied S!(T) due to template arg check earlier)
+    s &= hasStaticMember!(S, "make") &&
+         __traits(isSame, Parameters!(S.make), AliasSeq!(T[])) &&
+         __traits(isSame, ReturnType!(S.make), S);
+
+    return s;
+}
+
+/** 
+ * A view represents a collection of
+ * arrays which can be accessed
+ * in an array like manner and have their
+ * elements changed too. Therefore this
+ * provides access to these originally
+ * non-contiguous data sets as if they
+ * were one contiguous array.
+ *
+ * Updating of elements is allowed,
+ * fetching of elements (and slices)
+ * and lastly sizing down but NOT
+ * updwards. This last constraint
+ * is why this is considered a "view".
+ */
+public struct View(T, SectorType = BasicSector!(T))
+if(isSector!(SectorType)())
+{
+    private SectorType[] sectors;
+
+    // Maybe current size should be here as we
+    // are a view, we should allow modification
+    // but not make any NEW arrays
+    private size_t curSize;
+
+    /** 
+     * Computes the sum of the
+     * length of all sectors
+     * attached to us
+     *
+     * Returns: the total
+     */
+    private size_t computeTotalLen()
+    {
+        size_t l;
+        foreach(SectorType sector; this.sectors)
+        {
+            l += sector.opDollar();
+        }
+        return l;
+    }
+
+    /** 
+     * Returns the total length
+     * of the data in the view
+     *
+     * Returns: the length
+     */
+    public size_t opDollar()
+    {
+        return this.length;
+    }
+
+    /** 
+     * Retrieves the value of
+     * the element at the
+     * given position
+     *
+     * Params:
+     *   idx = the position
+     * of the element
+     * Returns: the value
+     */
+    public T opIndex(size_t idx)
+    {
+        // Within range of "fake" size
+        if(!(idx < this.length))
+        {
+            throw new ArrayIndexError(idx, this.length);
+        }
+
+        size_t thunk;
+        foreach(SectorType sector; this.sectors)
+        {
+            if(idx-thunk < sector.opDollar())
+            {
+                return sector[idx-thunk];
+            }
+            else
+            {
+                thunk += sector.opDollar();
+            }
+        }
+
+        // NOTE: This should be unreachable but
+        // compiler moans and groans
+        assert(false);
+    }
+
+    /** 
+     * Updates the element at
+     * the given index with
+     * a new value
+     *
+     * Params:
+     *   value = the new value
+     *   idx = the element
+     * to update's position
+     */
+    public void opIndexAssign(T value, size_t idx)
+    {
+        // Within range of "fake" size
+        if(!(idx < this.length))
+        {
+            throw new ArrayIndexError(idx, this.length);
+        }
+
+        size_t thunk;
+        foreach(ref SectorType sector; this.sectors)
+        {
+            version(unittest)
+            {
+                writeln(sector);
+                writeln("idx: ", idx);
+                writeln("thunk: ", thunk);
+            }
+            
+            if(idx-thunk < sector.opDollar())
+            {
+                sector[idx-thunk] = value;
+                return;
+            }
+            else
+            {
+                thunk += sector.opDollar();
+            }
+        }
+    }
+
+    /** 
+     * Returns a copy of the entire
+     * view
+     *
+     * Returns: a `T[]`
+     */
+    public T[] opSlice()
+    {
+        return this[0..this.length];
+    }
+
+    /** 
+     * Returns a copy of the view
+     * within the provided bounds
+     *
+     * Params:
+     *   start = the starting
+     * index
+     *   end = the ending index
+     * (exclusive)
+     * Returns: 
+     */
+    public T[] opSlice(size_t start, size_t end)
+    {
+        // Invariant of start <= end
+        if(!(start <= end))
+        {
+            throw new RangeError("Starting index must be smaller than or equal to ending index");
+        }
+        // If the indices are equal, then it is empty
+        else if(start == end)
+        {
+            return [];
+        }
+        // Within range of "fake" size
+        else if(!((start < this.length) && (end <= this.length)))
+        {
+            throw new RangeError("start index or end index not under range");
+        }
+
+        T[] collected;
+
+        size_t thunk;
+        foreach(SectorType sector; this.sectors)
+        {
+            // If the current sector contains
+            // both the starting AND ending
+            // indices
+            if(start-thunk < sector.opDollar() && end-thunk <= sector.opDollar())
+            {
+                return sector[start-thunk..end-thunk];
+            }
+            // If the current sector's starting
+            // index (only) is included
+            else if(start-thunk < sector.opDollar() && !(end-thunk <= sector.opDollar()))
+            {
+                collected ~= sector[start-thunk..$];
+            }
+            // If the current sector's ending
+            // index (only) is included
+            else if(!(start-thunk < sector.opDollar()) && end-thunk <= sector.opDollar())
+            {
+                collected ~= sector[0..end-thunk];
+            }
+            // If the current sector's entirety
+            // is to be included
+            else
+            {
+                collected ~= sector[];
+            }
+
+            thunk += sector.opDollar();
+        }
+
+        return collected;
+    }
+
+    private static bool isArrayAppend(P)()
+    {
+        return __traits(isSame, P, T[]);
+    }
+
+    private static bool isElementAppend(P)()
+    {
+        return __traits(isSame, P, T);
+    }
+
+    /** 
+     * Appends a new value to
+     * the end of the view
+     *
+     * Params:
+     *   value = the value
+     * to append
+     */
+    public void opOpAssign(string op, E)(E value)
+    if(op == "~" && (isArrayAppend!(E) || isElementAppend!(E)))
+    {
+        static if(isArrayAppend!(E))
+        {
+            add(value);
+        }
+        else
+        {
+            add([value]);
+        }
+    }
+
+    /** 
+     * Takes the data with which we
+     * constructs a kind-of `SectorType`
+     * from. We then adjust the total
+     * size and append the new sector
+     *
+     * Params:
+     *   data = the data to append
+     */
+    private void add(T[] data)
+    {
+        // Create a new sector
+        SectorType sec = SectorType.make(data);
+
+        // Update the tracking size
+        this.curSize += sec.length;
+
+        // Concatenate it to the view
+        this.sectors ~= sec;
+    }
+
+    /** 
+     * Returns the total length
+     * of the data in the view
+     *
+     * Returns: the length
+     */
+    @property
+    public size_t length()
+    {
+        return this.curSize;
+    }
+
+    /** 
+     * Resizes the total
+     * length of the view.
+     *
+     * This allows the user
+     * to either keep the
+     * size the same or
+     * shrink the view,
+     * but never extend
+     * it.
+     *
+     * 
+     * Params:
+     *   size = the new size
+     * Throws:
+     *   RangeError if an
+     * attempt to extend
+     * the length is made
+     */
+    @property
+    public void length(size_t size)
+    {
+        // TODO: Need we continuously compute this?
+        // ... we should have a tracking field for
+        // ... this
+        // Would only need to be called in length(size_t)
+        // and add(T[])
+        size_t actualSize = computeTotalLen();
+
+        // On successful exit, update the "fake" size
+        scope(success)
+        {
+            this.curSize = size;
+        }
+
+
+        // Don't allow sizing up (doesn't make sense for a view)
+        if(size > actualSize)
+        {
+            auto r = new RangeError();
+            r.msg = "Cannot extend the size of a view past its total size (of all attached sectors)";
+            throw r;
+        }
+        // If nothing changes
+        else if(size == actualSize)
+        {
+            // Nothing
+        }
+        // If shrinking to zero
+        else if(size == 0)
+        {
+            // Just drop everything
+            this.sectors.length = 0;
+        }
+        // If shrinking (arbitrary)
+        else
+        {
+            // Sectors from left-to-right to keep
+            size_t sectorCnt;
+
+            // Accumulator
+            size_t accumulator;
+
+            foreach(ref SectorType sector; this.sectors)
+            {
+                accumulator += sector.length;
+                sectorCnt++;
+                if(size <= accumulator)
+                {
+                    // TODO: Resize on the tail-end sector?
+
+                    // Bleed size (accumulation of previous sectors)
+                    // called "x". Then we do `size-x`, this gives
+                    // us the bleed size and we use this as the
+                    // tail-end sector's new size
+                    size_t tailEndTrimSize = size-(accumulator-sector.length);
+                    version(unittest)
+                    {
+                        writeln("tailEndTrimSize: ", tailEndTrimSize);
+                    }
+                    sector.length(tailEndTrimSize);
+
+                    break;
+                }
+            }
+
+            this.sectors.length = sectorCnt;
+        }
+    }
+}
+
+unittest
+{
+    View!(int) view;
+    assert(view.opDollar() == 0);
+
+    try
+    {
+        view[1];
+        assert(false);
+    }
+    catch(ArrayIndexError e)
+    {
+        assert(e.index == 1);
+        assert(e.length == 0);
+    }
+
+    view ~= [1,3,45];
+    assert(view.opDollar() == 3);
+    assert(view.length == 3);
+
+    view ~= 2;
+    assert(view.opDollar() == 4);
+    assert(view.length == 4);
+
+    assert(view[0] == 1);
+    assert(view[1] == 3);
+    assert(view[2] == 45);
+    assert(view[3] == 2);
+    assert(view[0..2] == [1,3]);
+    assert(view[0..4] == [1,3,45,2]);
+
+    // Update elements
+    view[0] = 71;
+    view[3] = 50;
+
+    // Set size to same size
+    view.length = view.length;
+
+    // Check that update is present
+    // and size unchanged
+    int[] all = view[];
+    assert(all == [71,3,45,50]);
+
+    // Truncate by 1 element
+    view.length = view.length-1;
+    all = view[];
+    assert(all == [71,3,45]);
+
+    // This should fail
+    try
+    {
+        view[3] = 3;
+        assert(false);
+    }
+    catch(RangeError e)
+    {
+    }
+
+    // This should fail
+    try
+    {
+        int j = view[3];
+        assert(false);
+    }
+    catch(RangeError e)
+    {
+    }
+
+    // Up-sizing past real size should not be allowed
+    try
+    {
+        view.length =  view.length+1;
+        assert(false);
+    }
+    catch(RangeError e)
+    {
+    }
+
+    // Size to zero
+    view.length = 0;
+    assert(view.length == 0);
+    assert(view[] == []);
+}
+
+unittest
+{
+    View!(int) view;
+    view ~= 1;
+    view ~= [2,3,4];
+    view ~= 5;
+
+    assert(view[0..5] == [1,2,3,4,5]);
+
+    // test: start <= end invariant broken
+    try
+    {
+        auto j = view[1..0];
+        assert(false);
+    }
+    catch(RangeError e)
+    {
+
+    }
+
+    // test: end out of bounds
+    try
+    {
+        auto j = view[1..view.length+1];
+        assert(false);
+    }
+    catch(RangeError e)
+    {
+
+    }
+
+    int[] d = [1,2,3];
+    writeln("according to dlang: ", d[1..2]);
+
+    writeln("test lekker: ", view[1..2]);
+    assert(view[1..2] == [2]);
+
+    writeln("test lekker: ", view[1..1]);
+    assert(view[1..1] == []);
 }
