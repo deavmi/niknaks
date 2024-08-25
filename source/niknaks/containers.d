@@ -1228,6 +1228,7 @@ private struct Sector(T)
         this.data = data;
     }
 
+    // Contract: Factory function
     public static Sector!(T) make(T[] data)
     {
         return Sector!(T)(data);
