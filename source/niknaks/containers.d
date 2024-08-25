@@ -1265,15 +1265,6 @@ private struct Sector(T)
     {
         return opSlice(0, opDollar);
     }
-
-    // Contract: Rezising must be implemented
-    // TODO: This would then be the very reason for
-    // using ref actually, as resizing may only
-    // change a local copy when extding on
-    // the tail-end "extent" (SectorType)
-
-    // Actually should resizing even be done here?
-
 }
 
 // TODO: Make a bit better
