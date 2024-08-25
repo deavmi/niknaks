@@ -1347,8 +1347,6 @@ private bool isSector(S)()
     return s;
 }
 
-
-
 /** 
  * A view represents a collection of
  * arrays which can be accessed
