@@ -1259,11 +1259,13 @@ private struct Sector(T)
         return opDollar();
     }
 
+    // Contract: Slicing subset
     public T[] opSlice(size_t start, size_t end)
     {
         return this.data[start..end];
     }
 
+    // Contract: Slice of entire buffer
     public T[] opSlice()
     {
         return opSlice(0, opDollar);
