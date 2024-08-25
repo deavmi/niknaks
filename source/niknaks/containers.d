@@ -15,6 +15,8 @@ import core.exception : ArrayIndexError;
 import core.exception : RangeError;
 import std.string : format;
 import niknaks.arrays : removeResize;
+import std.traits : hasMember, hasStaticMember, Parameters, arity, ReturnType, TemplateArgsOf;
+import std.meta : AliasSeq, staticIndexOf;
 
 version(unittest)
 {
@@ -1282,10 +1284,6 @@ public struct BasicSector(T)
         this.data.length = newSize;
     }
 }
-
-// TODO: Make a bit better
-import std.traits : hasMember, hasStaticMember, Parameters, arity, ReturnType, TemplateArgsOf;
-import std.meta : AliasSeq, staticIndexOf;
 
 /** 
  * Compile-time function to check if
