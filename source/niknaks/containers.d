@@ -1219,7 +1219,10 @@ unittest
     assert(linearized[1] == "root");
 }
 
-private struct Sector(T)
+/** 
+ * Basic implementation of a `SectorType`
+ */
+public struct BasicSector(T)
 {
     private T[] data;
 
@@ -1229,9 +1232,9 @@ private struct Sector(T)
     }
 
     // Contract: Factory function
-    public static Sector!(T) make(T[] data)
+    public static BasicSector!(T) make(T[] data)
     {
-        return Sector!(T)(data);
+        return BasicSector!(T)(data);
     }
 
     // Contract: Obtain something at an index
@@ -1393,7 +1396,7 @@ public bool isSector(S)()
  * updwards. This last constraint
  * is why this is considered a "view".
  */
-public struct View(T, SectorType = Sector!(T))
+public struct View(T, SectorType = BasicSector!(T))
 if(isSector!(SectorType)())
 {
     private SectorType[] sectors;
