@@ -1328,11 +1328,6 @@ public bool isSector(S)()
     }
     s &= foundNonParamOpSlice;
 
-    pragma(msg, __traits(getFunctionAttributes, S.length));
-    pragma(msg, 3LU > -1);
-    // pragma(msg,   staticIndexOf!("@property", __traits(getFunctionAttributes, S.length)) == -1);
-  
-
     // Has length method
     s &= hasMember!(S, "length") && 
          __traits(isSame, ReturnType!(S.length), size_t) &&
