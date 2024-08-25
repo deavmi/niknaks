@@ -1327,7 +1327,6 @@ public bool isSector(S)()
         }
     }
     s &= foundNonParamOpSlice;
-    // s &= hasMember!(S, "opSlice") && arity!(S.) == 0;
 
     pragma(msg, __traits(getFunctionAttributes, S.length));
     pragma(msg, 3LU > -1);
