@@ -16,7 +16,7 @@ permissions:
 jobs:
   build:
 
-    runs-on: fedora-latest
+    runs-on: ubuntu-latest
 
     steps:
     - uses: RouxAntoine/checkout@v4.1.8
