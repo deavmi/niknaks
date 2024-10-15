@@ -656,7 +656,7 @@ public template Nothing(T)
      * Params:
      *   treeNode = the node
      */
-    public void Nothing(Graph!(T));
+    public void Nothing(Graph!(T)) {}
 }
 
 /** 
