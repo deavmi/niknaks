@@ -1225,7 +1225,7 @@ public class VisitationTree(T) : Graph!(T)
      * Marks this node as
      * visited
      */
-    private void mark()
+    public void mark()
     {
         this.visisted = true;
     }
@@ -1237,7 +1237,7 @@ public class VisitationTree(T) : Graph!(T)
      * Returns: `true` if visited,
      * otherwise `false`
      */
-    private bool isVisited()
+    public bool isVisited()
     {
         return this.visisted;
     }
