@@ -234,6 +234,20 @@ if(isAssignable!(Throwable, onEmptyGet) // &&
 
 			return value;
 		}
+
+		/** 
+		 * Creates an empty optional
+		 *
+		 * This is the same as doing `Optional!(T)()`
+		 * or simply declaring a variable
+		 * of the type `Optional!(T)
+		 *
+		 * Returns: an empty optional
+		 */
+		public static Optional!(T) empty()
+		{
+			return Optional!(T)();
+		}
 	}
 }
 
@@ -245,7 +259,18 @@ if(isAssignable!(Throwable, onEmptyGet) // &&
  */
 unittest
 {
-	Optional!(int) d;
+	struct MyType
+	{
+
+	}
+
+	Optional!(MyType) d;
+	assert(d.isPresent() == false);
+	
+	d = Optional!(MyType)();
+	assert(d.isPresent() == false);
+
+	d = Optional!(MyType).empty();
 	assert(d.isPresent() == false);
 
 	try
