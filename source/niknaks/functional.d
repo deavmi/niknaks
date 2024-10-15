@@ -208,6 +208,19 @@ if(isAssignable!(Throwable, onEmptyGet) // &&
 		}
 
 		/** 
+		 * Checks if there is
+		 * no value present
+		 *
+		 * Returns: `true` if
+		 * no value is present,
+		 * `false` otherwise
+		 */
+		public bool isEmpty()
+		{
+			return isPresent() == false;
+		}
+
+		/** 
 		 * Returns the value of this
 		 * optional if it is set. If
 		 * not set then an exception
@@ -266,12 +279,15 @@ unittest
 
 	Optional!(MyType) d;
 	assert(d.isPresent() == false);
+	assert(d.isEmpty());
 	
 	d = Optional!(MyType)();
 	assert(d.isPresent() == false);
+	assert(d.isEmpty());
 
 	d = Optional!(MyType).empty();
 	assert(d.isPresent() == false);
+	assert(d.isEmpty());
 
 	try
 	{
@@ -294,6 +310,7 @@ unittest
 {
 	Optional!(byte) f = Optional!(byte)(1);
 	assert(f.isPresent() == true);
+	assert(f.isEmpty() == false);
 
 	try
 	{
