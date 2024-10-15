@@ -17,6 +17,7 @@ import std.string : format;
 import niknaks.arrays : removeResize;
 import std.traits : hasMember, hasStaticMember, Parameters, arity, ReturnType, TemplateArgsOf;
 import std.meta : AliasSeq, staticIndexOf;
+import niknaks.functional : Optional;
 
 version(unittest)
 {
@@ -1048,6 +1049,41 @@ public class Graph(T)
     {
         return format("GraphNode [val: %s]", this.value);
     }
+
+    /** 
+     * This will attempt to find the
+     * graph node which contains the
+     * provided value.
+     *
+     * Value matching is based on applying
+     * the `==`/`opEquals()` operator
+     * to each graph nodes' `getValue()`
+     * within the graph.
+     *
+     * Params:
+     *   val = the value
+     * Returns: an optional containing
+     * the graph node if found, else
+     * an empty optional
+     */
+    public Optional!(Graph!(T)) findByValue(T val)
+    {
+        if(getValue() == val)
+        {
+            return Optional!(Graph!(T))(this);
+        }
+
+        foreach(Graph!(T) g; this.children)
+        {
+            Optional!(Graph!(T)) g_opt = g.findByValue(val);
+            if(g_opt.isPresent())
+            {
+                return g_opt;
+            }
+        }
+
+        return Optional!(Graph!(T)).empty();
+    }
 }
 
 /**
@@ -1074,6 +1110,10 @@ unittest
     assert(treeOfStrings[2] == subtree_3.getValue());
 
     assert(treeOfStrings.opDollar() == 3);
+
+    Optional!(Graph!(string)) match_opt = treeOfStrings.findByValue("2");
+    assert(match_opt.isPresent());
+    assert(match_opt.get() is subtree_2);
 
     InclusionStratergy!(string) strat = toDelegate(&Always!(string));
     TouchStratergy!(string) touch = toDelegate(&DebugTouch!(string));
