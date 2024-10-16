@@ -1957,7 +1957,7 @@ import std.traits;
 
 private bool isClassType(T)()
 {
-    return __traits(isFinalClass, T) || __traits(isAbstractClass, T);
+    return __traits(compiles, __traits(classInstanceSize, T));
 }
 
 public struct Pool(EntryType, ValueType)
@@ -2005,7 +2005,7 @@ if
 
 version(unittest)
 {
-    final class DNode
+    class DNode
     {
         private int x;
         this(int x)
