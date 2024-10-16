@@ -1954,21 +1954,15 @@ unittest
 }
 
 import std.traits;
+import niknaks.meta : isClassType;
 
-private bool isClassType(T)()
-{
-    return __traits(compiles, __traits(classInstanceSize, T));
-}
 
 public struct Pool(EntryType, ValueType)
 if
 (
-    // hasC
-    // true
     isClassType!(EntryType)
 )
 {
-    // TODO: Add compile-time option for safety
     private EntryType[ValueType] _p;
 
     /** 
