@@ -56,3 +56,8 @@ public import niknaks.config;
  * Text manipulation
  */
 public import niknaks.text;
+
+/**
+ * Template-oriented routines
+ */
+public import niknaks.meta;

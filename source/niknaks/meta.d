@@ -1,5 +1,7 @@
 /** 
- * Template-oriented routiens
+ * Template-oriented routines
+ *
+ * Authors: Tristan Brice Velloza Kildaire
  */
 module niknaks.meta;
 

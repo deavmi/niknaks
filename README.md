@@ -48,6 +48,8 @@ is expected to grow over time.
     * Configuration entries and management
 * `niknaks.text`
     * Textual manipulation routines
+* `niknaks.meta`
+    * Template-oriented helper routines
 
 ## License
 
