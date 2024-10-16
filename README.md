@@ -42,6 +42,7 @@ is expected to grow over time.
     * Some useful container types
     * Things such as `CacheMap`, `Graph` and `VisitationTree`
     * Also contains a jump-buffer implementation known as `View`
+    * A generic pooling mechanism known as `Pool`
 * `niknaks.mechanisms`
     * User-defined input prompter, retry mechanisms
 * `niknaks.config`
