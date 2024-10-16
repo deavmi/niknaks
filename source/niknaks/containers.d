@@ -1952,3 +1952,107 @@ unittest
     writeln("test lekker: ", view[1..1]);
     assert(view[1..1] == []);
 }
+
+import std.traits;
+
+private bool isClassType(T)()
+{
+    return __traits(isFinalClass, T) || __traits(isAbstractClass, T);
+}
+
+public struct Pool(EntryType, ValueType)
+if
+(
+    // hasC
+    // true
+    isClassType!(EntryType)
+)
+{
+    // TODO: Add compile-time option for safety
+    private EntryType[ValueType] _p;
+
+    /** 
+     * Pools a new entry by the given
+     * value. If no such pool entry 
+     * exists then it is constructed,
+     * stored and returned, else the
+     * existing entry is returned.
+     *
+     * Params:
+     *   v = the key to pool by
+     * Returns: the pooled entry
+     */
+    public EntryType pool(ValueType v)
+    {
+        // Class-based types
+        static if(isClassType!(EntryType))
+        {
+            EntryType* ent = v in _p;
+            if(ent is null)
+            {
+                _p[v] = new EntryType(v);
+                return pool(v);
+            }
+            return *ent;
+        }
+        else
+        {
+            pragma(msg, "Non-class types are not yet supported for pooling")
+            static assert(false);
+        }
+    }
+}
+
+version(unittest)
+{
+    final class DNode
+    {
+        private int x;
+        this(int x)
+        {
+            this.x = x;
+        }
+
+        public int getTestVal()
+        {
+            return this.x;
+        }
+    }
+
+    final class ClassWithoutSimpleThis
+    {
+        this(int, int)
+        {
+
+        }
+    }
+}
+
+unittest
+{
+    static assert(__traits(compiles, Pool!(DNode, int)()));
+    Pool!(DNode, int) d;
+
+    // Initial pool creates the node
+    DNode p1 = d.pool(1);
+    assert(p1 !is null);
+
+    // Pooling again by said value
+    // should now return the same
+    // exact object
+    DNode p2 = d.pool(1);
+    assert(p2 is p1);
+
+    // Any other value makes an entirely
+    // new node
+    DNode p3 = d.pool(2);
+    assert(p3 !is p2);
+
+    // Class-based type without a `this(ValueType)` ctor
+    static assert(__traits(compiles, Pool!(ClassWithoutSimpleThis, int)()) == false);
+
+    // We don't yet support non-class entry types
+    static assert(__traits(compiles, Pool!(int, int)()) == false);
+    struct P {}
+    static assert(__traits(compiles, Pool!(P, int)()) == false);
+}
