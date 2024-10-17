@@ -2028,7 +2028,7 @@ if
     }
 }
 
-version(unittest)
+private version(unittest)
 {
     class DNode
     {
@@ -2085,7 +2085,7 @@ unittest
     static assert(__traits(compiles, Pool!(P, int)()) == false);
 }
 
-version(unittest)
+private version(unittest)
 {
     class Thing
     {
