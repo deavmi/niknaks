@@ -1974,6 +1974,29 @@ if
     private EntryType[ValueType] _p;
 
     /** 
+     * Clears the entry that would
+     * be mapped to by the given
+     * key
+     *
+     * Params:
+     *   v = the key
+     * Returns: `true` if it existed,
+     * `false` otheriwse
+     */
+    public bool clear(ValueType v)
+    {
+        EntryType* ent = v in _p;
+        if(ent is null)
+        {
+            return false;
+        }
+
+        _p.remove(v);
+
+        return true;
+    }
+
+    /** 
      * Pools a new entry by the given
      * value. If no such pool entry 
      * exists then it is constructed,
@@ -2030,6 +2053,9 @@ version(unittest)
     }
 }
 
+/**
+ * General usage of the pool
+ */
 unittest
 {
     static assert(__traits(compiles, Pool!(DNode, int)()));
@@ -2057,4 +2083,35 @@ unittest
     static assert(__traits(compiles, Pool!(int, int)()) == false);
     struct P {}
     static assert(__traits(compiles, Pool!(P, int)()) == false);
+}
+
+version(unittest)
+{
+    class Thing
+    {
+        this(int)
+        {
+            
+        }
+    }
+}
+
+/**
+ * Tests out the clearing of
+ * an entry by its key
+ */
+unittest
+{
+    Pool!(Thing, int) p;
+    Thing t1 = p.pool(1);
+    assert(t1);
+
+    Thing t2 = p.pool(1);
+    assert(t2 is t1);
+
+    // Clear, now pooling should give different address
+    p.clear(1);
+
+    Thing t3 = p.pool(1);
+    assert(t3 !is t2);
 }
