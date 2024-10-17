@@ -34,6 +34,42 @@ version(unittest)
     }
 }
 
+private version(unittest)
+{
+    class DNode
+    {
+        private int x;
+        this(int x)
+        {
+            this.x = x;
+        }
+
+        public int getTestVal()
+        {
+            return this.x;
+        }
+    }
+
+    class ClassWithoutSimpleThis
+    {
+        this(int, int)
+        {
+
+        }
+    }
+}
+
+private version(unittest)
+{
+    class Thing
+    {
+        this(int)
+        {
+            
+        }
+    }
+}
+
 /** 
  * Represents an entry of
  * some value of type `V`
@@ -2028,31 +2064,6 @@ if
     }
 }
 
-private version(unittest)
-{
-    class DNode
-    {
-        private int x;
-        this(int x)
-        {
-            this.x = x;
-        }
-
-        public int getTestVal()
-        {
-            return this.x;
-        }
-    }
-
-    class ClassWithoutSimpleThis
-    {
-        this(int, int)
-        {
-
-        }
-    }
-}
-
 /**
  * General usage of the pool
  */
@@ -2083,17 +2094,6 @@ unittest
     static assert(__traits(compiles, Pool!(int, int)()) == false);
     struct P {}
     static assert(__traits(compiles, Pool!(P, int)()) == false);
-}
-
-private version(unittest)
-{
-    class Thing
-    {
-        this(int)
-        {
-            
-        }
-    }
 }
 
 /**
