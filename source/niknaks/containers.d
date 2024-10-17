@@ -1956,7 +1956,15 @@ unittest
 import std.traits;
 import niknaks.meta : isClassType;
 
-
+/** 
+ * Represents a pool which takes
+ * in a key of type `ValueType`.
+ * If a corresponding `EntryType`
+ * is mapped-to via said key then
+ * it is returned, else it is
+ * constructed on the spot, stored
+ * and then finally returned
+ */
 public struct Pool(EntryType, ValueType)
 if
 (
