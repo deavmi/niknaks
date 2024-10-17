@@ -1297,6 +1297,37 @@ unittest
     assert(linearized[1] == "root");
 }
 
+public class CycleDetectionTree(T) : Graph!(T)
+{
+    private size_t cnt;
+
+    /** 
+     * Constructs a new node
+     *
+     * Params:
+     *   value = the value
+     */
+    this(T value)
+    {
+        super(value);
+    }
+
+    public void mark()
+    {
+        this.cnt++;
+    }
+
+    public bool isVisited()
+    {
+        return this.cnt > 0;
+    }
+
+    public bool wasCycled()
+    {
+        return this.cnt > 1;
+    }
+}
+
 /** 
  * Basic implementation of a `SectorType`
  */
