@@ -1312,9 +1312,27 @@ public class CycleDetectionTree(T) : Graph!(T)
         super(value);
     }
 
+    public void mark(size_t s)
+    {
+        this.cnt += s;
+    }
+
     public void mark()
     {
-        this.cnt++;
+        mark(1);
+    }
+
+    public void opUnary(string op)()
+    if(op == "++")
+    {
+        mark();
+    }
+
+    public void opBinaryRight(string op, size_t)(size_t lhs)
+    if(op == "+")
+    {
+        assert(lhs > 0); // FIXME: Throw rather
+        mark(lhs);
     }
 
     public bool isVisited()
@@ -1325,6 +1343,11 @@ public class CycleDetectionTree(T) : Graph!(T)
     public bool wasCycled()
     {
         return this.cnt > 1;
+    }
+
+    public size_t getCnt()
+    {
+        return this.cnt;
     }
 }
 
