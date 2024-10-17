@@ -2013,7 +2013,7 @@ version(unittest)
         }
     }
 
-    final class ClassWithoutSimpleThis
+    class ClassWithoutSimpleThis
     {
         this(int, int)
         {
