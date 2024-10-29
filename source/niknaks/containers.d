@@ -2064,7 +2064,6 @@ unittest
     assert(view[1..1] == []);
 }
 
-import std.traits;
 import niknaks.meta : isClassType, isStructType;
 
 private mixin template Methods(EntityType)
