@@ -2103,6 +2103,7 @@ private mixin template Methods(EntityType)
             return *ent;
         }
     }
+    // Struct-based types
     else static if(isStructType!(EntryType))
     {
         /** 
