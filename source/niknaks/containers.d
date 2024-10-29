@@ -2052,7 +2052,79 @@ unittest
 }
 
 import std.traits;
-import niknaks.meta : isClassType;
+import niknaks.meta : isClassType, isStructType;
+
+private mixin template Methods(EntityType)
+{
+    // Class-based types
+    static if(isClassType!(EntityType))
+    {
+        /** 
+         * Pools a new entry by the given
+         * value. If no such pool entry 
+         * exists then it is constructed,
+         * stored and returned, else the
+         * existing entry is returned.
+         *
+         * Params:
+         *   v = the key to pool by
+         * Returns: the pooled entry
+         */
+        public EntryType pool(ValueType v)
+        {
+
+            EntryType* ent = v in _p;
+            if(ent is null)
+            {
+                static if(entryTakesValue_onCtor)
+                {
+                    _p[v] = new EntryType(v);
+                }
+                else
+                {
+                    pragma(msg, "Class: Argless ctor less");
+                    _p[v] = new EntryType();
+                }
+                
+                return pool(v);
+            }
+            return *ent;
+        }
+    }
+    else static if(isStructType!(EntryType))
+    {
+        /** 
+         * Pools a new entry by the given
+         * value. If no such pool entry 
+         * exists then it is constructed,
+         * stored and returned, else the
+         * existing entry is returned.
+         *
+         * Params:
+         *   v = the key to pool by
+         * Returns: the pooled entry
+         */
+        public EntryType* pool(ValueType v)
+        {
+            EntryType* ent = v in _p;
+            if(ent is null)
+            {
+                static if(entryTakesValue_onCtor)
+                {
+                    _p[v] = EntryType(v);
+                }
+                else
+                {
+                    pragma(msg, "Struct: Argless ctor less");
+                    _p[v] = EntryType();
+                }
+                
+                return pool(v);
+            }
+            return ent;
+        }
+    }
+}
 
 /** 
  * Represents a pool which takes
@@ -2070,11 +2142,17 @@ import niknaks.meta : isClassType;
  * then set the `entryTakesValue_onCtor`
  * to `false`. It is `true` by
  * default.
+ *
+ * The result of pooling an `EntryType`
+ * which is a struct-type is that
+ * it will have a pointer returned,
+ * i.e. an `EntryType*`
  */
 public struct Pool(EntryType, ValueType, bool entryTakesValue_onCtor = true)
 if
 (
-    isClassType!(EntryType)
+    isClassType!(EntryType) ||
+    isStructType!(EntryType)
 )
 {
     private EntryType[ValueType] _p;
@@ -2102,45 +2180,7 @@ if
         return true;
     }
 
-    /** 
-     * Pools a new entry by the given
-     * value. If no such pool entry 
-     * exists then it is constructed,
-     * stored and returned, else the
-     * existing entry is returned.
-     *
-     * Params:
-     *   v = the key to pool by
-     * Returns: the pooled entry
-     */
-    public EntryType pool(ValueType v)
-    {
-        // Class-based types
-        static if(isClassType!(EntryType))
-        {
-            EntryType* ent = v in _p;
-            if(ent is null)
-            {
-                static if(entryTakesValue_onCtor)
-                {
-                    _p[v] = new EntryType(v);
-                }
-                else
-                {
-                    pragma(msg, "Argless ctor less");
-                    _p[v] = new EntryType();
-                }
-                
-                return pool(v);
-            }
-            return *ent;
-        }
-        else
-        {
-            pragma(msg, "Non-class types are not yet supported for pooling")
-            static assert(false);
-        }
-    }
+    mixin Methods!(EntryType);
 }
 
 /**
@@ -2148,8 +2188,9 @@ if
  */
 unittest
 {
-    static assert(__traits(compiles, Pool!(DNode, int)()));
     Pool!(DNode, int) d;
+    static assert(__traits(compiles, Pool!(DNode, int)()));
+    
 
     // Initial pool creates the node
     DNode p1 = d.pool(1);
@@ -2169,10 +2210,8 @@ unittest
     // Class-based type without a `this(ValueType)` ctor
     static assert(__traits(compiles, Pool!(ClassWithoutSimpleThis, int)()) == false);
 
-    // We don't yet support non-class entry types
+    // Only class types and struct types are supported
     static assert(__traits(compiles, Pool!(int, int)()) == false);
-    struct P {}
-    static assert(__traits(compiles, Pool!(P, int)()) == false);
 }
 
 /**
@@ -2212,4 +2251,41 @@ unittest
     
     ArglessThing t2 = p.pool(1);
     assert(t2 is t1);
+}
+
+// TODO: Move to top of module
+version(unittest)
+{   
+    struct Person
+    {
+        private static size_t _g = 0;
+        size_t uniq;
+        this(int)
+        {
+            this.uniq = ++_g;
+        }
+    }
+}
+
+unittest
+{
+    // Struct-based types are supported
+    struct P {}
+    static assert(__traits(compiles, Pool!(P, int, false)()) == true);
+}
+
+unittest
+{
+    Pool!(Person, int) p;
+    Person* t1 = p.pool(1);
+    assert(t1);
+    
+    Person* t2 = p.pool(1);
+    assert(t2 is t1);
+    assert(t2.uniq == 1);
+
+    Person* t3 = p.pool(2);
+    assert(t3);
+    assert(t3.uniq == 2);
+    assert(t3 !is t2);
 }
