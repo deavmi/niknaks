@@ -18,6 +18,14 @@ public bool isClassType(T)()
     return __traits(compiles, __traits(classInstanceSize, T));
 }
 
+/** 
+ * Determines if the
+ * type `T` is a struct
+ * type
+ *
+ * Returns: `true` if
+ * so, `false` otherwise
+ */
 public bool isStructType(T)()
 {
     // FIXME: This isn't the best test yet
