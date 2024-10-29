@@ -68,6 +68,14 @@ private version(unittest)
             
         }
     }
+
+    class ArglessThing
+    {
+        this()
+        {
+            
+        }
+    }
 }
 
 /** 
@@ -2054,8 +2062,16 @@ import niknaks.meta : isClassType;
  * it is returned, else it is
  * constructed on the spot, stored
  * and then finally returned
+ *
+ * If your `EntryType` is to
+ * have its constructor called
+ * _without_ taking in a single
+ * argument of type `ValueType`
+ * then set the `entryTakesValue_onCtor`
+ * to `false`. It is `true` by
+ * default.
  */
-public struct Pool(EntryType, ValueType)
+public struct Pool(EntryType, ValueType, bool entryTakesValue_onCtor = true)
 if
 (
     isClassType!(EntryType)
@@ -2105,7 +2121,16 @@ if
             EntryType* ent = v in _p;
             if(ent is null)
             {
-                _p[v] = new EntryType(v);
+                static if(entryTakesValue_onCtor)
+                {
+                    _p[v] = new EntryType(v);
+                }
+                else
+                {
+                    pragma(msg, "Argless ctor less");
+                    _p[v] = new EntryType();
+                }
+                
                 return pool(v);
             }
             return *ent;
@@ -2168,4 +2193,23 @@ unittest
 
     Thing t3 = p.pool(1);
     assert(t3 !is t2);
+}
+
+/**
+ * Tests usage of a type that
+ * consumes no `ValueType`
+ * on construction of itself
+ * (`EntryType` has a zero-arity
+ * constructor)
+ */
+unittest
+{
+    static assert(__traits(compiles,  Pool!(ArglessThing, int, false)));
+
+    Pool!(ArglessThing, int, false) p;
+    ArglessThing t1 = p.pool(1);
+    assert(t1);
+    
+    ArglessThing t2 = p.pool(1);
+    assert(t2 is t1);
 }
