@@ -2081,6 +2081,7 @@ private mixin template Methods(EntityType)
          * Params:
          *   v = the key to pool by
          * Returns: the pooled entry
+         * (as an `EntryType`)
          */
         public EntryType pool(ValueType v)
         {
@@ -2116,6 +2117,7 @@ private mixin template Methods(EntityType)
          * Params:
          *   v = the key to pool by
          * Returns: the pooled entry
+         * (as an `EntryType*`)
          */
         public EntryType* pool(ValueType v)
         {
