@@ -19,12 +19,12 @@ import std.traits : hasMember, hasStaticMember, Parameters, arity, ReturnType, T
 import std.meta : AliasSeq, staticIndexOf;
 import niknaks.functional : Optional;
 
-version(unittest)
+private version(unittest)
 {
     import std.stdio : writeln;
 }
 
-version(unittest)
+private version(unittest)
 {
     import std.functional : toDelegate;
 
