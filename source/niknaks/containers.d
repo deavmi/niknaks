@@ -78,6 +78,19 @@ private version(unittest)
     }
 }
 
+private version(unittest)
+{   
+    struct Person
+    {
+        private static size_t _g = 0;
+        size_t uniq;
+        this(int)
+        {
+            this.uniq = ++_g;
+        }
+    }
+}
+
 /** 
  * Represents an entry of
  * some value of type `V`
@@ -2253,29 +2266,16 @@ unittest
     assert(t2 is t1);
 }
 
-// TODO: Move to top of module
-version(unittest)
-{   
-    struct Person
-    {
-        private static size_t _g = 0;
-        size_t uniq;
-        this(int)
-        {
-            this.uniq = ++_g;
-        }
-    }
-}
-
+/**
+ * Tests pooling with an `EntryType`
+ * which is a struct type
+ */
 unittest
 {
     // Struct-based types are supported
     struct P {}
     static assert(__traits(compiles, Pool!(P, int, false)()) == true);
-}
 
-unittest
-{
     Pool!(Person, int) p;
     Person* t1 = p.pool(1);
     assert(t1);
