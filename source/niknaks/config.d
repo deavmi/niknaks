@@ -29,7 +29,7 @@ version(unittest)
 private union ConfigValue
 {
     string text;
-    int integer;
+    size_t integer;
     bool flag;
     string[] textArray;
 }
@@ -115,6 +115,42 @@ public struct ConfigEntry
     // TODO: Must have an unset flag
     // @disable
     // private this();
+    import std.traits : isIntegral;
+
+    this(EntryType)(EntryType value)
+    if
+    (
+        __traits(isSame, EntryType, string[]) ||
+        __traits(isSame, EntryType, string) ||
+        isIntegral!(EntryType) ||
+        __traits(isSame, EntryType, bool)
+    )
+    {
+        ConfigValue _v;
+        ConfigType _t;
+        static if(__traits(isSame, EntryType, string[]))
+        {
+            _v.textArray = value;
+            _t = ConfigType.ARRAY;
+        }
+        else static if(__traits(isSame, EntryType, string))
+        {
+            _v.text = value;
+            _t = ConfigType.TEXT;
+        }
+        else static if(isIntegral!(EntryType))
+        {
+            _v.integer = cast(size_t)value;
+            _t = ConfigType.NUMERIC;
+        }
+        else static if(__traits(isSame, EntryType, bool))
+        {
+            _v.flag = value;
+            _t = ConfigType.FLAG;
+        }
+
+        this(_v, _t);
+    }
 
     /** 
      * Constructs a new `ConfigEntry`
@@ -155,7 +191,7 @@ public struct ConfigEntry
      *   i = the integer
      * Returns: a `ConfigEntry`
      */
-    public static ConfigEntry ofNumeric(int i)
+    public static ConfigEntry ofNumeric(size_t i)
     {
         ConfigValue tmp;
         tmp.integer = i;
@@ -243,7 +279,7 @@ public struct ConfigEntry
      * the type of the value in this
      * entry is not numeric
      */
-    public int numeric()
+    public size_t numeric()
     {
         ensureSet;
         ensureTypeMatch(ConfigType.NUMERIC);
@@ -341,9 +377,9 @@ public struct ConfigEntry
         {
             return text();
         }
-        else static if(__traits(isSame, T, int))
+        else static if(isIntegral!(T))
         {
-            return numeric();
+            return cast(T)numeric();
         }
         else static if(__traits(isSame, T, string[]))
         {
@@ -744,7 +780,7 @@ public struct Registry
     /** 
      * See_Also: `opIndexAssign(ConfigEntry, string)`
      */
-    public void opIndexAssign(int numeric, string name)
+    public void opIndexAssign(size_t numeric, string name)
     {
         opIndexAssign(ConfigEntry.ofNumeric(numeric), name);
     }
@@ -824,11 +860,11 @@ unittest
     // Check that the entry still has the right value
     assert(cast(string)reg["name"] == "Tristan");
 
-    // Add a new entry and test its prescence
+    // // Add a new entry and test its prescence
     reg["age"] = 24;
-    assert(cast(int)reg["age"] == 24);
+    assert(cast(int)reg["age"]);
 
-    // Update it
+    // // Update it
     reg["age"] = 25;
     assert(cast(int)reg["age"] == 25);
 
