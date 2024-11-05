@@ -503,6 +503,18 @@ public struct RegistryEntry
     {
         return this.val;
     }
+
+    /** 
+     * Returns the configugration
+     * entry's type
+     *
+     * See_Also: `ConfigEntry.getType()`
+     * Returns: a `ConfigType`
+     */
+    public ConfigType getType()
+    {
+        return getEntry().getType();
+    }
 }
 
 /** 
