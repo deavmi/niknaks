@@ -470,6 +470,21 @@ public struct RegistryEntry
     }
 
     /** 
+     * Constructs a new `RegistryEntry`
+     * with the given name and configuration
+     * entry
+     *
+     * Params:
+     *   name = the name
+     *   entry = the entry itself
+     */
+    this(T)(string name, T entry)
+    {
+        this.name = name;
+        this.val = ConfigEntry(entryVal);
+    }
+
+    /** 
      * Obtains the entry's name
      *
      * Returns: the name
@@ -833,7 +848,7 @@ unittest
     Registry reg = Registry(false);
 
     // Add an entry
-    reg.newEntry("name", ConfigEntry.ofText("Tristan"));
+    reg.newEntry("name", "Tristan");
 
     // Check it exists
     assert(reg.hasEntry("name"));
@@ -841,7 +856,7 @@ unittest
     // Adding it again should fail
     try
     {
-        reg.newEntry("name", ConfigEntry.ofText("Tristan2"));
+        reg.newEntry("name", "Tristan2");
         assert(false);
     }
     catch(RegistryException e)
