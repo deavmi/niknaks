@@ -178,9 +178,7 @@ public struct ConfigEntry
      */
     public static ConfigEntry ofText(string text)
     {
-        ConfigValue tmp;
-        tmp.text = text;
-        return ConfigEntry(tmp, type.TEXT);
+        return ConfigEntry(text);
     }
 
     /** 
@@ -193,9 +191,7 @@ public struct ConfigEntry
      */
     public static ConfigEntry ofNumeric(size_t i)
     {
-        ConfigValue tmp;
-        tmp.integer = i;
-        return ConfigEntry(tmp, type.NUMERIC);
+        return ConfigEntry(i);
     }
 
     /** 
@@ -208,9 +204,7 @@ public struct ConfigEntry
      */
     public static ConfigEntry ofFlag(bool flag)
     {
-        ConfigValue tmp;
-        tmp.flag = flag;
-        return ConfigEntry(tmp, type.FLAG);
+        return ConfigEntry(flag);
     }
 
     /** 
@@ -223,9 +217,7 @@ public struct ConfigEntry
      */
     public static ConfigEntry ofArray(string[] array)
     {
-        ConfigValue tmp;
-        tmp.textArray = array;
-        return ConfigEntry(tmp, type.ARRAY);
+        return ConfigEntry(array);
     }
 
     /** 
