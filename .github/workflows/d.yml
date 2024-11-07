@@ -26,7 +26,7 @@ jobs:
       run: |
           apt update
           # curl -fsS https://dlang.org/install.sh | bash -s dmd
-          # apt install default-d-compiler -y
+          apt install default-d-compiler -y
           apt install gdc -y
           apt install dub -y
 
