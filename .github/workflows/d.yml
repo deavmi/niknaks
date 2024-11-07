@@ -38,7 +38,7 @@ jobs:
     - name: 'Build & Test'
       run: |
         # Explicitly set the compiler to `ldc`
-        DC=ldc
+        DC=ldc2
 
         # Build the project, with its main file included, without unittests
         dub build --compiler=$DC
