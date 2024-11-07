@@ -25,7 +25,8 @@ jobs:
     - name: Install DLang
       run: |
           apt update
-          apt install dub dmd -y
+          curl -fsS https://dlang.org/install.sh | bash -s dmd
+          # apt install  -y
 
     - name: Install Doveralls (code coverage tool)
       run: |
