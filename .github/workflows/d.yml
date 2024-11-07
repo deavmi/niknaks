@@ -20,7 +20,12 @@ jobs:
 
     steps:
     - uses: RouxAntoine/checkout@v4.1.8
-    - uses: deavmi/setup-dlang@patch-1
+    # - uses: deavmi/setup-dlang@patch-1
+
+    - name: Install DLang
+      run: |
+          sudo apt update
+          sudo apt install dub dmd -y
 
     - name: Install Doveralls (code coverage tool)
       run: |
