@@ -26,7 +26,8 @@ jobs:
       run: |
           apt update
           # curl -fsS https://dlang.org/install.sh | bash -s dmd
-          apt install default-d-compiler -y
+          # apt install default-d-compiler -y
+          apt install gdc -y
           apt install dub -y
 
     - name: Install Doveralls (code coverage tool)
@@ -37,8 +38,8 @@ jobs:
 
     - name: 'Build & Test'
       run: |
-        # Explicitly set the compiler to `ldc`
-        DC=ldc2
+        # Explicitly set the compiler to `gdc`
+        DC=gdc
 
         # Build the project, with its main file included, without unittests
         dub build --compiler=$DC
