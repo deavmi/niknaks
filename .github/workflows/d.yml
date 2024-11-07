@@ -20,7 +20,7 @@ jobs:
 
     steps:
     - uses: RouxAntoine/checkout@v4.1.8
-    - uses: dlang-community/setup-dlang@v2
+    - uses: deavmi/setup-dlang@patch-1
 
     - name: Install Doveralls (code coverage tool)
       run: |
