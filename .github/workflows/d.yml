@@ -33,7 +33,7 @@ jobs:
       run: |
           dub fetch doveralls
           apt update
-          apt install libcurl4-openssl-dev
+          apt install libcurl4-openssl-dev -y
 
     - name: 'Build & Test'
       run: |
