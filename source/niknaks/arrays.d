@@ -18,7 +18,7 @@ import niknaks.functional : Predicate;
  * Returns: `true` if present, `false`
  * otherwise
  */
-@safe @nogc
+@nogc
 public bool isPresent(T)(T[] array, T value)
 {
     if(array.length == 0)
