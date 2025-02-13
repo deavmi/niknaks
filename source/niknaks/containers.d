@@ -2085,7 +2085,6 @@ private mixin template Methods(EntityType)
          */
         public EntryType pool(ValueType v)
         {
-
             EntryType* ent = v in _p;
             if(ent is null)
             {
