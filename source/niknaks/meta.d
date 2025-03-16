@@ -36,6 +36,12 @@ public bool isStructType(T)()
     return __traits(isPOD, T) && !isBasicType!(T);
 }
 
+/** 
+ * Ensures that the given variadic arguments
+ * are all of the given type
+ *
+ * Returns: `true` if so, `false` otherwise
+ */
 public bool isVariadicArgsOf(T_should, VarArgs...)()
 {
 	pragma(msg, "All variadic args should be of type: '", T_should, "'");
