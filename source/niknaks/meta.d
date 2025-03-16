@@ -35,3 +35,46 @@ public bool isStructType(T)()
     pragma(msg, !isBasicType!(T));
     return __traits(isPOD, T) && !isBasicType!(T);
 }
+
+public bool isVariadicArgsOf(T_should, VarArgs...)()
+{
+	pragma(msg, "All variadic args should be of type: '", T_should, "'");
+	pragma(msg, "Variadic args: ", VarArgs);
+
+	static foreach(va; VarArgs)
+	{
+		static if(!__traits(isSame, va, T_should))
+		{
+			pragma(msg, "Var-arg '", va, "' not of type '", T_should, "'");
+			return false;
+		}
+	}
+	
+	return true;
+}
+
+version(unittest)
+{
+    
+}
+
+unittest
+{
+    enum SomeType
+    {
+        UM,
+        DOIS,
+        TRES,
+        QUATRO
+    }
+
+    void myFunc(T...)(T, string somethingElse)
+    if(isVariadicArgsOf!(SomeType, T)())
+    {
+        
+    }
+    static assert(__traits(compiles, myFunc(SomeType.UM, SomeType.DOIS, "Halo")));
+
+    static assert(__traits(compiles, myFunc(SomeType.UM, "Halo")));
+    static assert(!__traits(compiles, myFunc(1, "Halo")));
+}
