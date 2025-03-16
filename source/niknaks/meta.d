@@ -53,11 +53,15 @@ public bool isVariadicArgsOf(T_should, VarArgs...)()
 	return true;
 }
 
-version(unittest)
-{
-    
-}
-
+/**
+ * A function is implemented which
+ * wants to ensure its variadic
+ * arguments are all of the same
+ * type.
+ *
+ * This tests out two positive cases
+ * and one failing case.
+ */
 unittest
 {
     enum SomeType
