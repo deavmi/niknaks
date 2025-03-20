@@ -606,3 +606,62 @@ unittest
     newVals = unique(vals);
     assert(newVals == [1]);
 }
+
+
+import std.range : isInputRange, ElementType;
+
+/** 
+ * Given an input range this will
+ * copy all its elements into an 
+ * array of the range's element
+ * type
+ *
+ * Params:
+ *   range = the input range
+ * Returns: an array
+ */
+public ElementType!(T)[] toArray(T)(T range)
+if(isInputRange!(T))
+{
+    ElementType!(T)[] a;
+    while(!range.empty())
+    {
+        a ~= range.front();
+        range.popFront();
+    }
+    return a;
+}
+
+/**
+ * Tests out copying from an `SList`,
+ * which is an input range
+ */
+unittest
+{
+    import std.container.slist : SList;
+    SList!(int) r;
+    r.insertAfter(r[], 1);
+    r.insertAfter(r[], 12);
+    r.insertAfter(r[], 123);
+
+    assert(__traits(compiles, toArray(r[])));
+    int[] a = toArray(r[]);
+    assert(a == [1, 12, 123]);
+}
+
+/**
+ * Tests out copying from an `SList`,
+ * which is an input range
+ */
+unittest
+{
+    import std.container.dlist : DList;
+    DList!(int) r;
+    r.insertAfter(r[], 1);
+    r.insertAfter(r[], 12);
+    r.insertAfter(r[], 123);
+
+    assert(__traits(compiles, toArray(r[])));
+    int[] a = toArray(r[]);
+    assert(a == [1, 12, 123]);
+}
