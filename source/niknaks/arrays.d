@@ -650,7 +650,7 @@ unittest
 }
 
 /**
- * Tests out copying from an `SList`,
+ * Tests out copying from an `DList`,
  * which is an input range
  */
 unittest
