@@ -352,30 +352,22 @@ public struct Result(Okay, Error)
 	@disable
 	private this();
 
-	private this(Okay okay_val, bool placeholder = false)
+	private this(bool isSucc)
 	{
-		this.isSucc = true;
-		this.okay_val = okay_val;
-	}
-
-	private this(Error error_val)
-	{
-		this.isSucc = false;
-		this.error_val = error_val;
+		this.isSucc = isSucc;
 	}
 
 	private static makeOkay(Okay okay_val)
 	{
-		Result!(Okay, Error) r = Result!(Okay, Error)(okay_val, 1==1);
-
+		Result!(Okay, Error) r = Result!(Okay, Error)(true);
+		r.okay_val = okay_val;
 		return r;
 	}
 
 	private static makeBad(Error error_val)
 	{
-		Result!(Okay, Error) r = Result!(Okay, Error)(error_val);
-		// __traits()
-
+		Result!(Okay, Error) r = Result!(Okay, Error)(false);
+		r.error_val = error_val;
 		return r;
 	}
 
