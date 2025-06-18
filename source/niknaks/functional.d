@@ -352,23 +352,6 @@ public struct Result(Okay, Error)
 	@disable
 	private this();
 
-	// private this(bool isSucc)
-	// {
-	// 	this.isSucc = isSucc;
-	// }
-
-	// public this(Okay okay_val)
-	// {
-	// 	this(true);
-	// 	this.okay_val = okay_val;
-	// }
-
-	// public this(Error error_val)
-	// {
-	// 	this(false);
-	// 	this.error_val = error_val;
-	// }
-
 	private this(Okay okay_val, bool placeholder = false)
 	{
 		this.isSucc = true;
