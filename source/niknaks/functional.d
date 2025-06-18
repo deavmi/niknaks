@@ -567,8 +567,7 @@ unittest
 	assert(a.is_error());
 	
 	auto b = error!(Exception, string)(new Exception("A failed result"));
-	assert(a.ok is null);
-	assert(cast(Exception)a.error && (cast(Exception)a.error).msg == "A failed result");
+	assert(cast(Exception)a.error() && (cast(Exception)a.error()).msg == "A failed result");
 
 	// Should be Result!(string, Exception)
 	static assert(__traits(isSame, typeof(b._v.okay_val), string));
