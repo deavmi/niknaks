@@ -327,10 +327,10 @@ unittest
 	struct Message
 	{
 		private string b;
-		this(string s)
-		{
-			this.b = b;
-		}
+		// this(string s)
+		// {
+		// 	this.b = b;
+		// }
 	}
 
 	Message m = Message("Hello");
@@ -395,11 +395,6 @@ public struct Result(Okay, Error)
 
 		return r;
 	}
-
-	// public static makeError(Error error_val)
-	// {
-	// 	Result!()
-	// }
 
 	/** 
 	 * Retuns the okay value
@@ -475,11 +470,7 @@ public struct Result(Okay, Error)
 @safe @nogc
 public static Result!(OkayType, ErrorType) ok(OkayType, ErrorType = OkayType)(OkayType okayVal)
 {
-	// Result!(OkayType, ErrorType) result = Result!(OkayType, ErrorType)(true);
-	Result!(OkayType, ErrorType) result = Result!(OkayType, ErrorType).makeOkay(okayVal);
-	// result.okay_val = okayVal;
-
-	return result;
+	return Result!(OkayType, ErrorType).makeOkay(okayVal);
 }
 
 /** 
@@ -499,11 +490,7 @@ public static Result!(OkayType, ErrorType) ok(OkayType, ErrorType = OkayType)(Ok
 @safe @nogc
 public static Result!(OkayType, ErrorType) error(ErrorType, OkayType = ErrorType)(ErrorType errorVal)
 {
-	// Result!(OkayType, ErrorType) result = Result!(OkayType, ErrorType)(false);
-	Result!(OkayType, ErrorType) result = Result!(OkayType, ErrorType).makeBad(errorVal);
-	// result.error_val = errorVal;
-
-	return result;
+	return Result!(OkayType, ErrorType).makeBad(errorVal);
 }
 
 /**
