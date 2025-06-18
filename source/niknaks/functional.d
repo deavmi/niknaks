@@ -322,92 +322,36 @@ unittest
 	}
 }
 
-unittest
-{
-	struct Message
-	{
-		private string b;
-		// this(string s)
-		// {
-		// 	this.b = b;
-		// }
-	}
-
-	Message m = Message("Hello");
-	// Result!(Message, string) m_res = Result!(Message, string)(m);
-	Result!(Message, string) m_res = ok!(Message, string)(m);
-}
-
-unittest
-{
-	struct Message
-	{
-		private string b;
-		this(string s)
-		{
-			this.b = b;
-		}
-	}
-
-	Message m = Message("Hello");
-
-	auto d = Result!(Message)(m);
-
-	// in this case we succeed in compiling
-	// because the default constructor
-
-// ok!(Message, string)(m);
-	// should fail as declaring a parameter constructor
-	// removed the parameterless one and since our error
-	// field will not be set (inside `Result`) it will fail
-	// to (at compile time) have its parameter constructor
-	// filled with arguments
-	// static assert(__traits(compiles, ok!(Message, string)(m)));
-}
-
-unittest
-{
-	
-}
-
 /** 
  * A result type
  */
-@safe @nogc
+@nogc
 public struct Result(Okay, Error = string)
 if(!__traits(isSame, Okay, Error)) // must be distinct
 {
-	private Okay okay_val;
-	private Error error_val;
-
-	private bool isSucc;
+	private union Val
+	{
+		Okay okay_val;
+		Error error_val;
+	}
+	private Val _v;
+	
+	private bool _isSucc;
 	
 	// Prevent intentional bade state
 	@disable
 	private this();
 
-	public this(Okay okay)
+	public this(Okay okay) @safe
 	{
-		this.isSucc = true;
-		this.okay_val = okay;
+		this._isSucc = true;
+		this._v.okay_val = okay;
 	}
 
-	public this(Error error)
+	public this(Error error) @safe
 	{
-		this.isSucc = false;
-		this.error_val = error;
-	}
-
-	private static makeOkay(Okay okay_val)
-	{
-		Result!(Okay, Error) r = Result!(Okay, Error)(okay_val);
-		return r;
-	}
-
-	private static makeBad(Error error_val)
-	{
-		Result!(Okay, Error) r = Result!(Okay, Error)(error_val);
-		return r;
+		this._isSucc = false;
+		this._v.error_val = error;
 	}
 
 	/** 
@@ -417,7 +361,8 @@ if(!__traits(isSame, Okay, Error)) // must be distinct
 	 */
 	public Okay ok()
 	{
-		return this.okay_val;
+		assert(is_okay());
+		return this._v.okay_val;
 	}
 
 	/** 
@@ -427,7 +372,8 @@ if(!__traits(isSame, Okay, Error)) // must be distinct
 	 */
 	public Error error()
 	{
-		return this.error_val;
+		assert(is_error());
+		return this._v.error_val;
 	}
 
 	/** 
@@ -437,7 +383,7 @@ if(!__traits(isSame, Okay, Error)) // must be distinct
 	 * See_Also: `is_okay`
 	 * Returns: a boolean
 	 */
-	public bool opCast(T)()
+	public bool opCast(T)() @safe
 	if(__traits(isSame, T, bool))
 	{
 		return is_okay();
@@ -449,9 +395,9 @@ if(!__traits(isSame, Okay, Error)) // must be distinct
 	 * Returns: `true` if
 	 * okay, `false` otherwise
 	 */
-	public bool is_okay()
+	public bool is_okay() @safe
 	{
-		return this.isSucc == true;
+		return this._isSucc == true;
 	}
 
 	/** 
@@ -461,9 +407,9 @@ if(!__traits(isSame, Okay, Error)) // must be distinct
 	 * erroneous, `false`
 	 * otherwise
 	 */
-	public bool is_error()
+	public bool is_error() @safe
 	{
-		return this.isSucc == false;
+		return this._isSucc == false;
 	}
 }
 
@@ -474,17 +420,17 @@ if(!__traits(isSame, Okay, Error)) // must be distinct
  *
  * If you don't specify the type
  * of the error value for this
- * then it is assumed to be the
- * same as the okay type.
+ * then it is assumed to be of
+ * type `string`.
  *
  * Params:
  *   okayVal = the okay value
  * Returns: a `Result`
  */
 @safe @nogc
-public static Result!(OkayType, ErrorType) ok(OkayType, ErrorType = OkayType)(OkayType okayVal)
+public static Result!(OkayType, ErrorType) ok(OkayType, ErrorType = string)(OkayType okayVal)
 {
-	return Result!(OkayType, ErrorType).makeOkay(okayVal);
+	return Result!(OkayType, ErrorType)(okayVal);
 }
 
 /** 
@@ -494,17 +440,17 @@ public static Result!(OkayType, ErrorType) ok(OkayType, ErrorType = OkayType)(Ok
  *
  * If you don't specify the type
  * of the okay value for this
- * then it is assumed to be the
- * same as the error type.
+ * then it is assumed to be of
+ * type `string`.
  *
  * Params:
  *   errorVal = the error value
  * Returns: a `Result`
  */
 @safe @nogc
-public static Result!(OkayType, ErrorType) error(ErrorType, OkayType = ErrorType)(ErrorType errorVal)
+public static Result!(OkayType, ErrorType) error(ErrorType, OkayType = string)(ErrorType errorVal)
 {
-	return Result!(OkayType, ErrorType).makeBad(errorVal);
+	return Result!(OkayType, ErrorType)(errorVal);
 }
 
 /**
@@ -513,13 +459,22 @@ public static Result!(OkayType, ErrorType) error(ErrorType, OkayType = ErrorType
  */
 unittest
 {
-	auto a = ok("A successful result");
-	assert(a.ok == "A successful result");
-	assert(a.error == null);
+	struct Message
+	{
+		string _m;
+		this(string m)
+		{
+			this._m = m;
+		}
+	}
+	Message m = Message("Hello");
 
-	// Should be Result!(string, string)
-	static assert(__traits(isSame, typeof(a.okay_val), string));
-	static assert(__traits(isSame, typeof(a.error_val), string));
+	auto a = ok(m);
+	assert(a.ok()._m == "Hello");
+
+	// Should be Result!(Message, string)
+	static assert(__traits(isSame, typeof(a._v.okay_val), Message));
+	static assert(__traits(isSame, typeof(a._v.error_val), string));
 
 	// opCast to bool
 	assert(cast(bool)a);
@@ -529,12 +484,11 @@ unittest
 	assert(!a.is_error());
 	
 	auto b = ok!(string, Exception)("A successful result");
-	assert(b.ok == "A successful result");
-	assert(b.error is null);
+	assert(b.ok() == "A successful result");
 
 	// Should be Result!(string, Exception)
-	static assert(__traits(isSame, typeof(b.okay_val), string));
-	static assert(__traits(isSame, typeof(b.error_val), Exception));
+	static assert(__traits(isSame, typeof(b._v.okay_val), string));
+	static assert(__traits(isSame, typeof(b._v.error_val), Exception));
 }
 
 /**
@@ -544,12 +498,11 @@ unittest
 unittest
 {
 	auto a = error(new Exception("A failed result"));
-	assert(a.ok is null);
-	assert(cast(Exception)a.error && (cast(Exception)a.error).msg == "A failed result");
+	assert(cast(Exception)a.error() && (cast(Exception)a.error()).msg == "A failed result");
 
-	// Should be Result!(Exception, Exception)
-	static assert(__traits(isSame, typeof(a.okay_val), Exception));
-	static assert(__traits(isSame, typeof(a.error_val), Exception));
+	// Should be Result!(string, Exception)
+	static assert(__traits(isSame, typeof(a._v.okay_val), string));
+	static assert(__traits(isSame, typeof(a._v.error_val), Exception));
 
 	// opCast to bool
 	assert(!cast(bool)a);
@@ -559,10 +512,9 @@ unittest
 	assert(a.is_error());
 	
 	auto b = error!(Exception, string)(new Exception("A failed result"));
-	assert(a.ok is null);
-	assert(cast(Exception)a.error && (cast(Exception)a.error).msg == "A failed result");
+	assert(cast(Exception)a.error() && (cast(Exception)a.error()).msg == "A failed result");
 
 	// Should be Result!(string, Exception)
-	static assert(__traits(isSame, typeof(b.okay_val), string));
-	static assert(__traits(isSame, typeof(b.error_val), Exception));
+	static assert(__traits(isSame, typeof(b._v.okay_val), string));
+	static assert(__traits(isSame, typeof(b._v.error_val), Exception));
 }
