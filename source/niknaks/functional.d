@@ -327,10 +327,14 @@ unittest
 	struct Message
 	{
 		private string b;
-		this(string s)
-		{
-			this.b = b;
-		}
+		// this()
+		// {
+
+		// }
+		// this(string s)
+		// {
+		// 	this.b = b;
+		// }
 	}
 
 	Message m = Message("Hello");
@@ -338,11 +342,13 @@ unittest
 	Result!(Message, string) m_res = ok!(Message, string)(m);
 }
 
+import std.meta : AliasSeq;
+
 /** 
  * A result type
  */
 @safe @nogc
-public struct Result(Okay, Error)
+public struct Result(Okay, Error)//, alias DefaultArg, alias DefaultErrorArgs = null)
 {
 	private Okay okay_val;
 	private Error error_val;
