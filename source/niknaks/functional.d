@@ -379,7 +379,7 @@ if(!__traits(isSame, Okay, Error)) // must be distinct
 	}
 	private Val _v;
 	
-	private bool isSucc;
+	private bool _isSucc;
 	
 	// Prevent intentional bade state
 	@disable
@@ -387,26 +387,14 @@ if(!__traits(isSame, Okay, Error)) // must be distinct
 
 	public this(Okay okay) @safe
 	{
-		this.isSucc = true;
+		this._isSucc = true;
 		this._v.okay_val = okay;
 	}
 
 	public this(Error error) @safe
 	{
-		this.isSucc = false;
+		this._isSucc = false;
 		this._v.error_val = error;
-	}
-
-	private static makeOkay(Okay okay_val)
-	{
-		Result!(Okay, Error) r = Result!(Okay, Error)(okay_val);
-		return r;
-	}
-
-	private static makeBad(Error error_val)
-	{
-		Result!(Okay, Error) r = Result!(Okay, Error)(error_val);
-		return r;
 	}
 
 	/** 
@@ -452,7 +440,7 @@ if(!__traits(isSame, Okay, Error)) // must be distinct
 	 */
 	public bool is_okay() @safe
 	{
-		return this.isSucc == true;
+		return this._isSucc == true;
 	}
 
 	/** 
@@ -464,7 +452,7 @@ if(!__traits(isSame, Okay, Error)) // must be distinct
 	 */
 	public bool is_error() @safe
 	{
-		return this.isSucc == false;
+		return this._isSucc == false;
 	}
 }
 
@@ -485,7 +473,7 @@ if(!__traits(isSame, Okay, Error)) // must be distinct
 @safe @nogc
 public static Result!(OkayType, ErrorType) ok(OkayType, ErrorType = string)(OkayType okayVal)
 {
-	return Result!(OkayType, ErrorType).makeOkay(okayVal);
+	return Result!(OkayType, ErrorType)(okayVal);
 }
 
 /** 
@@ -505,7 +493,7 @@ public static Result!(OkayType, ErrorType) ok(OkayType, ErrorType = string)(Okay
 @safe @nogc
 public static Result!(OkayType, ErrorType) error(ErrorType, OkayType = string)(ErrorType errorVal)
 {
-	return Result!(OkayType, ErrorType).makeBad(errorVal);
+	return Result!(OkayType, ErrorType)(errorVal);
 }
 
 /**
