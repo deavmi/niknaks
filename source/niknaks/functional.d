@@ -475,8 +475,8 @@ if(!__traits(isSame, Okay, Error)) // must be distinct
  *
  * If you don't specify the type
  * of the error value for this
- * then it is assumed to be the
- * same as the okay type.
+ * then it is assumed to be of
+ * type `string`.
  *
  * Params:
  *   okayVal = the okay value
@@ -495,8 +495,8 @@ public static Result!(OkayType, ErrorType) ok(OkayType, ErrorType = string)(Okay
  *
  * If you don't specify the type
  * of the okay value for this
- * then it is assumed to be the
- * same as the error type.
+ * then it is assumed to be of
+ * type `string`.
  *
  * Params:
  *   errorVal = the error value
