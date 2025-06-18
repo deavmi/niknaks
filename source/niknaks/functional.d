@@ -322,6 +322,22 @@ unittest
 	}
 }
 
+unittest
+{
+	struct Message
+	{
+		private string b;
+		this(string s)
+		{
+			this.b = b;
+		}
+	}
+
+	Message m = Message("Hello");
+	// Result!(Message, string) m_res = Result!(Message, string)(m);
+	Result!(Message, string) m_res = ok!(Message, string)(m);
+}
+
 /** 
  * A result type
  */
@@ -336,10 +352,54 @@ public struct Result(Okay, Error)
 	@disable
 	private this();
 
-	private this(bool isSucc)
+	// private this(bool isSucc)
+	// {
+	// 	this.isSucc = isSucc;
+	// }
+
+	// public this(Okay okay_val)
+	// {
+	// 	this(true);
+	// 	this.okay_val = okay_val;
+	// }
+
+	// public this(Error error_val)
+	// {
+	// 	this(false);
+	// 	this.error_val = error_val;
+	// }
+
+	private this(Okay okay_val, bool placeholder = false)
 	{
-		this.isSucc = isSucc;
+		this.isSucc = true;
+		this.okay_val = okay_val;
 	}
+
+	private this(Error error_val)
+	{
+		this.isSucc = false;
+		this.error_val = error_val;
+	}
+
+	private static makeOkay(Okay okay_val)
+	{
+		Result!(Okay, Error) r = Result!(Okay, Error)(okay_val, 1==1);
+
+		return r;
+	}
+
+	private static makeBad(Error error_val)
+	{
+		Result!(Okay, Error) r = Result!(Okay, Error)(error_val);
+		// __traits()
+
+		return r;
+	}
+
+	// public static makeError(Error error_val)
+	// {
+	// 	Result!()
+	// }
 
 	/** 
 	 * Retuns the okay value
@@ -415,8 +475,9 @@ public struct Result(Okay, Error)
 @safe @nogc
 public static Result!(OkayType, ErrorType) ok(OkayType, ErrorType = OkayType)(OkayType okayVal)
 {
-	Result!(OkayType, ErrorType) result = Result!(OkayType, ErrorType)(true);
-	result.okay_val = okayVal;
+	// Result!(OkayType, ErrorType) result = Result!(OkayType, ErrorType)(true);
+	Result!(OkayType, ErrorType) result = Result!(OkayType, ErrorType).makeOkay(okayVal);
+	// result.okay_val = okayVal;
 
 	return result;
 }
@@ -438,8 +499,9 @@ public static Result!(OkayType, ErrorType) ok(OkayType, ErrorType = OkayType)(Ok
 @safe @nogc
 public static Result!(OkayType, ErrorType) error(ErrorType, OkayType = ErrorType)(ErrorType errorVal)
 {
-	Result!(OkayType, ErrorType) result = Result!(OkayType, ErrorType)(false);
-	result.error_val = errorVal;
+	// Result!(OkayType, ErrorType) result = Result!(OkayType, ErrorType)(false);
+	Result!(OkayType, ErrorType) result = Result!(OkayType, ErrorType).makeBad(errorVal);
+	// result.error_val = errorVal;
 
 	return result;
 }
