@@ -513,7 +513,7 @@ unittest
 	Message m = Message("Hello");
 
 	auto a = ok(m);
-	assert(a.ok()._m == "A successful result");
+	assert(a.ok()._m == "Hello");
 
 	// Should be Result!(Message, string)
 	static assert(__traits(isSame, typeof(a._v.okay_val), Message));
