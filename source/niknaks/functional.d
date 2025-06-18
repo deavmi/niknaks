@@ -349,6 +349,7 @@ public struct Result(Okay, Error)
 
 	private bool isSucc;
 	
+	// Prevent intentional bade state
 	@disable
 	private this();
 
