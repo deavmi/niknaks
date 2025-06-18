@@ -322,49 +322,6 @@ unittest
 	}
 }
 
-unittest
-{
-	struct Message
-	{
-		private string b;
-		// this(string s)
-		// {
-		// 	this.b = b;
-		// }
-	}
-
-	Message m = Message("Hello");
-	// Result!(Message, string) m_res = Result!(Message, string)(m);
-	Result!(Message, string) m_res = ok!(Message, string)(m);
-}
-
-unittest
-{
-	struct Message
-	{
-		private string b;
-		this(string s)
-		{
-			this.b = b;
-		}
-	}
-
-	Message m = Message("Hello");
-
-	// This 
-	// In this case we succeed as the should fail as declaring a parameter constructor
-	// removed the parameterless one and since our error
-	// field will not be set (inside `Result`) it will fail
-	// to (at compile time) have its parameter constructor
-	// filled with arguments
-	static assert(__traits(compiles, error!(string, Message)("hi")));
-}
-
-unittest
-{
-	
-}
-
 /** 
  * A result type
  */
