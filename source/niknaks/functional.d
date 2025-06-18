@@ -338,11 +338,44 @@ unittest
 	Result!(Message, string) m_res = ok!(Message, string)(m);
 }
 
+unittest
+{
+	struct Message
+	{
+		private string b;
+		this(string s)
+		{
+			this.b = b;
+		}
+	}
+
+	Message m = Message("Hello");
+
+	auto d = Result!(Message)(m);
+
+	// in this case we succeed in compiling
+	// because the default constructor
+
+// ok!(Message, string)(m);
+	// should fail as declaring a parameter constructor
+	// removed the parameterless one and since our error
+	// field will not be set (inside `Result`) it will fail
+	// to (at compile time) have its parameter constructor
+	// filled with arguments
+	// static assert(__traits(compiles, ok!(Message, string)(m)));
+}
+
+unittest
+{
+	
+}
+
 /** 
  * A result type
  */
 @safe @nogc
-public struct Result(Okay, Error)
+public struct Result(Okay, Error = string)
+if(!__traits(isSame, Okay, Error)) // must be distinct
 {
 	private Okay okay_val;
 	private Error error_val;
@@ -353,22 +386,27 @@ public struct Result(Okay, Error)
 	@disable
 	private this();
 
-	private this(bool isSucc)
+	public this(Okay okay)
 	{
-		this.isSucc = isSucc;
+		this.isSucc = true;
+		this.okay_val = okay;
+	}
+
+	public this(Error error)
+	{
+		this.isSucc = false;
+		this.error_val = error;
 	}
 
 	private static makeOkay(Okay okay_val)
 	{
-		Result!(Okay, Error) r = Result!(Okay, Error)(true);
-		r.okay_val = okay_val;
+		Result!(Okay, Error) r = Result!(Okay, Error)(okay_val);
 		return r;
 	}
 
 	private static makeBad(Error error_val)
 	{
-		Result!(Okay, Error) r = Result!(Okay, Error)(false);
-		r.error_val = error_val;
+		Result!(Okay, Error) r = Result!(Okay, Error)(error_val);
 		return r;
 	}
 
