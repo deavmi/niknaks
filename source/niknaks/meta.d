@@ -18,6 +18,40 @@ public bool isClassType(T)()
     return __traits(compiles, __traits(classInstanceSize, T));
 }
 
+/**
+ * Checking if a given data type
+ * is a class type
+ */
+unittest
+{
+	int g;
+	string[] arr;
+
+	enum D
+	{
+		J
+	}
+
+	struct F
+	{
+		
+	}
+
+	class C
+	{
+		public void f()
+		{
+			
+		}
+	}
+
+	assert(isClassType!(int) == false);
+	assert(isClassType!(D) == false);
+	assert(isClassType!(F) == false);
+	assert(isClassType!(string[]) == false);
+	assert(isClassType!(C) == true);	
+}
+
 /** 
  * Determines if the
  * type `T` is a struct
@@ -38,13 +72,17 @@ public bool isStructType(T)()
 
 
 
-    // POD: struct, string, array of string
-    // NOT: Basic type, means struct and string[]
-    // hence, we need to also add !isArray!(T)
+    // POD: struct, string, array of string, class
+    // NOT: Basic type, means struct, class and
+    // string[]
+    // hence, we need to also add !isArray!(T),
+    // then only struct and class left, so we
+    // need !isClassType!(T)
     return
     		__traits(isPOD, T) &&
     		!isBasicType!(T) &&
-    		!isArray!(T);
+    		!isArray!(T) &&
+    		!isClassType!(T);
 }
 
 /**
@@ -73,8 +111,6 @@ unittest
 			
 		}
 	}
-
-	pragma(msg, "Is C isPOD?: ", __traits(isPOD, C));
 
 	assert(isStructType!(int) == false);
 	assert(isStructType!(D) == false);
