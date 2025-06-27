@@ -31,8 +31,12 @@ public bool isStructType(T)()
     // FIXME: This isn't the best test yet
     // Primtiive types I believe are POD, so we need to also exlcude those
     import std.traits : isBasicType, isArray;
-    pragma(msg, __traits(isPOD, T));
-    pragma(msg, !isBasicType!(T));
+    pragma(msg, T, "::isPOD: ", __traits(isPOD, T));
+    pragma(msg, T, "::isBasicType: ", isBasicType!(T));
+    pragma(msg, T, "::isArray: ", isArray!(T));
+    pragma(msg, T, "::isClassType: ", isClassType!(T));
+
+
 
     // POD: struct, string, array of string
     // NOT: Basic type, means struct and string[]
@@ -62,10 +66,21 @@ unittest
 		
 	}
 
+	class C
+	{
+		public void f()
+		{
+			
+		}
+	}
+
+	pragma(msg, "Is C isPOD?: ", __traits(isPOD, C));
+
 	assert(isStructType!(int) == false);
 	assert(isStructType!(D) == false);
 	assert(isStructType!(F) == true);
 	assert(isStructType!(string[]) == false);
+	assert(isStructType!(C) == false);
 }
 
 /** 
