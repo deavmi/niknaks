@@ -30,10 +30,42 @@ public bool isStructType(T)()
 {
     // FIXME: This isn't the best test yet
     // Primtiive types I believe are POD, so we need to also exlcude those
-    import std.traits : isBasicType;
+    import std.traits : isBasicType, isArray;
     pragma(msg, __traits(isPOD, T));
     pragma(msg, !isBasicType!(T));
-    return __traits(isPOD, T) && !isBasicType!(T);
+
+    // POD: struct, string, array of string
+    // NOT: Basic type, means struct and string[]
+    // hence, we need to also add !isArray!(T)
+    return
+    		__traits(isPOD, T) &&
+    		!isBasicType!(T) &&
+    		!isArray!(T);
+}
+
+/**
+ * Checking if a given data type
+ * is a struct type
+ */
+unittest
+{
+	int g;
+	string[] arr;
+
+	enum D
+	{
+		J
+	}
+
+	struct F
+	{
+		
+	}
+
+	assert(isStructType!(int) == false);
+	assert(isStructType!(D) == false);
+	assert(isStructType!(F) == true);
+	assert(isStructType!(string[]) == false);
 }
 
 /** 
