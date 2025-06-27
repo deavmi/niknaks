@@ -62,7 +62,6 @@ unittest
  */
 public bool isStructType(T)()
 {
-    // FIXME: This isn't the best test yet
     // Primtiive types I believe are POD, so we need to also exlcude those
     import std.traits : isBasicType, isArray;
     pragma(msg, T, "::isPOD: ", __traits(isPOD, T));
