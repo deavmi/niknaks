@@ -1,5 +1,5 @@
 /**
-  * JSON-related tooling
+  * JSON-related routines
   *
   * Authors: Tristan Brice Velloza Kildaire (deavmi)
   */
