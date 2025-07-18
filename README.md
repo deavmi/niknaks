@@ -51,6 +51,8 @@ is expected to grow over time.
     * Textual manipulation routines
 * `niknaks.meta`
     * Template-oriented helper routines
+* `niknaks.json`
+	* JSON-related routines
 
 ## License
 
