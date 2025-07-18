@@ -28,7 +28,6 @@ public JSONValue* traverseTo(string path, JSONValue* start)
         return null;
     }
 
-    // todo: nullity check here on `start`?
     import std.string : split, indexOf;
 
     // no dots `.` in the name
@@ -58,6 +57,10 @@ private version(unittest)
     import std.json : parseJSON;
 }
 
+/**
+ * Tests out the traversing of
+ * a JSON data structure
+ */
 unittest
 {
     JSONValue z_node = parseJSON("1");
