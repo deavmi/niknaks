@@ -61,3 +61,8 @@ public import niknaks.text;
  * Template-oriented routines
  */
 public import niknaks.meta;
+
+/**
+ * JSON-related routines
+ */
+public import niknaks.json;
